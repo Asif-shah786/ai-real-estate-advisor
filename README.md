@@ -70,8 +70,7 @@ The AI Real Estate Advisor implements a Retrieval-Augmented Generation (RAG) sys
 ## Project Structure
 ```
 ├── ai/                    # AI agent implementation
-├── app.py                 # V1 application
-├── app_v2.py              # V2 application
+├── app.py                  # Main application (RAG implementation)
 ├── assets/                # Screenshots and images
 ├── common/                # Common configurations
 ├── data/                  # Data loading modules
@@ -79,30 +78,24 @@ The AI Real Estate Advisor implements a Retrieval-Augmented Generation (RAG) sys
 ├── pyproject.toml         # Poetry dependencies
 ├── README.md              # This file
 ├── PRD.MD                 # Product Requirements Document
-├── run_v1.sh              # Script to run V1
-├── run_v2.sh              # Script to run V2
+├── run_v2.sh              # Script to run the application
 ├── streaming.py           # Streaming utilities
 ├── TODO.MD                # Todo list
 ├── utils/                 # Utility scripts
 └── utils.py               # Helper functions
 ```
 
-## Project Versions
+## Project Overview
 
-### V1: Pandas DataFrame Agent
-- Used `langchain_experimental.agents.agent_toolkits.pandas.base.create_pandas_dataframe_agent`
-- Basic property search functionality with single-turn conversations
-- Run with: [run_v1.sh](run_v1.sh) | Application file: [app.py](app.py)
+The AI Real Estate Advisor is a RAG-powered application that provides intelligent property search and recommendations through natural language conversations.
 
-![V1 Screenshot](assets/screen.png)
-
-### V2: RAG with Multiple LLM Support
+### Key Features
 - Uses different LLM models (OpenAI GPT, Llama)
 - Implements RAG with `ConversationalRetrievalChain` for multi-turn conversations
 - Enhanced property search and filtering capabilities
-- Run with: [run_v2.sh](run_v2.sh) | Application file: [app_v2.py](app_v2.py)
+- Run with: [run.sh](run.sh) | Application file: [app.py](app.py)
 
-![V2 Screenshot](assets/screen2.png)
+![Application Screenshot](assets/screen2.png)
 
 ## Future Development Roadmap
 
@@ -144,15 +137,15 @@ The application follows a modular architecture with the following components:
 
 ## Solution Comparison & Technical Considerations
 
-### Implementation Evolution
+### Current Implementation
 
-| Aspect               | V1 Implementation      | V2 Implementation                      | Benefits of V2                                         |
-| -------------------- | ---------------------- | -------------------------------------- | ------------------------------------------------------ |
-| Agent Type           | Pandas DataFrame Agent | ConversationalRetrievalChain           | Improved conversation memory and context retention     |
-| LLM Integration      | Limited to OpenAI      | Multiple model support (OpenAI, Llama) | Greater flexibility and cost options                   |
-| Conversation Mode    | Single-turn            | Multi-turn with history                | More natural conversation flow and follow-up questions |
-| Result Quality       | Basic data filtering   | Enhanced reasoning with RAG            | More relevant and personalized recommendations         |
-| Technical Complexity | Lower                  | Higher                                 | More powerful but requires more careful implementation |
+| Aspect               | Current Implementation                 | Benefits                                               |
+| -------------------- | -------------------------------------- | ------------------------------------------------------ |
+| Agent Type           | ConversationalRetrievalChain           | Improved conversation memory and context retention     |
+| LLM Integration      | Multiple model support (OpenAI, Llama) | Greater flexibility and cost options                   |
+| Conversation Mode    | Multi-turn with history                | More natural conversation flow and follow-up questions |
+| Result Quality       | Enhanced reasoning with RAG            | More relevant and personalized recommendations         |
+| Technical Complexity | Higher                                 | More powerful but requires more careful implementation |
 
 ### Alternative Approaches Considered
 
@@ -173,7 +166,7 @@ When presenting this solution, focus on:
 2. **Preference Refinement**: Demonstrate how the system narrows recommendations as users provide more details
    - Example: Start broad with "apartments in Warsaw" then refine with budget, amenities, etc.
 
-3. **Context Retention**: Highlight how the assistant remembers previous statements
+3. **Context Retention**: Highlight how the Advisor remembers previous statements
    - Example: User asks about parking after discussing a property, system knows which property they're referring to
 
 4. **Reasoning Capabilities**: Show how it explains why properties match criteria
@@ -322,17 +315,12 @@ OPENAI_API_KEY=your-api-key-here
 ### Running the Application
 
 #### Local Development
-Run either version of the application:
+Run the application:
 ```sh
-# Run V1
+# Run the application
 streamlit run app.py
 # OR
-./run_v1.sh
-
-# Run V2
-streamlit run app_v2.py
-# OR
-./run_v2.sh
+./run.sh
 ```
 
 For additional configuration options:

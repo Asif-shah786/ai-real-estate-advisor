@@ -27,7 +27,7 @@ def enable_chat_history(func):
 
         # to show chat history on ui
         if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you with finding real "
+            st.session_state["messages"] = [{"role": "Advisor", "content": "How can I help you with finding real "
                                                                              "estate properties?"}]
         for msg in st.session_state["messages"]:
             st.chat_message(msg["role"]).write(msg["content"])
@@ -41,7 +41,7 @@ def display_msg(msg, author):
 
     Args:
         msg (str): message to display
-        author (str): author of the message -user/assistant
+        author (str): author of the message -user/Advisor
     """
     st.session_state.messages.append({"role": author, "content": msg})
     st.chat_message(author).write(msg)

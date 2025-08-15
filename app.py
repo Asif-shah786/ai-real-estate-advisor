@@ -299,20 +299,18 @@ class ChatbotWeb:
         Returns:
             ConversationalRetrievalChain: The configured QA chain
         """
-        # Define retriever using Maximum Marginal Relevance (MMR) for diverse results
+        # Define retriever with cross-encoder reranking
+        from retrieval import CrossEncoderRerankRetriever
+
         try:
-            retriever = vectordb.as_retriever(
-                search_type='mmr',  # MMR helps ensure diversity in retrieved documents
-                search_kwargs={
-                    'k': 2,  # Return 2 most relevant documents
-                    'fetch_k': 4  # Fetch 4 candidates before selecting the 2 most diverse
-                }
+            retriever = CrossEncoderRerankRetriever.from_vectorstore(
+                vectordb, top_k=20, top_n=5
             )
-        except Exception as e:
-            # Fallback to simple similarity search if MMR fails
+        except Exception:
+            # Fallback to simple similarity search if reranker cannot be initialized
             retriever = vectordb.as_retriever(
                 search_type='similarity',
-                search_kwargs={'k': 2}
+                search_kwargs={'k': 5}
             )
 
         # Setup memory for contextual conversation

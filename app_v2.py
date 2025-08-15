@@ -198,15 +198,26 @@ class ChatbotWeb:
             chunk_overlap=200  # With 200 character overlap between chunks
         )
         splits = text_splitter.split_documents(docs)
+        
+        # Ensure we have valid documents with content
+        if not splits:
+            st.error("No valid documents found. Please check your CSV data sources.")
+            return None
+            
+        # Validate that splits contain proper Document objects
+        valid_splits = [doc for doc in splits if hasattr(doc, 'page_content') and doc.page_content.strip()]
+        if not valid_splits:
+            st.error("No valid document content found after splitting.")
+            return None
 
         # Create in-memory vector database using DocArrayInMemorySearch
         # Uses the embedding model configured in __init__
-        vectordb = DocArrayInMemorySearch.from_documents(splits, _self.embedding_model)
-
-        # Alternative vector store implementation (commented out):
-        # from langchain_community.vectorstores import Chroma
-        # from langchain_openai import OpenAIEmbeddings
-        # vectordb = Chroma.from_documents(splits, OpenAIEmbeddings())
+        try:
+            vectordb = DocArrayInMemorySearch.from_documents(valid_splits, _self.embedding_model)
+        except Exception as e:
+            # Fallback to Chroma if DocArrayInMemorySearch fails
+            from langchain_community.vectorstores import Chroma
+            vectordb = Chroma.from_documents(valid_splits, _self.embedding_model)
 
         return vectordb
 
@@ -226,13 +237,20 @@ class ChatbotWeb:
             ConversationalRetrievalChain: The configured QA chain
         """
         # Define retriever using Maximum Marginal Relevance (MMR) for diverse results
-        retriever = vectordb.as_retriever(
-            search_type='mmr',  # MMR helps ensure diversity in retrieved documents
-            search_kwargs={
-                'k': 2,  # Return 2 most relevant documents
-                'fetch_k': 4  # Fetch 4 candidates before selecting the 2 most diverse
-            }
-        )
+        try:
+            retriever = vectordb.as_retriever(
+                search_type='mmr',  # MMR helps ensure diversity in retrieved documents
+                search_kwargs={
+                    'k': 2,  # Return 2 most relevant documents
+                    'fetch_k': 4  # Fetch 4 candidates before selecting the 2 most diverse
+                }
+            )
+        except Exception as e:
+            # Fallback to simple similarity search if MMR fails
+            retriever = vectordb.as_retriever(
+                search_type='similarity',
+                search_kwargs={'k': 2}
+            )
 
         # Setup memory for contextual conversation
         memory = ConversationBufferMemory(
@@ -315,6 +333,9 @@ class ChatbotWeb:
 
             # Set up vector database and QA chain
             vectordb = self.setup_vectordb(websites)  # Create vector database from URLs
+            if vectordb is None:
+                st.error("Failed to create vector database. Please check your data sources.")
+                st.stop()
             qa_chain = self.setup_qa_chain(vectordb)  # Configure the QA chain
 
             # Create chat input field

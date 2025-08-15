@@ -32,7 +32,7 @@ from langchain_community.vectorstores import DocArrayInMemorySearch  # In-memory
 # Configure the Streamlit page
 st.set_page_config(page_title="🦾 AI Real Estate Advisor", page_icon='💬', layout='wide')
 st.header('Chat with Real Estate AI Advisor')  # Main heading
-LOCAL_DATASET_PATH = "dataset/manchester_properties_for_sale_mini.csv"
+LOCAL_DATASET_PATH = "dataset/structured_properties.csv"
 
 class ChatbotWeb:
     """
@@ -65,11 +65,11 @@ class ChatbotWeb:
         
         This method uses r.jina.ai as a proxy to fetch web content,
         which helps avoid CORS issues and standardizes web scraping.
-        
-        Parameters:
+    
+    Parameters:
             url (str): URL to scrape content from
-            
-        Returns:
+        
+    Returns:
             str: The scraped content or None if an error occurs
         """
         content = ""
@@ -91,11 +91,11 @@ class ChatbotWeb:
         
         Uses LangChain's CSVLoader to convert each row in the CSV file
         to a Document object that can be processed by the RAG pipeline.
-        
-        Parameters:
+    
+    Parameters:
             path (str): Path to the local CSV file
-            
-        Returns:
+        
+    Returns:
             list: List of Document objects or None if an error occurs
         """
         content = ""
@@ -112,11 +112,11 @@ class ChatbotWeb:
         
         First downloads the CSV file as a pandas DataFrame, then converts
         each row to a Document object using DataFrameLoader.
-        
-        Parameters:
+    
+    Parameters:
             url (str): URL to the CSV file
-            
-        Returns:
+    
+    Returns:
             list: List of Document objects or None if an error occurs
         """
         try:
@@ -127,14 +127,58 @@ class ChatbotWeb:
         except Exception as e:
             traceback.print_exc()
 
+    def load_docs_from_jsonl(self, jsonl_path):
+        """
+        Load documents from a JSONL file containing pre-processed embedding data.
+        
+        This method loads the JSONL file which contains:
+        - "text": Clean listing description for embedding
+        - "metadata": All structured fields (id, price, bedrooms, address, flags, etc.)
+        
+        Parameters:
+            jsonl_path (str): Path to the JSONL file
+            
+        Returns:
+            list: List of Document objects with text and metadata
+        """
+        try:
+            import json
+            docs = []
+            with open(jsonl_path, 'r', encoding='utf-8') as f:
+                for line_num, line in enumerate(f, 1):
+                    try:
+                        data = json.loads(line.strip())
+                        text = data.get('text', '')
+                        metadata = data.get('metadata', {})
+                        
+                        if text and metadata:
+                            # Create Document with text content and full metadata
+                            doc = Document(
+                                page_content=text,
+                                metadata=metadata
+                            )
+                            docs.append(doc)
+                    except json.JSONDecodeError as e:
+                        print(f"Warning: Invalid JSON at line {line_num}: {e}")
+                        continue
+                    except Exception as e:
+                        print(f"Warning: Error processing line {line_num}: {e}")
+                        continue
+            
+            print(f"✅ Loaded {len(docs)} documents from JSONL: {jsonl_path}")
+            return docs
+        except Exception as e:
+            print(f"❌ Error loading JSONL file: {e}")
+            return []
+
     def load_data_from_csv_web(self, url):
         """
         Load data from a web-hosted CSV and convert it to a string representation.
         
         This method is optimized for RAG processing by converting the CSV data
         to a dictionary string representation that can be easily chunked and embedded.
-        
-        Parameters:
+    
+    Parameters:
             url (str): URL to the CSV file
             
         Returns:
@@ -152,8 +196,8 @@ class ChatbotWeb:
             traceback.print_exc()
             return ""  # Return empty string instead of None
 
-    @st.cache_resource(show_spinner='Analyzing csv data set', ttl=3600)
-    def setup_vectordb(_self, websites=None, local_file=None):
+    @st.cache_resource(show_spinner='Analyzing data set', ttl=3600)
+    def setup_vectordb(_self, websites=None, local_file=None, jsonl_file=None):
         """
         Set up a vector database from the provided website URLs or local file.
         
@@ -177,15 +221,25 @@ class ChatbotWeb:
         # Scrape and load documents
         docs = []
         
-        # Load local dataset if provided
-        if local_file:
+        # Load JSONL dataset if provided (primary source)
+        if jsonl_file:
+            try:
+                jsonl_docs = _self.load_docs_from_jsonl(jsonl_file)
+                if jsonl_docs:
+                    docs.extend(jsonl_docs)
+                    print(f"✅ Loaded JSONL dataset: {jsonl_file}")
+            except Exception as e:
+                print(f"⚠️ Could not load JSONL dataset: {e}")
+        
+        # Load local CSV dataset if provided (fallback)
+        if local_file and not docs:
             try:
                 local_docs = _self.load_docs_from_csv_local(local_file)
                 if local_docs:
                     docs.extend(local_docs)
-                    print(f"✅ Loaded local dataset: {local_file}")
+                    print(f"✅ Loaded local CSV dataset: {local_file}")
             except Exception as e:
-                print(f"⚠️ Could not load local dataset: {e}")
+                print(f"⚠️ Could not load local CSV dataset: {e}")
         
         # Load from URLs if provided
         if websites:
@@ -335,9 +389,10 @@ class ChatbotWeb:
         # Set up vector database and QA chain
         # First try to load local dataset, then add any URLs provided
         local_dataset_path = LOCAL_DATASET_PATH
+        jsonl_dataset_path = "dataset/embedding_docs.jsonl"
         
-        # Set up vector database with local dataset and any additional URLs
-        vectordb = self.setup_vectordb(websites, local_dataset_path)
+        # Set up vector database with JSONL dataset and any additional URLs
+        vectordb = self.setup_vectordb(websites, local_dataset_path, jsonl_dataset_path)
         if vectordb is None:
             st.error("Failed to create vector database. Please check your data sources.")
             st.stop()
@@ -346,7 +401,8 @@ class ChatbotWeb:
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
         st.sidebar.markdown("**📊 Data Sources**")
-        st.sidebar.markdown(f"📁 **Local:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
+        st.sidebar.markdown(f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}`")
+        st.sidebar.markdown(f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
         if websites:
             for url in websites:
                 st.sidebar.markdown(f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`")
@@ -358,34 +414,45 @@ class ChatbotWeb:
         
         # Process query when user inputs a message
         if user_query:
-                # Display the user message
-                utils.display_msg(user_query, 'user')
+            # Display the user message
+            utils.display_msg(user_query, 'user')
 
-                # Display Advisor response with streaming
-                with st.chat_message("Advisor"):
-                    # Set up streaming handler to show response as it's generated
-                    st_cb = StreamHandler(st.empty())
-                    
-                    # Process the query through the QA chain
-                    result = qa_chain.invoke(
-                        {"question": user_query},
-                        {"callbacks": [st_cb]}  # Use streaming callback
-                    )
-                    
-                    # Extract and store the response
-                    response = result["answer"]
-                    st.session_state.messages.append({"role": "Advisor", "content": response})
-                    utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
+            # Display Advisor response with streaming
+            with st.chat_message("Advisor"):
+                # Set up streaming handler to show response as it's generated
+                st_cb = StreamHandler(st.empty())
+                
+                # Process the query through the QA chain
+                result = qa_chain.invoke(
+                    {"question": user_query},
+                    {"callbacks": [st_cb]}  # Use streaming callback
+                )
+                
+                # Extract and store the response
+                response = result["answer"]
+                st.session_state.messages.append({"role": "Advisor", "content": response})
+                utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
 
-                    # Display source references for transparency
-                    for idx, doc in enumerate(result['source_documents'], 1):
-                        # Extract filename from the source URL
-                        url = os.path.basename(doc.metadata['source'])
-                        # Create a reference title with clickable popup
-                        ref_title = f":blue[Reference {idx}: *{url}*]"
-                        # Show document content in a popup when clicked
-                        with st.popover(ref_title):
-                            st.caption(doc.page_content)
+                # Display source references for transparency
+                for idx, doc in enumerate(result['source_documents'], 1):
+                    # Extract source information based on metadata structure
+                    if 'source' in doc.metadata:
+                        # CSV/URL documents
+                        source_name = os.path.basename(doc.metadata['source'])
+                    elif 'canonical_id' in doc.metadata:
+                        # JSONL documents - use property ID and address
+                        prop_id = doc.metadata.get('id', 'Unknown')
+                        address = doc.metadata.get('displayAddress', 'Unknown Address')
+                        source_name = f"Property {prop_id} - {address}"
+                    else:
+                        # Fallback
+                        source_name = "Unknown Source"
+                    
+                    # Create a reference title with clickable popup
+                    ref_title = f":blue[Reference {idx}: *{source_name}*]"
+                    # Show document content in a popup when clicked
+                    with st.popover(ref_title):
+                        st.caption(doc.page_content)
 
 
 # Application entry point

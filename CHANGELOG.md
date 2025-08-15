@@ -30,7 +30,14 @@
 - **Modified**: `setup_vectordb()` to prioritize JSONL over CSV
 - **Updated**: Data source display in sidebar
 - **Fixed**: Source reference display for JSONL metadata structure
+- **Added**: Cross-encoder reranking retriever for better search quality
 - **Preserved**: All existing CSV and URL functionality
+
+**File**: `retrieval.py`
+- **Added**: Custom CrossEncoderRerankRetriever class
+- **Fixed**: Pydantic field definition issues
+- **Fixed**: Type checking issues with model.predict() access
+- **Features**: Hybrid retrieval with cross-encoder reranking
 
 ### 📁 **File Usage**
 

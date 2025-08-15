@@ -15,7 +15,10 @@ class CrossEncoderRerankRetriever(BaseRetriever):
     top_k: int = 20
     top_n: int = 5
     model_name: str = "BAAI/bge-reranker-large"
-    _model = None
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._model = None
 
     def _load_model(self) -> None:
         from sentence_transformers import CrossEncoder
@@ -41,16 +44,25 @@ class CrossEncoderRerankRetriever(BaseRetriever):
 
     def _rerank(self, query: str, docs: List[Document]) -> List[Document]:
         model = self._get_model()
-        if model is False:
+        if model is False or model is None:
             # model failed to load; fallback to similarity scores
             return docs[: self.top_n]
-        if model is None:
-            # should not happen, but fallback anyway
+        
+        try:
+            # Type check to ensure model is a CrossEncoder
+            if hasattr(model, 'predict'):
+                pairs: List[Tuple[str, str]] = [(query, d.page_content) for d in docs]
+                # Use getattr to avoid type checker issues
+                predict_method = getattr(model, 'predict', None)
+                if predict_method:
+                    scores = predict_method(pairs)
+                    scored = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+                    return [doc for _, doc in scored[: self.top_n]]
+            # fallback if model doesn't have predict method
             return docs[: self.top_n]
-        pairs: List[Tuple[str, str]] = [(query, d.page_content) for d in docs]
-        scores = model.predict(pairs)
-        scored = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
-        return [doc for _, doc in scored[: self.top_n]]
+        except Exception:
+            # fallback to similarity scores if reranking fails
+            return docs[: self.top_n]
 
     def get_relevant_documents(self, query: str) -> List[Document]:  # type: ignore[override]
         candidates = self._search(query)

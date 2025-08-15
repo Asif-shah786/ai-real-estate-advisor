@@ -32,7 +32,6 @@ from langchain_community.vectorstores import DocArrayInMemorySearch  # In-memory
 # Configure the Streamlit page
 st.set_page_config(page_title="🦾 AI Real Estate Advisor", page_icon='💬', layout='wide')
 st.header('Chat with Real Estate AI Advisor')  # Main heading
-st.info("🏠 **Ready to chat!** The app automatically loads Manchester properties data and is ready for questions.")
 LOCAL_DATASET_PATH = "dataset/manchester_properties_for_sale_mini.csv"
 
 class ChatbotWeb:
@@ -184,9 +183,9 @@ class ChatbotWeb:
                 local_docs = _self.load_docs_from_csv_local(local_file)
                 if local_docs:
                     docs.extend(local_docs)
-                    st.success(f"✅ Loaded local dataset: {local_file}")
+                    print(f"✅ Loaded local dataset: {local_file}")
             except Exception as e:
-                st.warning(f"⚠️ Could not load local dataset: {e}")
+                print(f"⚠️ Could not load local dataset: {e}")
         
         # Load from URLs if provided
         if websites:
@@ -344,11 +343,15 @@ class ChatbotWeb:
             st.stop()
         qa_chain = self.setup_qa_chain(vectordb)  # Configure the QA chain
         
-        # Show data sources info
-        data_sources = [f"📁 {local_dataset_path}"]
+        # Show data sources info in compact sidebar format
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**📊 Data Sources**")
+        st.sidebar.markdown(f"📁 **Local:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
         if websites:
-            data_sources.extend([f"🌐 {url}" for url in websites])
-        st.sidebar.info("Data Sources:\n" + "\n".join(data_sources))
+            for url in websites:
+                st.sidebar.markdown(f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`")
+        else:
+            st.sidebar.markdown("🌐 *No external URLs added*")
 
         # Create chat input field
         user_query = st.chat_input(placeholder="Ask me about Manchester properties for sale!")

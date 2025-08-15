@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "ai-real-estate-assistant"
+name = "ai-real-estate-advisor"
 version = "0.1.0"
-description = "AI Real Estate Assistant App"
+description = "AI Real Estate Advisor App"
 authors = ["Asif Shah <asif.shah9091@gmail.com>"]
 readme = "README.md"
 

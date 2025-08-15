@@ -1,7 +1,7 @@
-# 💬 AI Real Estate Assistant App
+# 💬 AI Real Estate Advisor App
 
 ## Overview
-The AI Real Estate Assistant is a conversational AI application designed to help real estate agencies assist potential buyers and renters in finding their ideal properties. The application uses natural language processing and machine learning to understand user preferences and recommend suitable properties from a database.
+The AI Real Estate Advisor is a conversational AI application designed to help real estate agencies assist potential buyers and renters in finding their ideal properties. The application uses natural language processing and machine learning to understand user preferences and recommend suitable properties from a database.
 
 For detailed project requirements and specifications, see the [Product Requirements Document](PRD.MD).
 
@@ -9,7 +9,7 @@ For detailed project requirements and specifications, see the [Product Requireme
 
 ### Technical Solution Overview
 
-The AI Real Estate Assistant implements a Retrieval-Augmented Generation (RAG) system that combines the strengths of large language models with structured property data to provide intelligent property recommendations through natural conversation.
+The AI Real Estate Advisor implements a Retrieval-Augmented Generation (RAG) system that combines the strengths of large language models with structured property data to provide intelligent property recommendations through natural conversation.
 
 | Component             | Implementation                   | Why We Chose It                                                                                |
 | --------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -290,8 +290,8 @@ This table describes the columns in the DataFrame:
 
 #### 1. Clone the repository
 ```sh
-git clone https://github.com/YOUR_USERNAME/ai-real-estate-assistant.git
-cd ai-real-estate-assistant
+git clone https://github.com/YOUR_USERNAME/ai-real-estate-advisor.git
+cd ai-real-estate-advisor
 ```
 
 #### 2. Set up Poetry environment
@@ -302,7 +302,7 @@ curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
 
 # Configure Poetry
 poetry config virtualenvs.in-project true
-poetry config virtualenvs.prompt 'ai-real-estate-assistant'
+poetry config virtualenvs.prompt 'ai-real-estate-advisor'
 
 # Install dependencies
 poetry install --no-root

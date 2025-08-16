@@ -43,6 +43,13 @@ The AI Real Estate Advisor implements a Retrieval-Augmented Generation (RAG) sys
 - **Flexible LLM Integration**: Support for OpenAI GPT models and open-source alternatives
 - **Responsive Web Interface**: Easy-to-use Streamlit-based user interface
 
+### Conversation Memory
+The chatbot uses `ConversationSummaryBufferMemory` to keep track of the dialogue.
+When the chat history exceeds a configurable token limit, older messages are
+summarized automatically. Adjust this limit with the `MEMORY_TOKEN_LIMIT`
+setting in [`common/cfg.py`](common/cfg.py) or via the environment variable of
+the same name.
+
 ## Strengths & Limitations
 
 ### Strengths

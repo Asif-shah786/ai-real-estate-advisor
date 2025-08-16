@@ -31,6 +31,7 @@
 - **Updated**: Data source display in sidebar
 - **Fixed**: Source reference display for JSONL metadata structure
 - **Added**: Cross-encoder reranking retriever for better search quality
+- **Updated**: Now uses `artifacts_v2/embedding_docs_v2.jsonl` as primary data source
 - **Preserved**: All existing CSV and URL functionality
 
 **File**: `retrieval.py`
@@ -38,6 +39,12 @@
 - **Fixed**: Pydantic field definition issues
 - **Fixed**: Type checking issues with model.predict() access
 - **Features**: Hybrid retrieval with cross-encoder reranking
+
+**File**: `preprocess_v2.py`
+- **Fixed**: File path handling for CSV input
+- **Fixed**: Pandas Series boolean operations in listing_id assignment
+- **Fixed**: Timezone handling in datetime operations
+- **Output**: Generated structured_properties_v2.parquet and embedding_docs_v2.jsonl
 
 ### 📁 **File Usage**
 

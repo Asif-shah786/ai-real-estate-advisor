@@ -389,7 +389,7 @@ class ChatbotWeb:
         # Set up vector database and QA chain
         # First try to load local dataset, then add any URLs provided
         local_dataset_path = LOCAL_DATASET_PATH
-        jsonl_dataset_path = "dataset/embedding_docs.jsonl"
+        jsonl_dataset_path = "artifacts_v2/embedding_docs_v2.jsonl"
         
         # Set up vector database with JSONL dataset and any additional URLs
         vectordb = self.setup_vectordb(websites, local_dataset_path, jsonl_dataset_path)
@@ -401,7 +401,7 @@ class ChatbotWeb:
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
         st.sidebar.markdown("**📊 Data Sources**")
-        st.sidebar.markdown(f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}`")
+        st.sidebar.markdown(f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}` (v2)")
         st.sidebar.markdown(f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
         if websites:
             for url in websites:

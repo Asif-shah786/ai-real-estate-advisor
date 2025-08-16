@@ -20,7 +20,7 @@ import validators  # For validating URLs
 import streamlit as st  # Web UI framework
 from streaming import StreamHandler  # Custom handler for streaming responses
 from common.cfg import *  # Import configuration variables
-from langchain.memory import ConversationBufferMemory  # For storing conversation context
+from langchain.memory import ConversationSummaryBufferMemory  # For storing conversation context
 from langchain.chains import ConversationalRetrievalChain  # Main RAG chain
 import pandas as pd  # For data manipulation
 from langchain_core.documents.base import Document  # LangChain document structure
@@ -313,11 +313,13 @@ class ChatbotWeb:
                 search_kwargs={'k': 5}
             )
 
-        # Setup memory for contextual conversation
-        memory = ConversationBufferMemory(
+        # Setup memory for contextual conversation using automatic summarization
+        memory = ConversationSummaryBufferMemory(
+            llm=self.llm,
             memory_key='chat_history',  # Key used to access chat history in the chain
             output_key='answer',  # Key used to store the final answer
-            return_messages=True  # Return chat history as message objects
+            return_messages=True,  # Return chat history as message objects
+            max_token_limit=MEMORY_TOKEN_LIMIT,  # Summarize when token limit is reached
         )
 
         # Setup QA chain that combines the LLM, retriever, and memory

@@ -9,6 +9,9 @@ from faker import Faker
 env_file = find_dotenv()
 load_dotenv(env_file, override=True)
 
+# Conversation memory configuration
+MEMORY_TOKEN_LIMIT = int(os.environ.get("MEMORY_TOKEN_LIMIT", 1000))
+
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
 HUGGINGFACEHUB_API_TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN")

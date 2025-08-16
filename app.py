@@ -433,20 +433,14 @@ class ChatbotWeb:
                 st.session_state.messages.append({"role": "Advisor", "content": response})
                 utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
 
-                # Display source references for transparency
+                                # Display source references for transparency
                 for idx, doc in enumerate(result['source_documents'], 1):
                     # Extract source information based on metadata structure
-                    if 'source' in doc.metadata:
-                        # CSV/URL documents
-                        source_name = os.path.basename(doc.metadata['source'])
-                    elif 'canonical_id' in doc.metadata:
-                        # JSONL documents - use property ID and address
-                        prop_id = doc.metadata.get('id', 'Unknown')
-                        address = doc.metadata.get('displayAddress', 'Unknown Address')
-                        source_name = f"Property {prop_id} - {address}"
-                    else:
-                        # Fallback
-                        source_name = "Unknown Source"
+                    src = doc.metadata.get("source") or doc.metadata.get("property_url") or "unknown"
+                    try:
+                        source_name = os.path.basename(src)
+                    except Exception:
+                        source_name = str(src)
                     
                     # Create a reference title with clickable popup
                     ref_title = f":blue[Reference {idx}: *{source_name}*]"

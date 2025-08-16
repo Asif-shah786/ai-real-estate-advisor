@@ -30,8 +30,10 @@
 - **Modified**: `setup_vectordb()` to prioritize JSONL over CSV
 - **Updated**: Data source display in sidebar
 - **Fixed**: Source reference display for JSONL metadata structure
+- **Fixed**: TypeError when source metadata is None
 - **Added**: Cross-encoder reranking retriever for better search quality
 - **Updated**: Now uses `artifacts_v2/embedding_docs_v2.jsonl` as primary data source
+- **Added**: Resilient source reference display with fallback handling
 - **Preserved**: All existing CSV and URL functionality
 
 **File**: `retrieval.py`
@@ -44,6 +46,11 @@
 - **Fixed**: File path handling for CSV input
 - **Fixed**: Pandas Series boolean operations in listing_id assignment
 - **Fixed**: Timezone handling in datetime operations
+- **Added**: Guaranteed non-null metadata['source'] for all JSONL documents
+- **Added**: compute_source() helper function for safe source string generation
+- **Added**: source_title metadata for better UI display
+- **Added**: Runtime assertions to prevent empty source metadata
+- **Added**: Post-generation validation of JSONL output
 - **Output**: Generated structured_properties_v2.parquet and embedding_docs_v2.jsonl
 
 ### 📁 **File Usage**

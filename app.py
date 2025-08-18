@@ -208,15 +208,60 @@ class ChatbotWeb:
         Returns:
                     ConversationalRetrievalChain: The configured QA chain
         """
-        # Define retriever with cross-encoder reranking
-        from retrieval import CrossEncoderRerankRetriever
+        # Define retriever that can translate natural language filters into
+        # vector store metadata queries
+        from langchain.chains.query_constructor.schema import AttributeInfo
+        from langchain.retrievers.self_query.base import SelfQueryRetriever
+
+        metadata_field_info = [
+            AttributeInfo(
+                name="price_int",
+                description="Listing price in British pounds",
+                type="integer",
+            ),
+            AttributeInfo(
+                name="bedrooms",
+                description="Number of bedrooms in the property",
+                type="integer",
+            ),
+            AttributeInfo(
+                name="bathrooms",
+                description="Number of bathrooms in the property",
+                type="integer",
+            ),
+            AttributeInfo(
+                name="property_type",
+                description="Type of property such as detached, semi-detached, terraced or apartment",
+                type="string",
+            ),
+            AttributeInfo(
+                name="postcode",
+                description="Postcode prefix where the property is located",
+                type="string",
+            ),
+            AttributeInfo(
+                name="tenure",
+                description="Property tenure for example freehold or leasehold",
+                type="string",
+            ),
+        ]
+
+        document_content_description = (
+            "Property listings with fields such as price_int, bedrooms, bathrooms, "
+            "property_type, postcode and tenure"
+        )
 
         try:
-            retriever = CrossEncoderRerankRetriever.from_vectorstore(
-                vectordb, top_k=20, top_n=5
+            retriever = SelfQueryRetriever.from_llm(
+                self.llm,
+                vectordb,
+                document_content_description,
+                metadata_field_info,
+                enable_limit=True,
+                search_kwargs={"k": 5},
             )
         except Exception:
-            # Fallback to simple similarity search if reranker cannot be initialized
+            # Fallback to simple similarity search if self-query retriever fails
             retriever = vectordb.as_retriever(
                 search_type="similarity", search_kwargs={"k": 5}
             )

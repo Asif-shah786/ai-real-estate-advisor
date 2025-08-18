@@ -1,0 +1,570 @@
+[
+  {
+    "title": "4 bed semi-detached house for sale Withington Drive, Tyldesley M29",
+    "address": "Withington Drive, Tyldesley M29",
+    "postcode": "M29",
+    "lat": 53.506712,
+    "lng": -2.445004,
+    "price": 350000,
+    "property_type": "semi_detached",
+    "bedrooms": 4,
+    "bathrooms": 1,
+    "property_id": 71079331,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71079331/",
+    "tenure": "freehold",
+    "receptions": 3,
+    "council_tax_band": "C",
+    "epc_rating": null,
+    "size_sqft": null,
+    "nearest_stations": "Atherton, Walkden, Hag Fold, Daisy Hill, Farnworth, Moorside, Moses Gate, Kearsley (Manchester), Patricroft, Swinton (Manchester)",
+    "nearest_schools": null,
+    "agent_name": "Hills",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 27,
+    "number_of_floorplans": 1,
+    "ground_rent": "£0",
+    "description": "Immaculately Presented Four Bedroom Semi-Detached Family Home Located in the Popular Astley Area, Close to Garrett Hall Primary School Boasting a Large Family Lounge and a Spacious Dining Room with Patio Doors to the Rear Benefits from an Office and a Large Storage Cupboard Beautifully Presented Modern Fitted Kitchen with Integrated Appliances, a Larder Cupboard and a Skylight Double Storey Plus Single Storey Extended Four Well-Proportioned Bedrooms Modern Four-Piece Family Bathroom Driveway to the Front for Off-Road Parking Large Landscaped Garden to the Rear with Indian Stone Paving, Laid-to-Lawn Grass and Mature Plants **Immaculately Presented, Extended Four Bedroom Semi-Detached Family Home, Located in the Popular Astley Area! Featuring a Modern Fitted Kitchen with a Skylight, a Home Office and a Large Garden!** This beautifully presented property is ready for you to pack your bags and move in! Boasting both a double storey and a single storey extension, the property provides an abundance of space that would be ideal for a growing family. The property is also located within walking distance of Garrett Hall Primary School and plenty of green space. Properties in this area are also popular due to their access to transport links to both Manchester and Warrington through the A580, along with the guided busway that provides direct access into Manchester City Centre - the park and ride is just a 10 minute drive to Astley Street Park and Ride, close to Tyldesley Town Centre. Tyldesley Town Centre also provides a wide array of amenities, including bars, pubs, shops and restaurants. As you enter the property you go into a porch, which leads to a large family lounge. From here, you flow through to the spacious dining room, that benefits from patio doors to the rear that let natural light in. The dining room provides access to a home office and a storage cupboard, which takes up part of the existing garage space - so the rest of the garage is used for storage. From the dining room you will also find the beautifully presented, modern fitted kitchen, which boasts plenty of storage with an array of cupboards and a larder unit. It also benefits from natural light from a skylight, along with antico flooring. Upstairs, from the landing you will find four well-proportioned bedrooms, three of which benefit from inbuilt wardrobes and the fourth has a fitted wardrobe. Completing the internal accommodation is the modern, four-piece family bathroom. Externally, the property benefits from a driveway to the front for off-road parking, along with a well-presented garden. To the rear, there is a large, landscaped garden complete with Indian stone paving, laid-to-lawn grass and mature plants that benefits from the sun. There is also the added benefit of a summerhouse at the end of the garden. Viewing is highly recommended - get in touch to secure your viewing today! Lounge (4.91m x 3.83m) Dining Room (5.44m x 3.43m) Office (2.37m x 1.48m) Kitchen (5.44m x 2.88m) Bedroom One (3.82m x 3.16m) Bedroom Two (4.01m x 2.94m) Bedroom Three (3.16m x 2.42m) Bedroom Four (3.08m x 2.45m) Family Bathroom (2.41m x 2.25m) Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "False",
+    "bedrooms_int": 4,
+    "bathrooms_int": 1,
+    "receptions_int": 3,
+    "price_num": 350000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟢 Withington Drive, Tyldesley M29 (M29): Low crime - 1 incidents within 1.0km radius (near On or near Brindley Street), mainly Violent Crime (falling trend)",
+    "crime_data": {
+      "total": 1,
+      "by_category": {
+        "violent-crime": 1
+      },
+      "top_streets": {
+        "On or near Brindley Street": 1
+      },
+      "outcomes": {
+        "Unable to prosecute suspect": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 1,
+        "2025-03": 0
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "3 bed terraced house for sale New Lane, Eccles M30",
+    "address": "New Lane, Eccles M30",
+    "postcode": "M30",
+    "lat": 53.480978,
+    "lng": -2.365687,
+    "price": 250000,
+    "property_type": "terraced",
+    "bedrooms": 3,
+    "bathrooms": 1,
+    "property_id": 71078810,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71078810/",
+    "tenure": "freehold",
+    "receptions": 2,
+    "council_tax_band": "A",
+    "epc_rating": "D",
+    "size_sqft": null,
+    "nearest_stations": "Patricroft (national_rail_station) (0.5 miles), Eccles (Manchester) (national_rail_station) (1.3 miles), Urmston (national_rail_station) (2.3 miles), Chassen Road (national_rail_station) (2.4 miles)",
+    "nearest_schools": "Beech Street Community Primary School (0.08486600776465442 miles) - Good, St Patrick's RC High School (0.13889027591366418 miles) - Good, St Gilbert's RC Primary School (0.31258974702114645 miles) - Requires improvement, Willow House School (0.3226125848295951 miles) - Good",
+    "agent_name": "Hills",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 22,
+    "number_of_floorplans": 1,
+    "ground_rent": "£0",
+    "description": "Beautifully Presented Three Bedroom Bay-Fronted Period Property Bay-Fronted Lounge and a Spacious Dining Room, with Brick Feature Walls Stylish Fitted Kitchen and a Contemporary Three-Piece Shower Room Three Well-Proportioned Bedrooms Large Sun Drenched Garden to the Rear Within Easy Access of Monton and Worsley Villages Close to Excellent Transport Links Throughout Manchester Early Viewing is Essential! *Beautifully Presented Three Bedroom, Bay-Fronted Period Property Located in a Popular Area, Boasting a Stylish Fitted Kitchen, an Island to the Dining Room and a huge Sun Drenched Rear Garden!* If you’re looking for a property you can pack your bags and move into this could be the one for you! Located within walking distance of both Monton and Worsley Villages, along with being within easy access of the Trafford Centre and Eccles Town Centre - the area is spoilt for choice with a wide array of bars, pubs, shops and restaurants available. As you enter the property you go into a welcoming entrance hallway, which flows through to the spacious dining room, complete with an island with seating. From here, you flow through the bay-fronted lounge through an archway. Both the lounge and the dining room benefit from brick feature walls. Towards the rear of the property you will find a good-sized, stylish fitted kitchen. Upstairs, from the landing there are three well-proportioned bedrooms and a contemporary, three-piece shower room. Externally, there is a huge, sun-drenched garden to the rear complete with artificial grass, decking and paving. The property also benefits from being close to good local schooling. It would be a great first time home or investment - get in touch to secure your viewing today! EPC Rating: D Lounge (3.47m x 3.18m) Kitchen (3.68m x 2.43m) Dining Room (4.07m x 3.45m) Master Bedroom (3.83m x 3.50m) Bedroom Two (3.93m x 2.32m) Bedroom Three (3.77m x 2.43m) Shower Room (2.71m x 1.54m) Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "False",
+    "bedrooms_int": 3,
+    "bathrooms_int": 1,
+    "receptions_int": 2,
+    "price_num": 250000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟢 New Lane, Eccles M30 (M30): Low crime - 1 incidents within 1.0km radius (near On or near Claude Street), mainly Other Crime (falling trend)",
+    "crime_data": {
+      "total": 1,
+      "by_category": {
+        "other-crime": 1
+      },
+      "top_streets": {
+        "On or near Claude Street": 1
+      },
+      "outcomes": {
+        "Under investigation": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 0,
+        "2025-03": 1
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "4 bed detached house for sale Shalewood Court, Atherton M46",
+    "address": "Shalewood Court, Atherton M46",
+    "postcode": "M46",
+    "lat": 53.521971,
+    "lng": -2.506492,
+    "price": 400000,
+    "property_type": "detached",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "property_id": 71078674,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71078674/",
+    "tenure": "leasehold",
+    "receptions": 3,
+    "council_tax_band": "E",
+    "epc_rating": null,
+    "size_sqft": 1378.0,
+    "nearest_stations": "Hag Fold, Atherton, Daisy Hill, Westhoughton, Hindley, Lostock, Horwich Parkway, Ince (Manchester), Walkden, Bolton",
+    "nearest_schools": null,
+    "agent_name": "Smoothmove Property",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 34,
+    "number_of_floorplans": 1,
+    "ground_rent": "£250",
+    "description": "Exceptionally large, four bed detached property Welcoming, light &amp; airy entrance hallway Two large living rooms Beautiful open plan kitchen/family room Playroom / study room Utility &amp; cloaks / W.C Four spacious double bedrooms (Master with en-suite) White suite family bathroom Gardens to the front and rear Double driveway leading to the garage Tenure: Leasehold Welcome to this exceptionally large, four bedrppm detached property, situated in a prime cul-de-sac position overlooking the green. As you step into the welcoming, light and airy entrance hallway, you are greeted by a sense of space that sets the tone for the rest of this stunning home. The property boasts two large living rooms, perfect for entertaining guests or relaxing with the family, along with a beautiful open plan kitchen/family room – a hub of activity. For those needing a quiet space to work or play, there is a dedicated playroom/study room currently used as a beauty room that offers flexibility and privacy. The modern fitted kitchen opens to a spacious family room, creating a seamless flow for indoor living. The property also features a utility room and cloaks/W.C for added convenience. Upstairs, you will find four, spacious double bedrooms, each offering comfort and style. The master bedroom includes an en-suite bathroom, providing a touch of luxury and privacy. A white suite family bathroom serves the other bedrooms, ensuring ample space for the whole family. Outside, the property boasts gardens to the front and rear, with the rear gardens laid to lawn and featuring a patio area – perfect for outside dining or enjoying outdoor activities. A double driveway leads to the garage, providing ample parking space for multiple vehicles. Beautifully presented throughout, this property is within the catchment area of sought-after schools and is within walking distance of local shops, adding to the convenience and desirability of this wonderful home. For those seeking a spacious, elegant, and comfortable family home in a desirable location, this property offers the perfect blend of style and functionality. Don't miss the opportunity to make this exceptional property yours and experience the lifestyle it has to offer. Garden Large rear garden, laid to lawn with established borders and patio area. Garden Laid to lawn gardens to the front with established borders. Parking - Garage Parking - Driveway Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "False",
+    "bedrooms_int": 4,
+    "bathrooms_int": 3,
+    "receptions_int": 3,
+    "price_num": 400000.0,
+    "size_sqft_num": 1378.0,
+    "crime_summary": "🟢 Shalewood Court, Atherton M46 (M46): Low crime - 2 incidents within 1.0km radius (near On or near Hesketh Street, On or near Field Hurst Croft), mainly Violent Crime (stable trend)",
+    "crime_data": {
+      "total": 2,
+      "by_category": {
+        "violent-crime": 2
+      },
+      "top_streets": {
+        "On or near Hesketh Street": 1,
+        "On or near Field Hurst Croft": 1
+      },
+      "outcomes": {
+        "Under investigation": 2
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 1,
+        "2025-05": 0,
+        "2025-04": 0,
+        "2025-03": 1
+      },
+      "trend": "stable"
+    }
+  },
+  {
+    "title": "2 bed terraced house for sale Bury & Rochdale Old Road, Birtle, Bury BL9",
+    "address": "Bury &amp; Rochdale Old Road, Birtle, Bury BL9",
+    "postcode": "BL9",
+    "lat": 53.604507,
+    "lng": -2.242995,
+    "price": 240000,
+    "property_type": "terraced",
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "property_id": 70318995,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/70318995/",
+    "tenure": "leasehold",
+    "receptions": 2,
+    "council_tax_band": "B",
+    "epc_rating": "C",
+    "size_sqft": null,
+    "nearest_stations": "Castleton (Manchester) (national_rail_station) (2.8 miles), Rochdale (national_rail_station) (3.7 miles), Mills Hill (Manchester) (national_rail_station) (4.7 miles), Smithy Bridge (national_rail_station) (5.7 miles)",
+    "nearest_schools": "Fairfield Community Primary School (0.86740489003594 miles) - Good, St Michael's Church of England Primary School, Bamford (1.0247490671727113 miles) - Outstanding, St Margaret's Church of England Primary School (1.0269064399842418 miles) - Good, Woodland Community Primary School (1.0525718431920086 miles) - Good",
+    "agent_name": "Pearson Ferrier",
+    "chain_free": "True",
+    "status": "Just added",
+    "number_of_photos": 17,
+    "number_of_floorplans": 1,
+    "ground_rent": null,
+    "description": "Very well presented mid terrace cottage style property Terraced rear gardens with views over adjacent fields Two double bedrooms Two reception rooms Striking kitchen extension Gas central heating &amp; UPVC double glazing Offered for sale with no onward chain No onward chain Street parking A real credit to the current owners, the presentation of this property will only be apparent on internal inspection. The property is conveniently located more or less midway between Bury and Bamford town centres in a more or less semi rural location with open views to both the front and rear across neighbouring farmland. The property does benefit from gas central heating and upvc double glazing and the accommodation briefly comprises: Entrance vestibule, lounge with feature fireplace, dining room with tiled flooring, kitchen extension, first floor landing, two double bedrooms and a three piece bathroom with shower. But, it is the rear gardens that are the show stopper with decked patio immediately from the rear of the property and then steps leading up to two terraced areas, the top area with ornamental pond and gorgeous views over adjacent fields. On road parking. Tenure - Leasehold 999 years from 1 May 1834 EPC Rating - C Council Tax Banding - B Entrance Vestibule Via Upvc door. Leading to... Lounge With feature fireplace and period fitted cupboards. Upvc double glazed window to the front. Dining Room With gloss tiled flooring and opening onto.... Kitchen With a range of wall &amp; base units in gloss black with contrasting solid wood worktops incorporating a 1 1/2 bowl polycarbonate sink unit, integrated electric oven &amp; gas hob with stainless steel extractor hood over, plumbed for washing machine, space for fridge/freezer and ceiling light point. Landing Spindle balustrade, ceiling light point and loft access. Main Bedroom Double glazed window to the front, built in wardrobe, ceiling light point and radiator. Second Bedroom Double glazed window to the rear, ceiling light point and radiator. Family Bathroom Three piece white suite comprising of; Low level w.c, pedestal hand wash basin and panel bath with shower over, chrome heated towel rail, down lighting and extractor fan. Externally To the rear of the property is a stunning low maintenace tiered garden, with pond and water feature and views over adjacent farmland. Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "True",
+    "bedrooms_int": 2,
+    "bathrooms_int": 1,
+    "receptions_int": 2,
+    "price_num": 240000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟢 Bury &amp; Rochdale Old Road, Birtle, Bury BL9 (BL9): Low crime - 1 incidents within 1.0km radius (near On or near Foxglove Drive), mainly Violent Crime (falling trend)",
+    "crime_data": {
+      "total": 1,
+      "by_category": {
+        "violent-crime": 1
+      },
+      "top_streets": {
+        "On or near Foxglove Drive": 1
+      },
+      "outcomes": {
+        "Unable to prosecute suspect": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 1,
+        "2025-03": 0
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "2 bed flat for sale 42 City Road East, Deansgate, Manchester, Greater Manchester M15",
+    "address": "42 City Road East, Deansgate, Manchester, Greater Manchester M15",
+    "postcode": "M15",
+    "lat": 53.471962,
+    "lng": -2.250177,
+    "price": 230000,
+    "property_type": "flat",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "property_id": 71077879,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71077879/",
+    "tenure": "leasehold",
+    "receptions": 1,
+    "council_tax_band": "A",
+    "epc_rating": null,
+    "size_sqft": null,
+    "nearest_stations": "Deansgate, Manchester Oxford Road, Salford Central, Manchester Piccadilly, Manchester Victoria, Salford Crescent, Ardwick, Manchester United Football Ground, Ashburys, Trafford Park",
+    "nearest_schools": null,
+    "agent_name": "Springbok Properties, Nationwide",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 10,
+    "number_of_floorplans": 1,
+    "ground_rent": "£140",
+    "description": "Council Tax Band D Leasehold 999 years from 30 August 2002 Ground Rent £140 per year Service Charge £2,800 a year Open Plan Kitchen/Living Space 2 Double Bedrooms Private Balcony Family Bathroom Ensuite to Master Bedroom City Centre Location Contemporary second-floor apartment offering open-plan living with a private balcony, ensuite to master bedroom, and is ideally located near Manchester’s theatres, cafes, Deansgate Locks, and excellent transport links. This second-floor apartment could benefit from some internal upgrading but offers contemporary living just minutes from Manchester's vibrant heart. Inside, a bright open-plan lounge and kitchen provide the perfect space for relaxing or entertaining, while the master bedroom enjoys a private en-suite for added comfort. A spacious second bedroom and a three-piece bathroom complete the internal layout. Step outside onto the stunning balcony, ideal for unwinding and enjoying the views. The apartment benefits from full double glazing. Part of a well-maintained block of just 29 dwellings, it's quietly positioned yet close to everything - just five minutes to the theatre, cinema, and street cafe culture, and ten minutes to the lively Deansgate Locks dining district. Commuters will appreciate being an eight-minute walk to the Metro and only 10-15 minutes to Oxford Road Station, with Manchester Airport just eight miles away. With a new university lecture block nearby, this is an exceptional opportunity for first-time buyers, professionals, or investors. Viewing is highly recommended to fully appreciate the size, location, and value. Premium Fast Sale The innovative Premium Fast Sale Plus method from Springbok Properties is a secure and straightforward way to buy property. It works like a typical sale, with a number of added benefits to the buyer. Benefits o Carefully implemented security measures o A speedy process o Realistically priced properties o A Buy it Now option (ask for further information on this feature from our advisors) o A significantly reduced chance of fall-throughs o No risk of being \"gazumped\" o The full focus of our highly motivated team Springbok Properties' Premium Fast Sale Plus puts you in the driving seat thanks to our fast and secure methods. All properties are competitively priced and carefully managed by motivated sellers for a quick, stress-free transaction. Deposit Sales can be secured with a reservation deposit of £2,500. This forms part of the final purchase price and is not an extra cost. This deposit ensures that the property is taken off the market as soon as a sale is agreed. It is then exclusively reserved for you, eliminating gazumping, time wasting and financial loss. An administration fee of £396 is required in order to draw up an exclusive legally binding contract between the buyer and seller. This gives the buyer exclusive rights to purchase within a pre-agreed timeframe. Exclusivity Following the payment of the above amount, Springbok Properties will facilitate a fixed exclusivity period (approximately 12 weeks). During this time, surveys should be arranged and preparations made for the exchange of contracts. The property will be reserved, so there will be no risk of gazumping. Process Our Premium Fast Sale Plus follows the below process: Step 1 - Register your interest Step 2 - Prepare your finances for the purchase Step 3 - Arrange a viewing Step 4 - Make an offer Step 5 - Secure your sale using our secure system Step 6 - Exchange and complete Don't miss out on the chance to purchase this property. Call us today for further information and to arrange a viewing. If you're interested in this property, we urge you to contact us immediately to arrange an early viewing and get the process started. This will help you to avoid missing out on this opportunity. Springbok Properties' innovative Premium Fast Sale Plus is a secure and straightforward way to buy property. Please note: To ensure the highest level of customer service, all calls may be recorded and monitored for training and quality purposes. Please call us now to book an appointment. We highly recommend early viewing as this property is priced relatively low and is likely to generate quite an interest. Please call us now to book an appointment. Call Recording Please note to ensure the highest level of customer service, all calls may be recorded and monitored for training and quality purposes. Disclaimer Springbok Properties for itself and the Vendors or lessors of properties for whom they act give notice that: The details shown on this website are a general outline for the guidance of intending purchasers, and do not constitute, nor constitute part of, an offer or contract or sales particulars. All descriptions, dimensions, references to condition and other details are given in good faith and are believed to be correct but any intending purchasers should not rely on them as statements or representations of fact but must satisfy themselves by inspection, searches, survey, enquiries or otherwise as to their correctness. We have not been able to test any of the building service installations and recommend that prospective purchasers arrange for a qualified person to check them before entering into any commitment. Further, any reference to, or use of any part of the properties is not a statement that any necessary planning, building regulations or other consent has been obtained. All photographs shown are indicative and cannot be guaranteed to represent the complete interior scheme or items included in the sale. No person in our employment has any authority to make or give any representation or warranty whatsoever in relation to this property. Tenure To be confirmed by the Vendor's Solicitors Note The price given is a marketing price and not an indication of the property's market value. The vendor like any seller is looking to achieve the maximum price possible. Hence, by making an enquiry on this property, you recognise and understand that this property is strictly offers in excess of the marketing price provided. How to View this Property Viewing is strictly by appointment please call us now for bookings. Aml regulations &amp; proof of funding: Any proposed purchasers will be asked to provide identification and proof of funding before any offer is accepted. We would appreciate your co-operation with this to ensure there are no delays in agreeing the sale. Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "True",
+    "bedrooms_int": 2,
+    "bathrooms_int": 2,
+    "receptions_int": 1,
+    "price_num": 230000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟡 42 City Road East, Deansgate, Manchester, Greater Manchester M15 (M15): Moderate crime - 6 incidents within 1.0km radius (near On or near Wood Street, On or near Ormsgill Street), mainly Violent Crime, Criminal Damage Arson (falling trend)",
+    "crime_data": {
+      "total": 6,
+      "by_category": {
+        "violent-crime": 4,
+        "criminal-damage-arson": 1,
+        "other-theft": 1
+      },
+      "top_streets": {
+        "On or near Wood Street": 3,
+        "On or near Ormsgill Street": 1,
+        "On or near Left Bank": 1
+      },
+      "outcomes": {
+        "Investigation complete; no suspect identified": 4,
+        "Under investigation": 2
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 2,
+        "2025-05": 3,
+        "2025-04": 0,
+        "2025-03": 1
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "1 bed flat for sale Alto, Block B, Sillavan Way, Salford M3",
+    "address": "Alto, Block B, Sillavan Way, Salford M3",
+    "postcode": "M3",
+    "lat": 53.48458,
+    "lng": -2.255402,
+    "price": 190000,
+    "property_type": "flat",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "property_id": 71077617,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71077617/",
+    "tenure": "leasehold",
+    "receptions": 1,
+    "council_tax_band": "A",
+    "epc_rating": "C",
+    "size_sqft": null,
+    "nearest_stations": "Salford Central (national_rail_station) (0.1 miles), Manchester Victoria (national_rail_station) (0.6 miles), Deansgate (national_rail_station) (0.7 miles), Salford Crescent (national_rail_station) (0.8 miles)",
+    "nearest_schools": "The Cathedral School of St Peter and St John RC Primary (0.26083248557176086 miles) - Good, The Friars Primary School (0.3290058293317028 miles) - Good, St Philip's CofE Primary School (0.3571568388424103 miles) - Good, Chetham's School of Music (0.5042623475590053 miles)",
+    "agent_name": "Kaytons Estate Agents - Manchester",
+    "chain_free": "True",
+    "status": "Just added",
+    "number_of_photos": 12,
+    "number_of_floorplans": 1,
+    "ground_rent": "£354",
+    "description": "Eighth Floor Position Immaculate One Bedroom Apartment Secure Under Croft Parking Space Bright Open Plan Living Room with Juliette Balcony 24 Hour Concierge Service Communal Courtyard with Water Features EWS1 Form Available No Onward Chain Short Walk from Spinningfields &amp; Main Retail District Close to Victoria and Salford Central Train Station * no onward chain ** secure under croft parking space ** This well proportioned one bedroom apartment offers a bright interior from its position on the eight floor and benefits from unobstructed east facing views. It forms part of a purpose built development located a few minutes walk from Spinningfields and Deansgate. The modern complex benefits from a 24 hour concierge and inviting communal courtyard with water features and is a short distance from several transport links including; Trinity Way, Victoria Train Station and Salford Central Station. The accommodation has been beautifully maintained by the current owner and briefly comprises; entrance hallway with spacious storage cupboard, bright open plan living room with Juliette balcony, modern kitchen diner with integrated appliances, double bedroom and stylish three piece bathroom suite. EPC Rating (B). Lease: 250 years from 2014 Ground Rent: £353.54 P.A. Parking Space Ground Rent: £70.71 P.A. Service Charge: £2,018.48 P.A. Ground rent is reviewed in line with rpi every 10 years, next review due 2034. Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "True",
+    "bedrooms_int": 1,
+    "bathrooms_int": 1,
+    "receptions_int": 1,
+    "price_num": 190000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟡 Alto, Block B, Sillavan Way, Salford M3 (M3): Moderate crime - 10 incidents within 1.0km radius (near On or near Wood Street, On or near Southall Street), mainly Violent Crime, Other Theft (falling trend)",
+    "crime_data": {
+      "total": 10,
+      "by_category": {
+        "violent-crime": 8,
+        "other-theft": 1,
+        "theft-from-the-person": 1
+      },
+      "top_streets": {
+        "On or near Wood Street": 3,
+        "On or near Southall Street": 1,
+        "On or near Left Bank": 1
+      },
+      "outcomes": {
+        "Under investigation": 6,
+        "Investigation complete; no suspect identified": 3,
+        "Unable to prosecute suspect": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 2,
+        "2025-05": 4,
+        "2025-04": 2,
+        "2025-03": 2
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "3 bed end terrace house for sale Chaddock Lane, Worsley M28",
+    "address": "Chaddock Lane, Worsley M28",
+    "postcode": "M28",
+    "lat": 53.504161,
+    "lng": -2.425062,
+    "price": 275000,
+    "property_type": "end_terrace",
+    "bedrooms": 3,
+    "bathrooms": 1,
+    "property_id": 71077241,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71077241/",
+    "tenure": "leasehold",
+    "receptions": 2,
+    "council_tax_band": "A",
+    "epc_rating": "E",
+    "size_sqft": 1375.0,
+    "nearest_stations": "Walkden (national_rail_station) (1.6 miles), Atherton (national_rail_station) (2.8 miles), Moorside (national_rail_station) (3.1 miles), Patricroft (national_rail_station) (3.1 miles)",
+    "nearest_schools": "Boothstown Methodist Primary School (0.04799725690094846 miles) - Good, St Andrew's CofE Primary School (0.21677455229584228 miles) - Outstanding, St John's CofE Primary School Mosley Common (0.3105816076861131 miles) - Good, Holy Family Catholic Primary School (0.4193260577912491 miles) - Good",
+    "agent_name": "Millbrooke Estate Agents",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 25,
+    "number_of_floorplans": 1,
+    "ground_rent": "£2",
+    "description": "A stunning end of terrace property Two receptions and three bedrooms Beautifully presented throughout Cellar and loft storage space Immaculate low maintenance gardens On + off street parking and a single garage Stylish kitchen and a renovated bathroom Walking distance to local amenities Excellent transport links Must be viewed to appreciate Millbrooke Estate Agents are delighted to offer for sale this beautiful, three-bedroom end-of-terrace property. Located on the popular Chaddock Lane and just a short stroll from the centre of the village. This incredible home boasts two reception rooms, three spacious bedrooms, and has been renovated to an excellent standard. The property boasts uPVC double glazing throughout, an energy-efficient combi boiler with upgraded radiators and a smart Hive thermostat, and an internal wall insulation system fitted on all external walls. The property comprises an entrance vestibule with a new composite external door, a spacious lounge with alcove storage units and a vast dining/sitting room. To the rear elevation is a high gloss kitchen with French doors opening to the patio area. To the first floor is a large master bedroom located to the front elevation and complete with fully fitted wardrobes, a second double bedroom, a third bedroom to the rear, and a newly renovated three-piece bathroom suite. Additional storage is available in the loft space if required. Accessible via the dining room is a fantastic cellar space offering an abundance of storage and a huge potential to convert into a more practical space if required. Externally, the property has ample on-street parking to the front elevation + the potential for off-street parking to the side elevation, and a well-presented front lawn. To the rear of the property, you will find a stunning, low-maintenance rear garden with a patio, artificial lawn, and an elevated deck that’s perfect for soaking up the sun and entertaining. To the rear of the garden and accessible via the side street is a single garage. The property is ideally located in the heart of Boothstown, within walking distance of local shops, restaurants, takeaways, family pubs and much more. There are also two excellent primary schools within a 5-minute walk of the property and just a short stroll to the Bridgewater Canal, Local Park and the rhs Bridgewater Gardens. Ideally located for commuters with the A580 East Lancashire Road and the M60 Ring Road both easily accessible, there are also local bus links through Boothstown and the guided busway (V1, V2 and V3) only a short distance away. Early internal viewing is highly recommended for this attractive and conveniently located home. EPC Rating: E Parking - Garage Parking - Off Street Parking - On Street Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "False",
+    "bedrooms_int": 3,
+    "bathrooms_int": 1,
+    "receptions_int": 2,
+    "price_num": 275000.0,
+    "size_sqft_num": 1375.0,
+    "crime_summary": "🟢 Chaddock Lane, Worsley M28 (M28): Low crime - 1 incidents within 1.0km radius (near On or near Brindley Street), mainly Violent Crime (falling trend)",
+    "crime_data": {
+      "total": 1,
+      "by_category": {
+        "violent-crime": 1
+      },
+      "top_streets": {
+        "On or near Brindley Street": 1
+      },
+      "outcomes": {
+        "Unable to prosecute suspect": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 1,
+        "2025-03": 0
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "4 bed detached house for sale Stableford Close, Standish WN6",
+    "address": "Stableford Close, Standish WN6",
+    "postcode": "WN6",
+    "lat": 53.588518,
+    "lng": -2.65339,
+    "price": 390000,
+    "property_type": "detached",
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "property_id": 71076610,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71076610/",
+    "tenure": "freehold",
+    "receptions": 2,
+    "council_tax_band": "A",
+    "epc_rating": null,
+    "size_sqft": null,
+    "nearest_stations": "Gathurst (national_rail_station) (2.6 miles), Adlington (Lancashire) (national_rail_station) (2.7 miles), Appley Bridge (national_rail_station) (2.8 miles), Wigan Wallgate (national_rail_station) (3.1 miles)",
+    "nearest_schools": "Standish St Wilfrid's Church of England Primary Academy (0.1293816969771534 miles) - Outstanding, St Marie's Catholic Primary School Standish (0.45734933521981624 miles) - Outstanding, Wood Fold Primary School (0.6117664888612999 miles) - Outstanding, Standish Community High School (0.859341509416259 miles) - Good",
+    "agent_name": "Kuavo Estate Agents",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 23,
+    "number_of_floorplans": 1,
+    "ground_rent": null,
+    "description": "Four Bed Detached Two Reception Rooms En-Suite Utility Room Downstairs WC Attractive Rear Garden Driveway Parking Sought After Area Freehold Situated in a highly sought-after residential location, this beautifully presented four-bedroom detached home offers spacious and versatile living, perfect for modern family life. The welcoming entrance hall leads to a bright and comfortable living room, while to the rear, the stylish open-plan kitchen/diner features contemporary fittings and ample space for both cooking and entertaining. A separate utility room provides additional storage and has direct access to the side of the property. There is also a convenient downstairs WC. The integral garage has been professionally converted to create a second lounge, offering flexibility for use as a playroom, home office or snug. Upstairs, there are four generously proportioned bedrooms. The main bedroom benefits from fitted wardrobes and a modern en-suite shower room, while the remaining bedrooms are served by a sleek family bathroom with contemporary fittings. Externally, the property boasts an attractive, well-maintained rear garden, ideal for relaxing or hosting summer gatherings. To the front, a driveway provides parking for two vehicles. Located in a desirable part of Standish, the property is close to an excellent range of local amenities, highly regarded schools, and offers superb transport links. Manchester City Centre is within approximately 30 minutes by car, making this an ideal choice for commuters seeking a balance of convenience and tranquillity. This is a rare opportunity to acquire a move-in-ready family home in one of the area’s most popular addresses. Early viewing is highly recommended. Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "True",
+    "bedrooms_int": 4,
+    "bathrooms_int": 2,
+    "receptions_int": 2,
+    "price_num": 390000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟢 Stableford Close, Standish WN6 (WN6): Safe area - no crimes reported within 1.0km radius in past 6 months",
+    "crime_data": {
+      "total": 0,
+      "by_category": {},
+      "top_streets": {},
+      "outcomes": {},
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 0,
+        "2025-03": 0
+      },
+      "trend": "stable"
+    }
+  },
+  {
+    "title": "3 bed terraced house for sale New Barton Street, Salford M6",
+    "address": "New Barton Street, Salford M6",
+    "postcode": "M6",
+    "lat": 53.500488,
+    "lng": -2.311422,
+    "price": 220000,
+    "property_type": "terraced",
+    "bedrooms": 3,
+    "bathrooms": 1,
+    "property_id": 71073577,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71073577/",
+    "tenure": "freehold",
+    "receptions": 2,
+    "council_tax_band": "A",
+    "epc_rating": "D",
+    "size_sqft": 1044.0,
+    "nearest_stations": "Eccles (Manchester) (national_rail_station) (1.4 miles), Swinton (Manchester) (national_rail_station) (1.5 miles), Clifton (Manchester) (national_rail_station) (1.5 miles), Salford Crescent (national_rail_station) (1.8 miles)",
+    "nearest_schools": "St Luke's RC Primary School (0.11461493205927382 miles) - Good, St John's CofE Primary School (0.18126899604435096 miles) - Good, Summerville Primary School (0.3119711528548278 miles) - Good, Salford City College (0.5031625724456672 miles) - Good",
+    "agent_name": "Hills",
+    "chain_free": "False",
+    "status": "Just added",
+    "number_of_photos": 13,
+    "number_of_floorplans": 1,
+    "ground_rent": "£0",
+    "description": "Spacious Three Bedroom Period Property Located in the Popular Irlam o' th' Heights Bay-Fronted Lounge and a Spacious Dining Room Fitted Kitchen and a Three-Piece Bathroom Three Well-Proportioned Bedrooms Low-Maintenance Courtyard Gardens to the Front and Rear Within Easy Access of Local Schooling and Several Well-Kept Parks Close to Excellent Transport Links into Salford Quays, Media City and Manchester City Centre Viewing is Highly Recommended! Take A look at this spacious three bedroom period terraced property! Located in the popular Irlam o’ th’ Heights - Could this be Your Next Move? Located in the popular Irlam o’th’ Height area, the property is within easy access of amenities, local schooling and several well-kept parks, including Buile Hill Park, Oakwood Park and Light Oaks Park. It is also close to excellent transport links throughout Manchester, including into Salford Quays, Media City and Manchester City Centre. As you enter the property you go into a welcoming entrance hallway, which flows through to the spacious dining room and the bay-fronted lounge. Towards the rear of the property you will find the fitted kitchen. Upstairs, there are three well-proportioned bedrooms and a three-piece family bathroom. Externally, to the front and rear there are low-maintenance courtyard gardens. Properties of this style are incredibly popular, get in touch to secure your viewing today! EPC Rating: D Lounge (4.45m x 3.73m) Dining Room (4.17m x 3.96m) Kitchen (2.92m x 2.24m) Bedroom One (4.17m x 3.20m) Bedroom Two (4.34m x 2.95m) Bedroom Three (2.64m x 1.85m) Bathroom (2.97m x 2.31m) Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "False",
+    "bedrooms_int": 3,
+    "bathrooms_int": 1,
+    "receptions_int": 2,
+    "price_num": 220000.0,
+    "size_sqft_num": 1044.0,
+    "crime_summary": "🟢 New Barton Street, Salford M6 (M6): Low crime - 1 incidents within 1.0km radius (near On or near Crosby Road), mainly Other Theft (falling trend)",
+    "crime_data": {
+      "total": 1,
+      "by_category": {
+        "other-theft": 1
+      },
+      "top_streets": {
+        "On or near Crosby Road": 1
+      },
+      "outcomes": {
+        "Action to be taken by another organisation": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 0,
+        "2025-04": 0,
+        "2025-03": 1
+      },
+      "trend": "falling"
+    }
+  },
+  {
+    "title": "3 bed detached house for sale Shergar Way, Salford M6",
+    "address": "Shergar Way, Salford M6",
+    "postcode": "M6",
+    "lat": 53.498556,
+    "lng": -2.275855,
+    "price": 430000,
+    "property_type": "detached",
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "property_id": 71072414,
+    "property_url": "https://www.zoopla.co.uk/for-sale/details/71072414/",
+    "tenure": "freehold",
+    "receptions": 1,
+    "council_tax_band": "D",
+    "epc_rating": "B",
+    "size_sqft": null,
+    "nearest_stations": "Salford Crescent (national_rail_station) (0.8 miles), Salford Central (national_rail_station) (1.4 miles), Manchester Victoria (national_rail_station) (1.6 miles), Deansgate (national_rail_station) (2 miles)",
+    "nearest_schools": "St Sebastian's RC Primary School (0.2515393644429034 miles) - Good, The Albion Academy (0.25313752123225364 miles) - Good, Edstart (0.2711508599528752 miles) - Good, Ahavas Torah Boys Academy (0.35166013138272484 miles) - Inadequate",
+    "agent_name": "Hills",
+    "chain_free": "True",
+    "status": "Just added",
+    "number_of_photos": 22,
+    "number_of_floorplans": 1,
+    "ground_rent": "£0",
+    "description": "Prestigious, Modern Four Bedroom Detached Property Coming To The Market chain free! Located on the Popular Castle Irwell Development Spacious family lounge Bright and Airy Kitchen Diner with Modern Units and Patio Doors to the Rear Four Generously-Sized Bedrooms Second Bedroom Benefits from an Ensuite and a Juliette Balcony Large Main Bedroom with an Ensuite and Access to a Balcony Stylish Three-Piece Family Bathroom and a Downstairs W/C Generously-Sized Garden to the Rear Driveway for Off-Road Parking *Located on the Popular Castle Irwell Development is this Prestigious Four Bedroom Detached Property! Featuring a Generous Plot, Ensuites to Two of the Bedrooms and a Private Balcony to the Main Bedroom!* What a fantastic property, and what a stunning development! The Castle Irwell development has been thoughtfully designed, incorporating tranquil communal spaces and a children’s play area. This beautiful home would be perfect for someone who is looking to upsize to a property that is ready for them to pack their bags and move in! Situated in a convenient location, the property is within easy access of Salford Quays, Media City and Manchester City Centre. As you enter the property you head into a welcoming entrance hallway, which provides access to the downstairs W/C, the family lounge - featuring a patio door - and the modern kitchen diner, which benefits from plenty of natural light from the windows and patio doors to the rear. On the first floor, there are three generously-sized bedrooms, with an ensuite and a juliette balcony to the second bedroom. There is also a generously-sized, stylish three-piece family bathroom. On the top floor, you will find the large main bedroom, complete with an ensuite shower room and access to the balcony. Externally, there is a generously-sized garden to the rear, complete with laid-to-lawn grass and paving. There is also a driveway to the side for off-road parking. Viewing is highly recommended to appreciate what this lovely home has to offer - get in touch to secure your viewing today! EPC Rating: B Lounge / Kitchen (8.6m x 5.0m) Bedroom Two (3.13m x 2.46m) En Suite (1.97m x 1.87m) Bedroom Three (3.33m x 2.25m) Bathroom (2.5m x 2.0m) Bedroom One (5.73m x 3.99m) En Suite (2.19m x 2.05m) Read full description In partnership with Zoopla insights Sign in and gain expert analysis to make informed decisions. Stamp duty calculator Our instant calculator helps you understand how much stamp duty is due on property purchases in England &amp; Northern Ireland. Read the latest stamp duty news Price Your situation Please select Buying for the first time Home mover with one property Buying an additional property From 1st April 2025 £- This calculation is intended as a guide only. We are unable to provide financial advice, so it&#x27;s important to consult with an adviser. It applies to UK residents purchasing residential properties in England and Northern Ireland, but does not apply if the purchase is made through a company.",
+    "source": "zoopla",
+    "has_epc": "True",
+    "bedrooms_int": 3,
+    "bathrooms_int": 3,
+    "receptions_int": 1,
+    "price_num": 430000.0,
+    "size_sqft_num": null,
+    "crime_summary": "🟢 Shergar Way, Salford M6 (M6): Low crime - 2 incidents within 1.0km radius (near On or near Elton's Yard, On or near Croft Street), mainly Violent Crime (falling trend)",
+    "crime_data": {
+      "total": 2,
+      "by_category": {
+        "violent-crime": 2
+      },
+      "top_streets": {
+        "On or near Elton's Yard": 1,
+        "On or near Croft Street": 1
+      },
+      "outcomes": {
+        "Under investigation": 1,
+        "Unable to prosecute suspect": 1
+      },
+      "monthly_counts": {
+        "2025-08": 0,
+        "2025-07": 0,
+        "2025-06": 0,
+        "2025-05": 1,
+        "2025-04": 1,
+        "2025-03": 0
+      },
+      "trend": "falling"
+    }
+  }
+]

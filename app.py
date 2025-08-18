@@ -42,6 +42,7 @@ import json  # For saving chat sessions
 import time  # For timestamps
 from datetime import datetime  # For formatted timestamps
 from typing import Optional  # For optional parameters
+from langchain_openai import ChatOpenAI  # Small LLM for query rewriting
 
 # Configure the Streamlit page
 st.set_page_config(
@@ -49,6 +50,27 @@ st.set_page_config(
 )
 st.header("Chat with Real Estate AI Advisor")  # Main heading
 LOCAL_DATASET_PATH = "dataset/structured_properties.csv"
+
+
+def rewrite_user_query(query: str) -> str:
+    """Rewrite the user's query using a lightweight LLM for spelling correction.
+
+    Falls back to the original query if the model or API key is unavailable.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return query
+    try:
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=api_key)
+        prompt = (
+            "Rewrite the following user query, fixing spelling and grammar while keeping "
+            "the original intent: "
+            f"{query}"
+        )
+        result = llm.invoke(prompt)
+        return result.content.strip() if hasattr(result, "content") else str(result)
+    except Exception:
+        return query
 
 
 class ChatbotWeb:
@@ -398,6 +420,9 @@ class ChatbotWeb:
 
         # Process query when user inputs a message
         if user_query:
+            # Rewrite the query for spelling/grammar corrections
+            corrected_query = rewrite_user_query(user_query)
+
             # Display the user message
             utils.display_msg(user_query, "user")
 
@@ -406,9 +431,9 @@ class ChatbotWeb:
                 # Set up streaming handler to show response as it's generated
                 st_cb = StreamHandler(st.empty())
 
-                # Process the query through the QA chain
+                # Process the corrected query through the QA chain
                 result = qa_chain.invoke(
-                    {"question": user_query},
+                    {"question": corrected_query},
                     {"callbacks": [st_cb]},  # Use streaming callback
                 )
 
@@ -417,7 +442,7 @@ class ChatbotWeb:
                 st.session_state.messages.append(
                     {"role": "Advisor", "content": response}
                 )
-                utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
+                utils.print_qa(ChatbotWeb, corrected_query, response)  # Log the Q&A
 
                 # Save chat session to JSON file
                 source_docs = result.get("source_documents", [])

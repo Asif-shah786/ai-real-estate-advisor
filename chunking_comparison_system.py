@@ -136,7 +136,7 @@ class ChunkingComparisonSystem:
             # Calculate metrics
             if search_results:
                 scores = [score for _, score in search_results]
-                avg_score = np.mean(scores)
+                avg_score = float(np.mean(scores))
                 coverage = len(set([chunk.metadata.get('type', 'unknown') for chunk, _ in search_results]))
             else:
                 avg_score = 0.0

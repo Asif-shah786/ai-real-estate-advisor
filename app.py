@@ -257,23 +257,25 @@ class ChatbotWeb:
                 self.chain = chain
                 self.memory = memory
 
-            def get_relevant_documents(self, query):  # type: ignore[override]
+            def _get_relevant_documents(self, query):  # type: ignore[override]
                 chat_history = self.memory.chat_memory.messages
-                return self.chain.invoke({
-                    "input": query,
-                    "chat_history": chat_history,
-                })
+                return self.chain.invoke(
+                    {
+                        "input": query,
+                        "chat_history": chat_history,
+                    }
+                )
 
             async def aget_relevant_documents(self, query):  # type: ignore[override]
                 chat_history = self.memory.chat_memory.messages
-                return await self.chain.ainvoke({
-                    "input": query,
-                    "chat_history": chat_history,
-                })
+                return await self.chain.ainvoke(
+                    {
+                        "input": query,
+                        "chat_history": chat_history,
+                    }
+                )
 
-        history_aware_retriever = HistoryAwareRetriever(
-            history_retriever_chain, memory
-        )
+        history_aware_retriever = HistoryAwareRetriever(history_retriever_chain, memory)
 
         # Identity prompt ensures the user's question is passed unchanged to the
         # history-aware retriever, which will handle rewriting using memory.

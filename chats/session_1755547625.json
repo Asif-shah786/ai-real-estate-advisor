@@ -1,7 +1,7 @@
 {
   "session_id": "session_1755547625",
-  "created_at": "2025-08-18T21:09:45.324817",
-  "total_messages": 6,
+  "created_at": "2025-08-18T21:16:05.875844",
+  "total_messages": 11,
   "messages": [
     {
       "timestamp": "2025-08-18T21:07:26.418212",
@@ -506,6 +506,428 @@
             "source_title": "2 bed flat for sale 42 City Road East, Deansgate, Manchester, Greater Manchester M15"
           },
           "type": "crime"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T21:14:35.210003",
+      "user_query": "sugegst someproperties near to city center",
+      "ai_response": "Based on the information provided, here are some properties near the city center:\n\n1. Property at Alto, Block B, Sillavan Way, Salford M3, priced at £190,000. It is close to Salford Central (0.1 miles) and Manchester Victoria (0.6 miles) national rail stations.\n\n2. Property at Fusion 1, Salford, Greater Manchester M5, priced at £110,000. It is near Salford Central (0.5 miles) and Deansgate (0.7 miles) national rail stations.\n\nThese properties are relatively close to the city center and have good transport links.",
+      "source_documents": [
+        {
+          "content": "Property at 42 City Road East, Deansgate, Manchester, Greater Manchester M15, price_int: £230,000\n\nTransport Links:\nDeansgate (national_rail_station) (0.2 miles), Manchester Oxford Road (national_rail_station) (0.3 miles), Salford Central (national_rail_station) (0.8 miles), Manchester Piccadilly (national_rail_station) (0.9 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71077879,
+            "address": "42 City Road East, Deansgate, Manchester, Greater Manchester M15",
+            "postcode": "M15",
+            "price_int": 230000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077879/",
+            "source_title": "2 bed flat for sale 42 City Road East, Deansgate, Manchester, Greater Manchester M15"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at 42 City Road East, Deansgate, Manchester, Greater Manchester M15, price_int: £230,000\n\nCrime Information:\n{\n  \"total\": 6,\n  \"by_category\": {\n    \"violent-crime\": 4,\n    \"criminal-damage-arson\": 1,\n    \"other-theft\": 1\n  },\n  \"top_streets\": {\n    \"On or near Wood Street\": 3,\n    \"On or near Ormsgill Street\": 1,\n    \"On or near Left Bank\": 1\n  },\n  \"outcomes\": {\n    \"Investigation complete; no suspect identified\": 4,\n    \"Under investigation\": 2\n  },\n  \"monthly_counts\": {\n    \"2025-08\"...",
+          "metadata": {
+            "type": "crime",
+            "property_id": 71077879,
+            "address": "42 City Road East, Deansgate, Manchester, Greater Manchester M15",
+            "postcode": "M15",
+            "price_int": 230000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077879/",
+            "source_title": "2 bed flat for sale 42 City Road East, Deansgate, Manchester, Greater Manchester M15"
+          },
+          "type": "crime"
+        },
+        {
+          "content": "Property at Alto, Block B, Sillavan Way, Salford M3, price_int: £190,000\n\nTransport Links:\nSalford Central (national_rail_station) (0.1 miles), Manchester Victoria (national_rail_station) (0.6 miles), Deansgate (national_rail_station) (0.7 miles), Salford Crescent (national_rail_station) (0.8 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71077617,
+            "address": "Alto, Block B, Sillavan Way, Salford M3",
+            "postcode": "M3",
+            "price_int": 190000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077617/",
+            "source_title": "1 bed flat for sale Alto, Block B, Sillavan Way, Salford M3"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Fusion 1, Salford, Greater Manchester M5, price_int: £110,000\n\nTransport Links:\nSalford Central (national_rail_station) (0.5 miles), Deansgate (national_rail_station) (0.7 miles), Salford Crescent (national_rail_station) (0.7 miles), Manchester Oxford Road (national_rail_station) (1.0 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71083151,
+            "address": "Fusion 1, Salford, Greater Manchester M5",
+            "postcode": "M5",
+            "price_int": 110000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71083151/",
+            "source_title": "1 bed flat for sale Fusion 1, Salford, Greater Manchester M5"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at 42 City Road East, Deansgate, Manchester, Greater Manchester M15, price_int: £230,000\n\nDescription: Council Tax Band D Leasehold 999 years from 30 August 2002 Ground Rent £140 per year Service Charge £2,800 a year Open Plan Kitchen/Living Space 2 Double Bedrooms Private Balcony Family Bathroom Ensuite to Master Bedroom City Centre Location Contemporary second-floor apartment offering open-plan liv...\n\nBedrooms: 2.0\nType: flat\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71077879,
+            "address": "42 City Road East, Deansgate, Manchester, Greater Manchester M15",
+            "postcode": "M15",
+            "price_int": 230000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077879/",
+            "source_title": "2 bed flat for sale 42 City Road East, Deansgate, Manchester, Greater Manchester M15"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T21:15:11.193920",
+      "user_query": "show me properties underr 150000",
+      "ai_response": "I don't have information on properties under £150,000 in the current dataset.",
+      "source_documents": [
+        {
+          "content": "Property at Burton Place, Manchester M15, price_int: £150,000\n\nNearby Schools:\nSt Wilfrid's RC Primary School (0.4 miles) - Good, Old Trafford Community Academy (0.5 miles) - Requires improvement, St Alphonsus RC Primary School (0.6 miles) - Outstanding, Rolls Crescent Primary School (0.7 miles) - Good",
+          "metadata": {
+            "type": "schools",
+            "property_id": 69474291,
+            "address": "Burton Place, Manchester M15",
+            "postcode": "M15",
+            "price_int": 150000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "school_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/69474291/",
+            "source_title": "1 bed flat for sale Burton Place, Manchester M15"
+          },
+          "type": "schools"
+        },
+        {
+          "content": "Property at Burton Place, Manchester M15, price_int: £150,000\n\nTransport Links:\nDeansgate (national_rail_station) (0.5 miles), Salford Central (national_rail_station) (0.8 miles), Manchester Oxford Road (national_rail_station) (0.8 miles), Salford Crescent (national_rail_station) (1.1 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 69474291,
+            "address": "Burton Place, Manchester M15",
+            "postcode": "M15",
+            "price_int": 150000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/69474291/",
+            "source_title": "1 bed flat for sale Burton Place, Manchester M15"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Burton Place, Manchester M15, price_int: £150,000\n\nDescription: One Bedroom One Bathroom Close to Transport Links Spacious Balcony No Chain EPC Rating B Owner Occupiers &amp; Investors Welcome EWS1 Form Available A lovely one-bedroom property is available in Burton Place, located in Castlefield. Entering into a hallway, this one bedroom, one bathroom apartment b...\n\nBedrooms: 1.0\nType: flat\nTenure: leasehold\nCouncil Tax: B\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 69474291,
+            "address": "Burton Place, Manchester M15",
+            "postcode": "M15",
+            "price_int": 150000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/69474291/",
+            "source_title": "1 bed flat for sale Burton Place, Manchester M15"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Burton Place, Manchester M15, price_int: £150,000\n\nCrime Information:\n{\n  \"total\": 6,\n  \"by_category\": {\n    \"violent-crime\": 4,\n    \"criminal-damage-arson\": 1,\n    \"other-theft\": 1\n  },\n  \"top_streets\": {\n    \"On or near Wood Street\": 3,\n    \"On or near Ormsgill Street\": 1,\n    \"On or near Archie Street\": 1\n  },\n  \"outcomes\": {\n    \"Investigation complete; no suspect identified\": 4,\n    \"Under investigation\": 2\n  },\n  \"monthly_counts\": {\n    \"2025-08\": 0,\n    \"2025-07\": 0,\n    \"2025...",
+          "metadata": {
+            "type": "crime",
+            "property_id": 69474291,
+            "address": "Burton Place, Manchester M15",
+            "postcode": "M15",
+            "price_int": 150000,
+            "property_type": "flat",
+            "bedrooms": 1.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/69474291/",
+            "source_title": "1 bed flat for sale Burton Place, Manchester M15"
+          },
+          "type": "crime"
+        },
+        {
+          "content": "Property at Meadowside Road, Hindley Green WN2, price_int: £160,000\n\nDescription: Bungalow Semi detached Two bedrooms Driveway Set on the highly sought-after Meadowside Road, this two-bedroom semi-detached bungalow offers spacious accommodation and presents a fantastic opportunity for buyers seeking a project with real potential. The property comprises a welcoming porch and entra...\n\nBedrooms: 2.0\nType: bungalow\nTenure: freehold\nCouncil Tax: B\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71082732,
+            "address": "Meadowside Road, Hindley Green WN2",
+            "postcode": "WN2",
+            "price_int": 160000,
+            "property_type": "bungalow",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71082732/",
+            "source_title": "2 bed bungalow for sale Meadowside Road, Hindley Green WN2"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T21:15:37.408594",
+      "user_query": "shoe me properties under 20000 price",
+      "ai_response": "I don't have any information on properties priced under £20,000.",
+      "source_documents": [
+        {
+          "content": "Property at Laburnum Street, Salford M6, price_int: £200,000\n\nDescription: Two Bedroom Property Located on the Popular 'Chimney Pot Park' Development Within Walking Distance of Salford Quays &amp; Media City Just a Short Walk from Langworthy Tram Stop, which Provides Direct Access into Manchester City Centre Two Double Bedrooms Modern Three-Piece Bathroom Complete with a '...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71068009,
+            "address": "Laburnum Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71068009/",
+            "source_title": "2 bed terraced house for sale Laburnum Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nDescription: Fantastic two bedroom terraced property coming to the market chain free! Located close to Salford Quays/Media City and excellent transport links into Manchester City Centre Gas central heated and double glazed throughout Modern fitted bathroom 21ft lounge/diner Stunning fitted kitchen Award winning ...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nNearby Schools:\nWillow Tree Primary School (0.2 miles) - Good, Lark Hill Community Primary School (0.2 miles) - Good, Holy Family VA RC Primary School (0.2 miles) - Outstanding, King of Kings (0.4 miles) - Requires improvement",
+          "metadata": {
+            "type": "schools",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "school_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "schools"
+        },
+        {
+          "content": "Property at Edgeley Road, Edgeley, Stockport SK3, price_int: £200,000\n\nTransport Links:\nStockport (national_rail_station) (0.5 miles), Davenport (national_rail_station) (1.1 miles), Woodsmoor (national_rail_station) (1.7 miles), Heaton Chapel (national_rail_station) (1.7 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71082167,
+            "address": "Edgeley Road, Edgeley, Stockport SK3",
+            "postcode": "SK3",
+            "price_int": 200000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71082167/",
+            "source_title": "2 bed flat for sale Edgeley Road, Edgeley, Stockport SK3"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nTransport Links:\nSalford Crescent (national_rail_station) (0.7 miles), Salford Central (national_rail_station) (1.5 miles), Manchester United Football Ground (national_rail_station) (1.6 miles), Eccles (Manchester) (national_rail_station) (1.7 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "transport"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T21:15:54.205387",
+      "user_query": "shoe me properties under 20000o price ",
+      "ai_response": "I don't have any information on properties priced under £20,000.",
+      "source_documents": [
+        {
+          "content": "Property at Laburnum Street, Salford M6, price_int: £200,000\n\nDescription: Two Bedroom Property Located on the Popular 'Chimney Pot Park' Development Within Walking Distance of Salford Quays &amp; Media City Just a Short Walk from Langworthy Tram Stop, which Provides Direct Access into Manchester City Centre Two Double Bedrooms Modern Three-Piece Bathroom Complete with a '...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71068009,
+            "address": "Laburnum Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71068009/",
+            "source_title": "2 bed terraced house for sale Laburnum Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nDescription: Fantastic two bedroom terraced property coming to the market chain free! Located close to Salford Quays/Media City and excellent transport links into Manchester City Centre Gas central heated and double glazed throughout Modern fitted bathroom 21ft lounge/diner Stunning fitted kitchen Award winning ...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Edgeley Road, Edgeley, Stockport SK3, price_int: £200,000\n\nDescription: Please Quote Ref GH702 Two Double Bedrooms Open Plan Lving Kitchen &amp; Dining Area Stunning Communal Garden Walking Distance to Stockport Train Station. Local Parkland Just Over The Road With Fishing Pond Off Road Parking Excellent Local Amenities All Within Walking Distance Welcome to Edgeley Roa...\n\nBedrooms: 2.0\nType: flat\nTenure: leasehold\nCouncil Tax: B\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71082167,
+            "address": "Edgeley Road, Edgeley, Stockport SK3",
+            "postcode": "SK3",
+            "price_int": 200000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71082167/",
+            "source_title": "2 bed flat for sale Edgeley Road, Edgeley, Stockport SK3"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Royds Street, Tottington, Bury BL8, price_int: £200,000\n\nCrime Information:\n{\n  \"total\": 0,\n  \"by_category\": {},\n  \"top_streets\": {},\n  \"outcomes\": {},\n  \"monthly_counts\": {\n    \"2025-08\": 0,\n    \"2025-07\": 0,\n    \"2025-06\": 0,\n    \"2025-05\": 0,\n    \"2025-04\": 0,\n    \"2025-03\": 0\n  },\n  \"trend\": \"stable\"\n}",
+          "metadata": {
+            "type": "crime",
+            "property_id": 71080672,
+            "address": "Royds Street, Tottington, Bury BL8",
+            "postcode": "BL8",
+            "price_int": 200000,
+            "property_type": "semi_detached",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71080672/",
+            "source_title": "2 bed semi-detached house for sale Royds Street, Tottington, Bury BL8"
+          },
+          "type": "crime"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nNearby Schools:\nWillow Tree Primary School (0.2 miles) - Good, Lark Hill Community Primary School (0.2 miles) - Good, Holy Family VA RC Primary School (0.2 miles) - Outstanding, King of Kings (0.4 miles) - Requires improvement",
+          "metadata": {
+            "type": "schools",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "school_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "schools"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T21:16:05.875799",
+      "user_query": "shoe me properties under 200000 price",
+      "ai_response": "I don't have information on properties under £200,000.",
+      "source_documents": [
+        {
+          "content": "Property at Laburnum Street, Salford M6, price_int: £200,000\n\nDescription: Two Bedroom Property Located on the Popular 'Chimney Pot Park' Development Within Walking Distance of Salford Quays &amp; Media City Just a Short Walk from Langworthy Tram Stop, which Provides Direct Access into Manchester City Centre Two Double Bedrooms Modern Three-Piece Bathroom Complete with a '...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71068009,
+            "address": "Laburnum Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71068009/",
+            "source_title": "2 bed terraced house for sale Laburnum Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nDescription: Fantastic two bedroom terraced property coming to the market chain free! Located close to Salford Quays/Media City and excellent transport links into Manchester City Centre Gas central heated and double glazed throughout Modern fitted bathroom 21ft lounge/diner Stunning fitted kitchen Award winning ...\n\nBedrooms: 2.0\nType: terraced\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nNearby Schools:\nWillow Tree Primary School (0.2 miles) - Good, Lark Hill Community Primary School (0.2 miles) - Good, Holy Family VA RC Primary School (0.2 miles) - Outstanding, King of Kings (0.4 miles) - Requires improvement",
+          "metadata": {
+            "type": "schools",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "school_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "schools"
+        },
+        {
+          "content": "Property at Edgeley Road, Edgeley, Stockport SK3, price_int: £200,000\n\nTransport Links:\nStockport (national_rail_station) (0.5 miles), Davenport (national_rail_station) (1.1 miles), Woodsmoor (national_rail_station) (1.7 miles), Heaton Chapel (national_rail_station) (1.7 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71082167,
+            "address": "Edgeley Road, Edgeley, Stockport SK3",
+            "postcode": "SK3",
+            "price_int": 200000,
+            "property_type": "flat",
+            "bedrooms": 2.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71082167/",
+            "source_title": "2 bed flat for sale Edgeley Road, Edgeley, Stockport SK3"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Reservoir Street, Salford M6, price_int: £200,000\n\nTransport Links:\nSalford Crescent (national_rail_station) (0.7 miles), Salford Central (national_rail_station) (1.5 miles), Manchester United Football Ground (national_rail_station) (1.6 miles), Eccles (Manchester) (national_rail_station) (1.7 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 71060928,
+            "address": "Reservoir Street, Salford M6",
+            "postcode": "M6",
+            "price_int": 200000,
+            "property_type": "terraced",
+            "bedrooms": 2.0,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71060928/",
+            "source_title": "2 bed terraced house for sale Reservoir Street, Salford M6"
+          },
+          "type": "transport"
         }
       ]
     }

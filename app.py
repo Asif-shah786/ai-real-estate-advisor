@@ -28,6 +28,10 @@ from langchain_community.document_loaders.csv_loader import CSVLoader  # For loa
 from langchain_community.document_loaders.dataframe import DataFrameLoader  # For loading pandas DataFrames
 from langchain.text_splitter import RecursiveCharacterTextSplitter  # For chunking documents
 from langchain_community.vectorstores import DocArrayInMemorySearch  # In-memory vector store
+import json  # For saving chat sessions
+import time  # For timestamps
+from datetime import datetime  # For formatted timestamps
+from typing import Optional  # For optional parameters
 
 # Configure the Streamlit page
 st.set_page_config(page_title="🦾 AI Real Estate Advisor", page_icon='💬', layout='wide')
@@ -54,10 +58,23 @@ class ChatbotWeb:
         1. Synchronizes Streamlit session state variables
         2. Configures the Language Model (LLM) based on user selection
         3. Sets up the embedding model for vector searches
+        4. Creates chats folder for saving chat sessions
         """
         utils.sync_st_session()  # Ensure session state consistency
         self.llm = utils.configure_llm()  # Set up the language model (OpenAI or Llama)
         self.embedding_model = utils.configure_embedding_model()  # Set up embeddings for vector search
+        
+        # Create chats folder if it doesn't exist
+        self.chats_folder = "chats"
+        if not os.path.exists(self.chats_folder):
+            os.makedirs(self.chats_folder)
+            print(f"✅ Created chats folder: {self.chats_folder}")
+        
+        # Initialize chat session tracking
+        if "chat_session_id" not in st.session_state:
+            st.session_state.chat_session_id = f"session_{int(time.time())}"
+        if "chat_messages" not in st.session_state:
+            st.session_state.chat_messages = []
 
     def scrape_website(self, url):
         """
@@ -196,15 +213,15 @@ class ChatbotWeb:
             traceback.print_exc()
             return ""  # Return empty string instead of None
 
-    @st.cache_resource(show_spinner='Analyzing data set', ttl=3600)
+    @st.cache_resource(show_spinner='Creating Aspect-Based Vector Database', ttl=3600)
     def setup_vectordb(_self, websites=None, local_file=None, jsonl_file=None):
         """
-        Set up a vector database from the provided website URLs or local file.
+        Set up a vector database using the Aspect-Based chunking strategy.
         
         This method:
-        1. Loads CSV data from URLs and/or local file
-        2. Creates Document objects with metadata
-        3. Splits documents into chunks for better retrieval
+        1. Uses the Aspect-Based chunking strategy (best performer from evaluation)
+        2. Creates separate chunks for crime, schools, transport, and overview aspects
+        3. Generates embeddings for optimal retrieval
         4. Creates and returns a vector database for semantic search
         
         The function is cached using Streamlit's cache_resource for performance,
@@ -214,10 +231,46 @@ class ChatbotWeb:
             _self: The ChatbotWeb instance
             websites (list): List of URLs to CSV files (optional)
             local_file (str): Path to local CSV file (optional)
+            jsonl_file (str): Path to JSONL file (optional, for backward compatibility)
             
         Returns:
             DocArrayInMemorySearch: A vector database for document retrieval
         """
+        try:
+            # Import the aspect-based chunker
+            from aspect_based_chunker import create_aspect_based_vectordb
+            
+            # Get OpenAI API key from environment
+            import os
+            openai_api_key = os.getenv('OPENAI_API_KEY')
+            
+            if not openai_api_key:
+                st.error("OpenAI API key not found. Please set OPENAI_API_KEY in your environment.")
+                return None
+            
+            # Create aspect-based vector database
+            print("🚀 Setting up Aspect-Based Vector Database...")
+            vectordb = create_aspect_based_vectordb(
+                openai_api_key=openai_api_key,
+                properties_file="dataset_v2/properties_with_crime_data.json",
+                legal_file="dataset_v2/legal_uk_greater_manchester.jsonl",
+                embedding_model=_self.embedding_model
+            )
+            
+            if vectordb:
+                print("✅ Aspect-Based Vector Database created successfully!")
+                return vectordb
+            else:
+                st.error("Failed to create Aspect-Based Vector Database. Falling back to legacy method.")
+                
+        except Exception as e:
+            print(f"⚠️ Aspect-Based chunking failed: {e}")
+            print("🔄 Falling back to legacy chunking method...")
+            st.warning("Using legacy chunking method due to error in Aspect-Based chunking.")
+        
+        # Fallback to legacy method if aspect-based chunking fails
+        print("📚 Using legacy chunking method...")
+        
         # Scrape and load documents
         docs = []
         
@@ -331,6 +384,66 @@ class ChatbotWeb:
             verbose=False  # Don't print debug info
         )
         return qa_chain
+    
+    def save_chat_session(self, user_query: str, response: str, source_documents: Optional[list] = None):
+        """
+        Save the current chat session to a JSON file
+        
+        Args:
+            user_query: The user's question
+            response: The AI's response
+            source_documents: List of source documents used for the response
+        """
+        try:
+            # Add message to session state
+            message_data = {
+                "timestamp": datetime.now().isoformat(),
+                "user_query": user_query,
+                "ai_response": response,
+                "source_documents": []
+            }
+            
+            # Add source document information if available
+            if source_documents:
+                for doc in source_documents:
+                    doc_info = {
+                        "content": doc.page_content[:500] + "..." if len(doc.page_content) > 500 else doc.page_content,
+                        "metadata": doc.metadata,
+                        "type": doc.metadata.get('type', 'unknown') if hasattr(doc, 'metadata') else 'unknown'
+                    }
+                    message_data["source_documents"].append(doc_info)
+            
+            # Add to session messages
+            st.session_state.chat_messages.append(message_data)
+            
+            # Save to JSON file
+            session_id = st.session_state.chat_session_id
+            filename = f"{session_id}.json"
+            filepath = os.path.join(self.chats_folder, filename)
+            
+            # Prepare chat session data
+            chat_session = {
+                "session_id": session_id,
+                "created_at": datetime.now().isoformat(),
+                "total_messages": len(st.session_state.chat_messages),
+                "messages": st.session_state.chat_messages,
+                "app_version": "Aspect-Based Chunking v2.0",
+                "chunking_strategy": "Aspect-Based (Best Performer)",
+                "data_sources": [
+                    "dataset_v2/properties_with_crime_data.json",
+                    "dataset_v2/legal_uk_greater_manchester.jsonl"
+                ]
+            }
+            
+            # Save to file
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(chat_session, f, indent=2, ensure_ascii=False)
+            
+            print(f"💾 Chat session saved: {filepath}")
+            
+        except Exception as e:
+            print(f"⚠️ Error saving chat session: {e}")
+            traceback.print_exc()
 
     @utils.enable_chat_history  # Decorator to enable persistent chat history
     def main(self):
@@ -382,6 +495,14 @@ class ChatbotWeb:
         # Button to clear all URLs
         if st.sidebar.button("Clear", type="primary"):
             st.session_state["websites"] = []
+        
+        # Button to start new chat session
+        if st.sidebar.button("🆕 New Chat Session", type="secondary"):
+            # Generate new session ID
+            st.session_state.chat_session_id = f"session_{int(time.time())}"
+            st.session_state.chat_messages = []
+            st.session_state.messages = []
+            st.rerun()
 
         # Remove duplicates by converting to set and back to list
         websites = list(set(st.session_state["websites"]))
@@ -401,6 +522,7 @@ class ChatbotWeb:
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
         st.sidebar.markdown("**📊 Data Sources**")
+        st.sidebar.markdown("🧠 **Strategy:** Aspect-Based Chunking (Best Performer)")
         st.sidebar.markdown(f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}` (v2)")
         st.sidebar.markdown(f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
         if websites:
@@ -408,6 +530,13 @@ class ChatbotWeb:
                 st.sidebar.markdown(f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`")
         else:
             st.sidebar.markdown("🌐 *No external URLs added*")
+        
+        # Show chat session info
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**💬 Chat Session**")
+        st.sidebar.markdown(f"🆔 **Session ID:** `{st.session_state.chat_session_id}`")
+        st.sidebar.markdown(f"💾 **Messages:** {len(st.session_state.chat_messages)}")
+        st.sidebar.markdown(f"📁 **Saved to:** `chats/{st.session_state.chat_session_id}.json`")
 
         # Create chat input field
         user_query = st.chat_input(placeholder="Ask me about Manchester properties for sale!")
@@ -432,6 +561,10 @@ class ChatbotWeb:
                 response = result["answer"]
                 st.session_state.messages.append({"role": "Advisor", "content": response})
                 utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
+                
+                # Save chat session to JSON file
+                source_docs = result.get('source_documents', [])
+                self.save_chat_session(user_query, response, source_docs)
 
                                 # Display source references for transparency
                 for idx, doc in enumerate(result['source_documents'], 1):

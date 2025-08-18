@@ -1,0 +1,255 @@
+{
+  "session_id": "session_1755538232",
+  "created_at": "2025-08-18T18:31:33.466607",
+  "total_messages": 3,
+  "messages": [
+    {
+      "timestamp": "2025-08-18T18:30:47.521434",
+      "user_query": "how can you help me?",
+      "ai_response": "I can provide you with information and guidance on various legal aspects related to renting properties in England, such as the required documents for tenancies, council tax bands, right to rent checks, planning permissions for HMOs, and rent increase regulations. If you have any specific questions within these areas, feel free to ask!",
+      "source_documents": [
+        {
+          "content": "Legal Information: Landlords must give tenants the latest “How to Rent: the checklist for renting in England” at the start of most assured shorthold tenancies (hard copy or PDF by agreement). Failing to do so can affect service of a valid no-fault notice under current law.\n\nTags: lettings, documents\n\nJurisdiction: England",
+          "metadata": {
+            "type": "legal",
+            "category": "lettings",
+            "topic": "how_to_rent_must_provide",
+            "complexity": "medium",
+            "jurisdiction": "England",
+            "source_name": "DLUHC – How to Rent",
+            "source": "https://www.gov.uk/government/publications/how-to-rent",
+            "source_title": "how_to_rent_must_provide"
+          },
+          "type": "legal"
+        },
+        {
+          "content": "Legal Information: Council Tax bands are set by the VOA. You can check a property’s band online and see how assessments work; band challenges follow VOA processes.\n\nTags: occupancy, council_tax\n\nJurisdiction: England",
+          "metadata": {
+            "type": "legal",
+            "category": "occupancy",
+            "topic": "council_tax_bands_how_to_check",
+            "complexity": "medium",
+            "jurisdiction": "England",
+            "source_name": "GOV.UK/VOA – Council Tax bands",
+            "source": "https://www.gov.uk/council-tax-bands",
+            "source_title": "council_tax_bands_how_to_check"
+          },
+          "type": "legal"
+        },
+        {
+          "content": "Legal Information: Landlords/agents in England must check a prospective tenant’s right to rent before the tenancy starts and keep records. Checks can be manual, via the Home Office online service, or by approved identity service providers, following the latest Home Office guidance.\n\nTags: lettings, checks, id\n\nJurisdiction: England",
+          "metadata": {
+            "type": "legal",
+            "category": "lettings",
+            "topic": "right_to_rent_england",
+            "complexity": "medium",
+            "jurisdiction": "England",
+            "source_name": "Home Office (Right to Rent)",
+            "source": "https://www.gov.uk/government/publications/landlords-guide-to-right-to-rent-checks",
+            "source_title": "right_to_rent_england"
+          },
+          "type": "legal"
+        },
+        {
+          "content": "Legal Information: In Manchester, an Article 4 Direction removes permitted development rights for changing a dwellinghouse to a small HMO in many areas; planning permission is required to let to more than two unrelated people where Article 4 applies.\n\nTags: planning, HMO, article4\n\nJurisdiction: Manchester City Council",
+          "metadata": {
+            "type": "legal",
+            "category": "planning",
+            "topic": "manchester_article4_small_hmo",
+            "complexity": "medium",
+            "jurisdiction": "Manchester City Council",
+            "source_name": "Manchester City Council – Article 4 Direction (HMOs)",
+            "source": "https://www.manchester.gov.uk/info/500207/planning_and_regeneration/4847/article_4_direction_changing_the_use_of_your_property",
+            "source_title": "manchester_article4_small_hmo"
+          },
+          "type": "legal"
+        },
+        {
+          "content": "Legal Information: For periodic ASTs, landlords typically can raise rent no more than once a year using a Section 13 notice (Form 4). For fixed-term ASTs, increases must be agreed or provided for in the contract; otherwise apply after the term ends.\n\nTags: lettings, rent\n\nJurisdiction: England",
+          "metadata": {
+            "type": "legal",
+            "category": "lettings",
+            "topic": "rent_increases_section13_basics",
+            "complexity": "medium",
+            "jurisdiction": "England",
+            "source_name": "GOV.UK – Private renting: Rent increases",
+            "source": "https://www.gov.uk/private-renting/rent-increases",
+            "source_title": "rent_increases_section13_basics"
+          },
+          "type": "legal"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T18:31:01.027550",
+      "user_query": "show me 2 bedrroom properties ",
+      "ai_response": "Based on the information provided, here are two properties with two bedrooms:\n\n1. Property at Bury & Rochdale Old Road, Birtle, Bury BL9\n   - Price: £240,000\n   - Description: Very well presented mid terrace cottage style property with two double bedrooms\n   - Type: terraced\n   - Tenure: leasehold\n   - Council Tax: B\n\n2. Property at Chaddock Lane, Worsley M28\n   - Price: £275,000\n   - Description: A stunning end of terrace property with three bedrooms, two receptions, and beautifully presented throughout\n   - Type: end_terrace\n   - Tenure: leasehold\n   - Council Tax: A\n\nThese are the properties with two bedrooms based on the information provided.",
+      "source_documents": [
+        {
+          "content": "Property at Bury &amp; Rochdale Old Road, Birtle, Bury BL9, Price: £240,000\n\nDescription: Very well presented mid terrace cottage style property Terraced rear gardens with views over adjacent fields Two double bedrooms Two reception rooms Striking kitchen extension Gas central heating &amp; UPVC double glazing Offered for sale with no onward chain No onward chain Street parking A real cr...\n\nBedrooms: 2\nType: terraced\nTenure: leasehold\nCouncil Tax: B\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 70318995,
+            "address": "Bury &amp; Rochdale Old Road, Birtle, Bury BL9",
+            "postcode": "BL9",
+            "price": 240000,
+            "property_type": "terraced",
+            "bedrooms": 2,
+            "source": "https://www.zoopla.co.uk/for-sale/details/70318995/",
+            "source_title": "2 bed terraced house for sale Bury & Rochdale Old Road, Birtle, Bury BL9"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Shalewood Court, Atherton M46, Price: £400,000\n\nDescription: Exceptionally large, four bed detached property Welcoming, light &amp; airy entrance hallway Two large living rooms Beautiful open plan kitchen/family room Playroom / study room Utility &amp; cloaks / W.C Four spacious double bedrooms (Master with en-suite) White suite family bathroom Gardens to the...\n\nBedrooms: 4\nType: detached\nTenure: leasehold\nCouncil Tax: E\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71078674,
+            "address": "Shalewood Court, Atherton M46",
+            "postcode": "M46",
+            "price": 400000,
+            "property_type": "detached",
+            "bedrooms": 4,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71078674/",
+            "source_title": "4 bed detached house for sale Shalewood Court, Atherton M46"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Bury &amp; Rochdale Old Road, Birtle, Bury BL9, Price: £240,000\n\nTransport Links:\nCastleton (Manchester) (national_rail_station) (2.8 miles), Rochdale (national_rail_station) (3.7 miles), Mills Hill (Manchester) (national_rail_station) (4.7 miles), Smithy Bridge (national_rail_station) (5.7 miles)",
+          "metadata": {
+            "type": "transport",
+            "property_id": 70318995,
+            "address": "Bury &amp; Rochdale Old Road, Birtle, Bury BL9",
+            "postcode": "BL9",
+            "price": 240000,
+            "property_type": "terraced",
+            "bedrooms": 2,
+            "transport_count": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/70318995/",
+            "source_title": "2 bed terraced house for sale Bury & Rochdale Old Road, Birtle, Bury BL9"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Stableford Close, Standish WN6, Price: £390,000\n\nDescription: Four Bed Detached Two Reception Rooms En-Suite Utility Room Downstairs WC Attractive Rear Garden Driveway Parking Sought After Area Freehold Situated in a highly sought-after residential location, this beautifully presented four-bedroom detached home offers spacious and versatile living, perfect for...\n\nBedrooms: 4\nType: detached\nTenure: freehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71076610,
+            "address": "Stableford Close, Standish WN6",
+            "postcode": "WN6",
+            "price": 390000,
+            "property_type": "detached",
+            "bedrooms": 4,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71076610/",
+            "source_title": "4 bed detached house for sale Stableford Close, Standish WN6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Chaddock Lane, Worsley M28, Price: £275,000\n\nDescription: A stunning end of terrace property Two receptions and three bedrooms Beautifully presented throughout Cellar and loft storage space Immaculate low maintenance gardens On + off street parking and a single garage Stylish kitchen and a renovated bathroom Walking distance to local amenities Excellent tr...\n\nBedrooms: 3\nType: end_terrace\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71077241,
+            "address": "Chaddock Lane, Worsley M28",
+            "postcode": "M28",
+            "price": 275000,
+            "property_type": "end_terrace",
+            "bedrooms": 3,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077241/",
+            "source_title": "3 bed end terrace house for sale Chaddock Lane, Worsley M28"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-18T18:31:33.466567",
+      "user_query": "show me two bedroom properties",
+      "ai_response": "Here are two properties with two bedrooms:\n\n1. Property at Bury & Rochdale Old Road, Birtle, Bury BL9\n   - Type: terraced\n   - Price: £240,000\n   - Tenure: leasehold\n   - Council Tax: B\n\n2. Property at New Lane, Eccles M30\n   - Type: terraced\n   - Price: £250,000\n   - Tenure: freehold\n   - Council Tax: A",
+      "source_documents": [
+        {
+          "content": "Property at Bury &amp; Rochdale Old Road, Birtle, Bury BL9, Price: £240,000\n\nDescription: Very well presented mid terrace cottage style property Terraced rear gardens with views over adjacent fields Two double bedrooms Two reception rooms Striking kitchen extension Gas central heating &amp; UPVC double glazing Offered for sale with no onward chain No onward chain Street parking A real cr...\n\nBedrooms: 2\nType: terraced\nTenure: leasehold\nCouncil Tax: B\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 70318995,
+            "address": "Bury &amp; Rochdale Old Road, Birtle, Bury BL9",
+            "postcode": "BL9",
+            "price": 240000,
+            "property_type": "terraced",
+            "bedrooms": 2,
+            "source": "https://www.zoopla.co.uk/for-sale/details/70318995/",
+            "source_title": "2 bed terraced house for sale Bury & Rochdale Old Road, Birtle, Bury BL9"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Shalewood Court, Atherton M46, Price: £400,000\n\nDescription: Exceptionally large, four bed detached property Welcoming, light &amp; airy entrance hallway Two large living rooms Beautiful open plan kitchen/family room Playroom / study room Utility &amp; cloaks / W.C Four spacious double bedrooms (Master with en-suite) White suite family bathroom Gardens to the...\n\nBedrooms: 4\nType: detached\nTenure: leasehold\nCouncil Tax: E\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71078674,
+            "address": "Shalewood Court, Atherton M46",
+            "postcode": "M46",
+            "price": 400000,
+            "property_type": "detached",
+            "bedrooms": 4,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71078674/",
+            "source_title": "4 bed detached house for sale Shalewood Court, Atherton M46"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at New Lane, Eccles M30, Price: £250,000\n\nDescription: Beautifully Presented Three Bedroom Bay-Fronted Period Property Bay-Fronted Lounge and a Spacious Dining Room, with Brick Feature Walls Stylish Fitted Kitchen and a Contemporary Three-Piece Shower Room Three Well-Proportioned Bedrooms Large Sun Drenched Garden to the Rear Within Easy Access of Monto...\n\nBedrooms: 3\nType: terraced\nTenure: freehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71078810,
+            "address": "New Lane, Eccles M30",
+            "postcode": "M30",
+            "price": 250000,
+            "property_type": "terraced",
+            "bedrooms": 3,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71078810/",
+            "source_title": "3 bed terraced house for sale New Lane, Eccles M30"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Stableford Close, Standish WN6, Price: £390,000\n\nDescription: Four Bed Detached Two Reception Rooms En-Suite Utility Room Downstairs WC Attractive Rear Garden Driveway Parking Sought After Area Freehold Situated in a highly sought-after residential location, this beautifully presented four-bedroom detached home offers spacious and versatile living, perfect for...\n\nBedrooms: 4\nType: detached\nTenure: freehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71076610,
+            "address": "Stableford Close, Standish WN6",
+            "postcode": "WN6",
+            "price": 390000,
+            "property_type": "detached",
+            "bedrooms": 4,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71076610/",
+            "source_title": "4 bed detached house for sale Stableford Close, Standish WN6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Alto, Block B, Sillavan Way, Salford M3, Price: £190,000\n\nDescription: Eighth Floor Position Immaculate One Bedroom Apartment Secure Under Croft Parking Space Bright Open Plan Living Room with Juliette Balcony 24 Hour Concierge Service Communal Courtyard with Water Features EWS1 Form Available No Onward Chain Short Walk from Spinningfields &amp; Main Retail District Cl...\n\nBedrooms: 1\nType: flat\nTenure: leasehold\nCouncil Tax: A\n",
+          "metadata": {
+            "type": "overview",
+            "property_id": 71077617,
+            "address": "Alto, Block B, Sillavan Way, Salford M3",
+            "postcode": "M3",
+            "price": 190000,
+            "property_type": "flat",
+            "bedrooms": 1,
+            "source": "https://www.zoopla.co.uk/for-sale/details/71077617/",
+            "source_title": "1 bed flat for sale Alto, Block B, Sillavan Way, Salford M3"
+          },
+          "type": "overview"
+        }
+      ]
+    }
+  ],
+  "app_version": "Aspect-Based Chunking v2.0",
+  "chunking_strategy": "Aspect-Based (Best Performer)",
+  "data_sources": [
+    "dataset_v2/properties_with_crime_data.json",
+    "dataset_v2/legal_uk_greater_manchester.jsonl"
+  ]
+}

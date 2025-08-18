@@ -24,6 +24,15 @@ from langchain.memory import (
     ConversationSummaryBufferMemory,
 )  # For storing conversation context
 from langchain.chains import ConversationalRetrievalChain  # Main RAG chain
+from langchain.chains.history_aware_retriever import (
+    create_history_aware_retriever,
+)  # For rewriting follow-up questions
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+)  # Prompt utilities for conversational retriever
+from langchain.prompts import PromptTemplate  # For identity question prompt
+from langchain.schema.retriever import BaseRetriever  # Base class for custom retriever
 import pandas as pd  # For data manipulation
 from langchain_core.documents.base import Document  # LangChain document structure
 from langchain_community.document_loaders.csv_loader import (
@@ -209,11 +218,61 @@ class ChatbotWeb:
             max_token_limit=MEMORY_TOKEN_LIMIT,  # Summarize when token limit is reached
         )
 
-        # Setup QA chain that combines the LLM, retriever, and memory
+        # Wrap the retriever with a conversational rewriter so follow-up
+        # questions are expanded into standalone queries before retrieval.
+        contextualize_q_system_prompt = (
+            "Given a chat history and the latest user question which might "
+            "reference context in the chat history, formulate a standalone "
+            "question which can be understood without the chat history. Do "
+            "NOT answer the question."
+        )
+        contextualize_q_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", contextualize_q_system_prompt),
+                MessagesPlaceholder("chat_history"),
+                ("human", "{input}"),
+            ]
+        )
+        history_retriever_chain = create_history_aware_retriever(
+            llm=self.llm, retriever=retriever, prompt=contextualize_q_prompt
+        )
+
+        class HistoryAwareRetriever(BaseRetriever):
+            """Retriever that uses chat history to rewrite follow-up questions."""
+
+            def __init__(self, chain, memory):
+                super().__init__()
+                self.chain = chain
+                self.memory = memory
+
+            def get_relevant_documents(self, query):  # type: ignore[override]
+                chat_history = self.memory.chat_memory.messages
+                return self.chain.invoke({
+                    "input": query,
+                    "chat_history": chat_history,
+                })
+
+            async def aget_relevant_documents(self, query):  # type: ignore[override]
+                chat_history = self.memory.chat_memory.messages
+                return await self.chain.ainvoke({
+                    "input": query,
+                    "chat_history": chat_history,
+                })
+
+        history_aware_retriever = HistoryAwareRetriever(
+            history_retriever_chain, memory
+        )
+
+        # Identity prompt ensures the user's question is passed unchanged to the
+        # history-aware retriever, which will handle rewriting using memory.
+        identity_prompt = PromptTemplate.from_template("{question}")
+
+        # Setup QA chain that combines the LLM, history-aware retriever, and memory
         qa_chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,  # Language model configured in __init__
-            retriever=retriever,  # Document retriever
+            retriever=history_aware_retriever,  # Retriever with conversational rewriting
             memory=memory,  # Conversation memory
+            condense_question_prompt=identity_prompt,  # Pass question as-is
             return_source_documents=True,  # Include source documents in the output
             verbose=False,  # Don't print debug info
         )

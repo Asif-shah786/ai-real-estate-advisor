@@ -43,6 +43,7 @@ import time  # For timestamps
 from datetime import datetime  # For formatted timestamps
 from typing import Optional  # For optional parameters
 from langchain_openai import ChatOpenAI  # Small LLM for query rewriting
+from pydantic.v1 import SecretStr  # For handling sensitive API keys
 
 # Configure the Streamlit page
 st.set_page_config(
@@ -57,18 +58,29 @@ def rewrite_user_query(query: str) -> str:
 
     Falls back to the original query if the model or API key is unavailable.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return query
     try:
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=api_key)
+        api_key = st.secrets["OPENAI_API_KEY"]
+        if not api_key:
+            return query
+    except:
+        return query
+
+    try:
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=SecretStr(api_key))
         prompt = (
             "Rewrite the following user query, fixing spelling and grammar while keeping "
             "the original intent: "
             f"{query}"
         )
         result = llm.invoke(prompt)
-        return result.content.strip() if hasattr(result, "content") else str(result)
+        # Handle the result properly - it should be a ChatMessage with content
+        if hasattr(result, "content"):
+            return str(result.content).strip()
+        elif isinstance(result, str):
+            return result.strip()
+        else:
+            # Fallback: convert to string and strip
+            return str(result).strip()
     except Exception:
         return query
 

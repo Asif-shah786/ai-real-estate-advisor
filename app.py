@@ -1,8 +1,8 @@
 """
 AI Real Estate Advisor - RAG Implementation
 
-This file implements the AI Real Estate Advisor, which uses 
-a Retrieval-Augmented Generation (RAG) approach with vector databases and 
+This file implements the AI Real Estate Advisor, which uses
+a Retrieval-Augmented Generation (RAG) approach with vector databases and
 ConversationalRetrievalChain from LangChain.
 
 This version:
@@ -20,28 +20,41 @@ import validators  # For validating URLs
 import streamlit as st  # Web UI framework
 from streaming import StreamHandler  # Custom handler for streaming responses
 from common.cfg import *  # Import configuration variables
-from langchain.memory import ConversationSummaryBufferMemory  # For storing conversation context
+from langchain.memory import (
+    ConversationSummaryBufferMemory,
+)  # For storing conversation context
 from langchain.chains import ConversationalRetrievalChain  # Main RAG chain
 import pandas as pd  # For data manipulation
 from langchain_core.documents.base import Document  # LangChain document structure
-from langchain_community.document_loaders.csv_loader import CSVLoader  # For loading local CSV files
-from langchain_community.document_loaders.dataframe import DataFrameLoader  # For loading pandas DataFrames
-from langchain.text_splitter import RecursiveCharacterTextSplitter  # For chunking documents
-from langchain_community.vectorstores import DocArrayInMemorySearch  # In-memory vector store
+from langchain_community.document_loaders.csv_loader import (
+    CSVLoader,
+)  # For loading local CSV files
+from langchain_community.document_loaders.dataframe import (
+    DataFrameLoader,
+)  # For loading pandas DataFrames
+from langchain.text_splitter import (
+    RecursiveCharacterTextSplitter,
+)  # For chunking documents
+from langchain_community.vectorstores import (
+    DocArrayInMemorySearch,
+)  # In-memory vector store
 import json  # For saving chat sessions
 import time  # For timestamps
 from datetime import datetime  # For formatted timestamps
 from typing import Optional  # For optional parameters
 
 # Configure the Streamlit page
-st.set_page_config(page_title="🦾 AI Real Estate Advisor", page_icon='💬', layout='wide')
-st.header('Chat with Real Estate AI Advisor')  # Main heading
+st.set_page_config(
+    page_title="🦾 AI Real Estate Advisor", page_icon="💬", layout="wide"
+)
+st.header("Chat with Real Estate AI Advisor")  # Main heading
 LOCAL_DATASET_PATH = "dataset/structured_properties.csv"
+
 
 class ChatbotWeb:
     """
     Main class that implements the RAG-based chatbot for real estate data.
-    
+
     This class handles:
     1. Loading and processing CSV data from URLs
     2. Setting up vector stores for efficient retrieval
@@ -53,7 +66,7 @@ class ChatbotWeb:
     def __init__(self):
         """
         Initialize the ChatbotWeb instance.
-        
+
         This method:
         1. Synchronizes Streamlit session state variables
         2. Configures the Language Model (LLM) based on user selection
@@ -62,295 +75,95 @@ class ChatbotWeb:
         """
         utils.sync_st_session()  # Ensure session state consistency
         self.llm = utils.configure_llm()  # Set up the language model (OpenAI or Llama)
-        self.embedding_model = utils.configure_embedding_model()  # Set up embeddings for vector search
-        
+        self.embedding_model = (
+            utils.configure_embedding_model()
+        )  # Set up embeddings for vector search
+
         # Create chats folder if it doesn't exist
         self.chats_folder = "chats"
         if not os.path.exists(self.chats_folder):
             os.makedirs(self.chats_folder)
             print(f"✅ Created chats folder: {self.chats_folder}")
-        
+
         # Initialize chat session tracking
         if "chat_session_id" not in st.session_state:
             st.session_state.chat_session_id = f"session_{int(time.time())}"
         if "chat_messages" not in st.session_state:
             st.session_state.chat_messages = []
 
-    def scrape_website(self, url):
-        """
-        Scrape content from a website using a proxy service.
-        
-        This method uses r.jina.ai as a proxy to fetch web content,
-        which helps avoid CORS issues and standardizes web scraping.
-    
-    Parameters:
-            url (str): URL to scrape content from
-        
-    Returns:
-            str: The scraped content or None if an error occurs
-        """
-        content = ""
-        try:
-            base_url = "https://r.jina.ai/"  # Proxy service to avoid CORS issues
-            final_url = base_url + url
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0'
-            }
-            response = requests.get(final_url, headers=headers)
-            content = response.text
-            return content
-        except Exception as e:
-            traceback.print_exc()  # Print detailed error information
-
-    def load_docs_from_csv_local(self, path):
-        """
-        Load documents from a local CSV file.
-        
-        Uses LangChain's CSVLoader to convert each row in the CSV file
-        to a Document object that can be processed by the RAG pipeline.
-    
-    Parameters:
-            path (str): Path to the local CSV file
-        
-    Returns:
-            list: List of Document objects or None if an error occurs
-        """
-        content = ""
-        try:
-            loader = CSVLoader(path)  # Initialize loader for CSV
-            docs = loader.load()  # Load CSV into Document objects
-            return docs
-        except Exception as e:
-            traceback.print_exc()  # Print detailed error information
-
-    def load_docs_from_csv_web(self, url):
-        """
-        Load documents from a CSV file hosted on the web.
-        
-        First downloads the CSV file as a pandas DataFrame, then converts
-        each row to a Document object using DataFrameLoader.
-    
-    Parameters:
-            url (str): URL to the CSV file
-    
-    Returns:
-            list: List of Document objects or None if an error occurs
-        """
-        try:
-            df = pd.read_csv(url)  # Download and parse CSV
-            loader = DataFrameLoader(data_frame=df)  # Convert DataFrame to Documents
-            docs = loader.load()
-            return docs
-        except Exception as e:
-            traceback.print_exc()
-
-    def load_docs_from_jsonl(self, jsonl_path):
-        """
-        Load documents from a JSONL file containing pre-processed embedding data.
-        
-        This method loads the JSONL file which contains:
-        - "text": Clean listing description for embedding
-        - "metadata": All structured fields (id, price, bedrooms, address, flags, etc.)
-        
-        Parameters:
-            jsonl_path (str): Path to the JSONL file
-            
-        Returns:
-            list: List of Document objects with text and metadata
-        """
-        try:
-            import json
-            docs = []
-            with open(jsonl_path, 'r', encoding='utf-8') as f:
-                for line_num, line in enumerate(f, 1):
-                    try:
-                        data = json.loads(line.strip())
-                        text = data.get('text', '')
-                        metadata = data.get('metadata', {})
-                        
-                        if text and metadata:
-                            # Create Document with text content and full metadata
-                            doc = Document(
-                                page_content=text,
-                                metadata=metadata
-                            )
-                            docs.append(doc)
-                    except json.JSONDecodeError as e:
-                        print(f"Warning: Invalid JSON at line {line_num}: {e}")
-                        continue
-                    except Exception as e:
-                        print(f"Warning: Error processing line {line_num}: {e}")
-                        continue
-            
-            print(f"✅ Loaded {len(docs)} documents from JSONL: {jsonl_path}")
-            return docs
-        except Exception as e:
-            print(f"❌ Error loading JSONL file: {e}")
-            return []
-
-    def load_data_from_csv_web(self, url):
-        """
-        Load data from a web-hosted CSV and convert it to a string representation.
-        
-        This method is optimized for RAG processing by converting the CSV data
-        to a dictionary string representation that can be easily chunked and embedded.
-    
-    Parameters:
-            url (str): URL to the CSV file
-            
-        Returns:
-            str: String representation of the CSV data or None if an error occurs
-        """
-        try:
-            df = pd.read_csv(url)  # Download and parse CSV
-            # Convert to dictionary format for better structure in embeddings
-            # Alternative formats are commented out:
-            # content = df.to_string(index=False)
-            # content = '\n'.join(df['content'].tolist())
-            content = str(df.to_dict(orient='records'))  # List of row dictionaries
-            return content
-        except Exception as e:
-            traceback.print_exc()
-            return ""  # Return empty string instead of None
-
-    @st.cache_resource(show_spinner='Creating Aspect-Based Vector Database', ttl=3600)
-    def setup_vectordb(_self, websites=None, local_file=None, jsonl_file=None):
+    @st.cache_resource(show_spinner="Creating Aspect-Based Vector Database", ttl=86400)
+    def setup_vectordb(
+        _self, websites=None, local_file=None, jsonl_file=None, force_recreate=False
+    ):
         """
         Set up a vector database using the Aspect-Based chunking strategy.
-        
+
         This method:
         1. Uses the Aspect-Based chunking strategy (best performer from evaluation)
         2. Creates separate chunks for crime, schools, transport, and overview aspects
         3. Generates embeddings for optimal retrieval
         4. Creates and returns a vector database for semantic search
-        
+
         The function is cached using Streamlit's cache_resource for performance,
-        with a time-to-live (TTL) of 1 hour before it needs to be refreshed.
-        
+        with a time-to-live (TTL) of 24 hours before it needs to be refreshed.
+
         Parameters:
             _self: The ChatbotWeb instance
             websites (list): List of URLs to CSV files (optional)
             local_file (str): Path to local CSV file (optional)
             jsonl_file (str): Path to JSONL file (optional, for backward compatibility)
-            
+            force_recreate (bool): If True, ignore existing database and create new one
+
         Returns:
             DocArrayInMemorySearch: A vector database for document retrieval
         """
         try:
-            # Import the aspect-based chunker
             from aspect_based_chunker import create_aspect_based_vectordb
-            
-            # Get OpenAI API key from environment
             import os
-            openai_api_key = os.getenv('OPENAI_API_KEY')
-            
+
+            openai_api_key = os.getenv("OPENAI_API_KEY")
             if not openai_api_key:
-                st.error("OpenAI API key not found. Please set OPENAI_API_KEY in your environment.")
+                st.error(
+                    "OpenAI API key not found. Please set OPENAI_API_KEY in your environment."
+                )
                 return None
-            
-            # Create aspect-based vector database
-            print("🚀 Setting up Aspect-Based Vector Database...")
             vectordb = create_aspect_based_vectordb(
                 openai_api_key=openai_api_key,
-                properties_file="dataset_v2/properties_with_crime_data.json",
+                properties_file="dataset_v2/run_ready_100.json",
                 legal_file="dataset_v2/legal_uk_greater_manchester.jsonl",
-                embedding_model=_self.embedding_model
+                embedding_model=_self.embedding_model,
+                force_recreate=force_recreate,
             )
-            
+
             if vectordb:
                 print("✅ Aspect-Based Vector Database created successfully!")
                 return vectordb
             else:
-                st.error("Failed to create Aspect-Based Vector Database. Falling back to legacy method.")
-                
+                st.error(
+                    "Failed to create Aspect-Based Vector Database. Falling back to legacy method."
+                )
+
         except Exception as e:
             print(f"⚠️ Aspect-Based chunking failed: {e}")
             print("🔄 Falling back to legacy chunking method...")
-            st.warning("Using legacy chunking method due to error in Aspect-Based chunking.")
-        
-        # Fallback to legacy method if aspect-based chunking fails
-        print("📚 Using legacy chunking method...")
-        
-        # Scrape and load documents
-        docs = []
-        
-        # Load JSONL dataset if provided (primary source)
-        if jsonl_file:
-            try:
-                jsonl_docs = _self.load_docs_from_jsonl(jsonl_file)
-                if jsonl_docs:
-                    docs.extend(jsonl_docs)
-                    print(f"✅ Loaded JSONL dataset: {jsonl_file}")
-            except Exception as e:
-                print(f"⚠️ Could not load JSONL dataset: {e}")
-        
-        # Load local CSV dataset if provided (fallback)
-        if local_file and not docs:
-            try:
-                local_docs = _self.load_docs_from_csv_local(local_file)
-                if local_docs:
-                    docs.extend(local_docs)
-                    print(f"✅ Loaded local CSV dataset: {local_file}")
-            except Exception as e:
-                print(f"⚠️ Could not load local CSV dataset: {e}")
-        
-        # Load from URLs if provided
-        if websites:
-            for url in websites:
-                # Load content from CSV
-                content = _self.load_data_from_csv_web(url)
-                
-                # Only add documents with non-empty content
-                if content and content.strip():
-                    docs.append(Document(
-                        page_content=content,  # Content from CSV
-                        metadata={"source": url}  # Track source URL for citations
-                        )
-                    )
-
-        # Split documents into smaller chunks for better retrieval
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,  # Split into chunks of 1000 characters
-            chunk_overlap=200  # With 200 character overlap between chunks
-        )
-        splits = text_splitter.split_documents(docs)
-        
-        # Ensure we have valid documents with content
-        if not splits:
-            st.error("No valid documents found. Please check your data sources.")
-            return None
-            
-        # Validate that splits contain proper Document objects
-        valid_splits = [doc for doc in splits if hasattr(doc, 'page_content') and doc.page_content.strip()]
-        if not valid_splits:
-            st.error("No valid document content found after splitting.")
-            return None
-
-        # Create in-memory vector database using DocArrayInMemorySearch
-        # Uses the embedding model configured in __init__
-        try:
-            vectordb = DocArrayInMemorySearch.from_documents(valid_splits, _self.embedding_model)
-        except Exception as e:
-            # Fallback to Chroma if DocArrayInMemorySearch fails
-            from langchain_community.vectorstores import Chroma
-            vectordb = Chroma.from_documents(valid_splits, _self.embedding_model)
-
-        return vectordb
+            st.warning(
+                "Using legacy chunking method due to error in Aspect-Based chunking."
+            )
 
     def setup_qa_chain(self, vectordb):
         """
-        Set up a Conversational Retrieval Chain for question answering.
-        
-        This method configures:
-        1. A retriever from the vector database with Maximum Marginal Relevance (MMR)
-        2. Conversation memory to maintain context across interactions
-        3. A QA chain that combines the retriever, memory, and LLM
-        
+                Set up a Conversational Retrieval Chain for question answering.
+
+                This method configures:
+                1. A retriever from the vector database with Maximum Marginal Relevance (MMR)
+                2. Conversation memory to maintain context across interactions
+                3. A QA chain that combines the retriever, memory, and LLM
+
         Parameters:
-            vectordb: The vector database to use for retrieval
-            
+                    vectordb: The vector database to use for retrieval
+
         Returns:
-            ConversationalRetrievalChain: The configured QA chain
+                    ConversationalRetrievalChain: The configured QA chain
         """
         # Define retriever with cross-encoder reranking
         from retrieval import CrossEncoderRerankRetriever
@@ -362,15 +175,14 @@ class ChatbotWeb:
         except Exception:
             # Fallback to simple similarity search if reranker cannot be initialized
             retriever = vectordb.as_retriever(
-                search_type='similarity',
-                search_kwargs={'k': 5}
+                search_type="similarity", search_kwargs={"k": 5}
             )
 
         # Setup memory for contextual conversation using automatic summarization
         memory = ConversationSummaryBufferMemory(
             llm=self.llm,
-            memory_key='chat_history',  # Key used to access chat history in the chain
-            output_key='answer',  # Key used to store the final answer
+            memory_key="chat_history",  # Key used to access chat history in the chain
+            output_key="answer",  # Key used to store the final answer
             return_messages=True,  # Return chat history as message objects
             max_token_limit=MEMORY_TOKEN_LIMIT,  # Summarize when token limit is reached
         )
@@ -381,14 +193,16 @@ class ChatbotWeb:
             retriever=retriever,  # Document retriever
             memory=memory,  # Conversation memory
             return_source_documents=True,  # Include source documents in the output
-            verbose=False  # Don't print debug info
+            verbose=False,  # Don't print debug info
         )
         return qa_chain
-    
-    def save_chat_session(self, user_query: str, response: str, source_documents: Optional[list] = None):
+
+    def save_chat_session(
+        self, user_query: str, response: str, source_documents: Optional[list] = None
+    ):
         """
         Save the current chat session to a JSON file
-        
+
         Args:
             user_query: The user's question
             response: The AI's response
@@ -400,27 +214,35 @@ class ChatbotWeb:
                 "timestamp": datetime.now().isoformat(),
                 "user_query": user_query,
                 "ai_response": response,
-                "source_documents": []
+                "source_documents": [],
             }
-            
+
             # Add source document information if available
             if source_documents:
                 for doc in source_documents:
                     doc_info = {
-                        "content": doc.page_content[:500] + "..." if len(doc.page_content) > 500 else doc.page_content,
+                        "content": (
+                            doc.page_content[:500] + "..."
+                            if len(doc.page_content) > 500
+                            else doc.page_content
+                        ),
                         "metadata": doc.metadata,
-                        "type": doc.metadata.get('type', 'unknown') if hasattr(doc, 'metadata') else 'unknown'
+                        "type": (
+                            doc.metadata.get("type", "unknown")
+                            if hasattr(doc, "metadata")
+                            else "unknown"
+                        ),
                     }
                     message_data["source_documents"].append(doc_info)
-            
+
             # Add to session messages
             st.session_state.chat_messages.append(message_data)
-            
+
             # Save to JSON file
             session_id = st.session_state.chat_session_id
             filename = f"{session_id}.json"
             filepath = os.path.join(self.chats_folder, filename)
-            
+
             # Prepare chat session data
             chat_session = {
                 "session_id": session_id,
@@ -431,16 +253,16 @@ class ChatbotWeb:
                 "chunking_strategy": "Aspect-Based (Best Performer)",
                 "data_sources": [
                     "dataset_v2/properties_with_crime_data.json",
-                    "dataset_v2/legal_uk_greater_manchester.jsonl"
-                ]
+                    "dataset_v2/legal_uk_greater_manchester.jsonl",
+                ],
             }
-            
+
             # Save to file
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(chat_session, f, indent=2, ensure_ascii=False)
-            
+
             print(f"💾 Chat session saved: {filepath}")
-            
+
         except Exception as e:
             print(f"⚠️ Error saving chat session: {e}")
             traceback.print_exc()
@@ -449,7 +271,7 @@ class ChatbotWeb:
     def main(self):
         """
         Main method to run the Streamlit application.
-        
+
         This method:
         1. Sets up the UI for URL input
         2. Handles adding and clearing data sources
@@ -457,26 +279,26 @@ class ChatbotWeb:
         4. Manages the chat interface
         5. Processes user queries and displays responses with citations
         """
-        csv_url = 'CSV Data Set URL'  # Label for the URL input
-        
+        csv_url = "CSV Data Set URL"  # Label for the URL input
+
         # Initialize session state for websites if not already set
         if "websites" not in st.session_state:
             st.session_state["websites"] = []  # List to store added URLs
             # Load default URLs from config
-            st.session_state["value_urls"] = GIT_DATA_SET_URLS_STR.split('\n')
+            st.session_state["value_urls"] = GIT_DATA_SET_URLS_STR.split("\n")
 
         # Set default URL for the input field
-        url_val = ''
+        url_val = ""
         value_urls = st.session_state.get("value_urls", [])
         if len(value_urls) >= 1:
             url_val = value_urls[0]  # Use first URL as default
-            
+
         # Create text area for URL input in the sidebar
         web_url = st.sidebar.text_area(
-            label=f'Enter {csv_url}s',
+            label=f"Enter {csv_url}s",
             placeholder="https://",
             # help="To add another website, modify this field after adding the website.",
-            value=url_val
+            value=url_val,
         )
         # Alternative way to display URLs (commented out)
         # st.sidebar.text(GIT_DATA_SET_URLS_STR)
@@ -484,10 +306,13 @@ class ChatbotWeb:
         # Button to add new URL to the list
         if st.sidebar.button(":heavy_plus_sign: Add Website"):
             # Validate URL format before adding
-            valid_url = web_url.startswith('http') and validators.url(web_url)
+            valid_url = web_url.startswith("http") and validators.url(web_url)
             if not valid_url:
                 # Show error for invalid URL
-                st.sidebar.error(f"Invalid URL! Please check {csv_url} that you have entered.", icon="⚠️")
+                st.sidebar.error(
+                    f"Invalid URL! Please check {csv_url} that you have entered.",
+                    icon="⚠️",
+                )
             else:
                 # Add valid URL to the session state
                 st.session_state["websites"].append(web_url)
@@ -495,7 +320,7 @@ class ChatbotWeb:
         # Button to clear all URLs
         if st.sidebar.button("Clear", type="primary"):
             st.session_state["websites"] = []
-        
+
         # Button to start new chat session
         if st.sidebar.button("🆕 New Chat Session", type="secondary"):
             # Generate new session ID
@@ -511,70 +336,106 @@ class ChatbotWeb:
         # First try to load local dataset, then add any URLs provided
         local_dataset_path = LOCAL_DATASET_PATH
         jsonl_dataset_path = "artifacts_v2/embedding_docs_v2.jsonl"
-        
+
+        # Add force recreate option in sidebar
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**⚙️ Database Options**")
+        force_recreate = st.sidebar.checkbox(
+            "🔄 Force Recreate Database",
+            value=False,
+            help="Check this to ignore existing database and create new embeddings",
+        )
+
+        # Clear cache if force recreate is enabled
+        if force_recreate:
+            st.cache_resource.clear()
+            st.info("🔄 Cache cleared - will create new database")
+
         # Set up vector database with JSONL dataset and any additional URLs
-        vectordb = self.setup_vectordb(websites, local_dataset_path, jsonl_dataset_path)
+        vectordb = self.setup_vectordb(
+            websites, local_dataset_path, jsonl_dataset_path, force_recreate
+        )
         if vectordb is None:
-            st.error("Failed to create vector database. Please check your data sources.")
+            st.error(
+                "Failed to create vector database. Please check your data sources."
+            )
             st.stop()
         qa_chain = self.setup_qa_chain(vectordb)  # Configure the QA chain
-        
+
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
         st.sidebar.markdown("**📊 Data Sources**")
         st.sidebar.markdown("🧠 **Strategy:** Aspect-Based Chunking (Best Performer)")
-        st.sidebar.markdown(f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}` (v2)")
-        st.sidebar.markdown(f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`")
+        st.sidebar.markdown("💾 **Storage:** Persistent (saved to disk)")
+        st.sidebar.markdown("🤖 **Embeddings:** OpenAI (default)")
+        st.sidebar.markdown(
+            f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}` (v2)"
+        )
+        st.sidebar.markdown(
+            f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`"
+        )
         if websites:
             for url in websites:
-                st.sidebar.markdown(f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`")
+                st.sidebar.markdown(
+                    f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`"
+                )
         else:
             st.sidebar.markdown("🌐 *No external URLs added*")
-        
+
         # Show chat session info
         st.sidebar.markdown("---")
         st.sidebar.markdown("**💬 Chat Session**")
         st.sidebar.markdown(f"🆔 **Session ID:** `{st.session_state.chat_session_id}`")
         st.sidebar.markdown(f"💾 **Messages:** {len(st.session_state.chat_messages)}")
-        st.sidebar.markdown(f"📁 **Saved to:** `chats/{st.session_state.chat_session_id}.json`")
+        st.sidebar.markdown(
+            f"📁 **Saved to:** `chats/{st.session_state.chat_session_id}.json`"
+        )
 
         # Create chat input field
-        user_query = st.chat_input(placeholder="Ask me about Manchester properties for sale!")
-        
+        user_query = st.chat_input(
+            placeholder="Ask me about Manchester properties for sale!"
+        )
+
         # Process query when user inputs a message
         if user_query:
             # Display the user message
-            utils.display_msg(user_query, 'user')
+            utils.display_msg(user_query, "user")
 
             # Display Advisor response with streaming
             with st.chat_message("Advisor"):
                 # Set up streaming handler to show response as it's generated
                 st_cb = StreamHandler(st.empty())
-                
+
                 # Process the query through the QA chain
                 result = qa_chain.invoke(
                     {"question": user_query},
-                    {"callbacks": [st_cb]}  # Use streaming callback
+                    {"callbacks": [st_cb]},  # Use streaming callback
                 )
-                
+
                 # Extract and store the response
                 response = result["answer"]
-                st.session_state.messages.append({"role": "Advisor", "content": response})
+                st.session_state.messages.append(
+                    {"role": "Advisor", "content": response}
+                )
                 utils.print_qa(ChatbotWeb, user_query, response)  # Log the Q&A
-                
+
                 # Save chat session to JSON file
-                source_docs = result.get('source_documents', [])
+                source_docs = result.get("source_documents", [])
                 self.save_chat_session(user_query, response, source_docs)
 
-                                # Display source references for transparency
-                for idx, doc in enumerate(result['source_documents'], 1):
+                # Display source references for transparency
+                for idx, doc in enumerate(result["source_documents"], 1):
                     # Extract source information based on metadata structure
-                    src = doc.metadata.get("source") or doc.metadata.get("property_url") or "unknown"
+                    src = (
+                        doc.metadata.get("source")
+                        or doc.metadata.get("property_url")
+                        or "unknown"
+                    )
                     try:
                         source_name = os.path.basename(src)
                     except Exception:
                         source_name = str(src)
-                    
+
                     # Create a reference title with clickable popup
                     ref_title = f":blue[Reference {idx}: *{source_name}*]"
                     # Show document content in a popup when clicked

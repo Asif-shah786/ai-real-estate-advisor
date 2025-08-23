@@ -250,13 +250,23 @@ def run_complete_evaluation(
         results = scorer.compute_metrics(dataset)
 
         print(f"✅ Metrics computed successfully:")
+
+        # Display detailed per-sample results
+        print("\n📊 **Detailed Per-Sample Results:**")
+        detailed_results = []
         for metric, score in results.items():
             if metric in ["metadata", "threshold_analysis"]:
                 continue
             if score is None or (isinstance(score, float) and np.isnan(score)):
                 print(f"   {metric}: {score}")
+                detailed_results.append(f"{metric}: {score}")
             else:
                 print(f"   {metric}: {score:.3f}")
+                detailed_results.append(f"{metric}: {score:.3f}")
+
+        # Display the detailed results in the format requested
+        print(f"\n📋 **Per-Sample Breakdown:**")
+        print("Results:", " ".join(detailed_results))
 
         # Save metrics using RagasScorer methods
         print("💾 Saving metrics...")
@@ -331,17 +341,19 @@ def run_complete_evaluation(
     print("   ✅ report.html (with topic slices & worst examples)")
     print("   ✅ run_meta.json")
 
-    print("\n📊 Four metrics computed:")
+    print("\n📊 **Current Results:**")
     for metric, score in results.items():
         if metric in ["metadata", "threshold_analysis"]:
             continue
         threshold = config.get("thresholds", {}).get(metric, 0.0)
         if score is None or (isinstance(score, float) and np.isnan(score)):
             status = "❌ FAIL"
-            print(f"   {metric}: {score} (threshold: {threshold}) {status}")
+            print(f"   - **{metric}**: {score} ❌ (FAIL - below {threshold} threshold)")
         else:
             status = "✅ PASS" if score >= threshold else "❌ FAIL"
-            print(f"   {metric}: {score:.3f} (threshold: {threshold}) {status}")
+            print(
+                f"   - **{metric}**: {score:.3f} {'✅' if score >= threshold else '❌'} ({status} - {'above' if score >= threshold else 'below'} {threshold} threshold)"
+            )
 
     print(f"\n🎯 Overall Status: {analysis['threshold_analysis']['overall_status']}")
 

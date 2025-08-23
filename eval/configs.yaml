@@ -14,6 +14,7 @@ judge:
   model: "gpt-4o"
   temperature: 0
   max_tokens: 1024
+  api_key: "${OPENAI_API_KEY}" # Will be replaced with actual API key
 
 # Metrics to compute
 metrics:
@@ -26,9 +27,9 @@ metrics:
 testset:
   mode: "synthetic" # or "curated"
   synthetic:
-    properties_path: "../datasets/run_ready_904.json" # <-- set to your full file when ready
-    n_questions: 5 # real run (reduced for testing)
-    smoke_n_questions: 5 # quick check; your runner can override to this if needed
+    properties_path: "../datasets/run_ready_904.json"
+    n_questions: 50 #
+    smoke_n_questions: 5
 
   curated:
     path: "eval/inputs/curated.parquet" # columns: question, ground_truth, topic, difficulty

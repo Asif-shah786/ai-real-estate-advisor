@@ -1,0 +1,328 @@
+{
+  "session_id": "session_1755985280",
+  "created_at": "2025-08-23T22:45:03.370824",
+  "total_messages": 6,
+  "messages": [
+    {
+      "timestamp": "2025-08-23T22:41:50.607229",
+      "user_query": "show me properties in manchesterr fro sale",
+      "ai_response": "Based on the provided context, here is a property available for sale in Greater Manchester:\n\n- **Location:** Brogden Terrace, Sale, Greater Manchester M33\n  - **Price:** £500,000\n  - **Bedrooms:** 3\n  - **Property Type:** Terraced\n  - **Tenure:** Freehold\n  - **Council Tax Band:** D\n\nIf you are looking for additional properties in Manchester, consider expanding your search to include nearby areas or different property types.",
+      "source_documents": [
+        {
+          "content": "Property at Brogden Terrace, Sale, Greater Manchester M33, price_int: £500,000\n\nDescription: Beautiful 3-Bedroom Terrace Home with Spacious Layout. Welcome to this well-presented three-bedroom terrace house, offering a modern and versatile layout across three floors—perfect for families, professionals, or those seeking stylish and functional living. Within walking distance to both Sale and ...\n\nBedrooms: 3.0\nType: terraced\nTenure: freehold\nCouncil Tax: D\n",
+          "metadata": {
+            "source_title": "3 bed terraced house for sale Brogden Terrace, Sale, Greater Manchester M33",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71065392/",
+            "bedrooms": 3.0,
+            "postcode": "M33",
+            "price_int": 500000,
+            "property_id": 71065392,
+            "address": "Brogden Terrace, Sale, Greater Manchester M33",
+            "property_type": "terraced",
+            "type": "overview"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Seven Acres, Bamford Road, Heywood OL10, price_int: £2,000,000\n\nDescription: Individual Detached Residence Over 8000sqft Of Living Accommodation Seven Acre Plot With Lake Six Double Bedrooms Four Reception Rooms Four Bathrooms / Shower Rooms Swimming Pool / Gym &amp; Sauna Self-Contained Apartment Multi-Car Garage &amp; Driveway Potential For Re-Development Ever dreamed of o...\n\nBedrooms: 6.0\nType: detached\nTenure: freehold\nCouncil Tax: H\n",
+          "metadata": {
+            "postcode": "OL10",
+            "property_type": "detached",
+            "source": "https://www.zoopla.co.uk/for-sale/details/67878411/",
+            "property_id": 67878411,
+            "address": "Seven Acres, Bamford Road, Heywood OL10",
+            "price_int": 2000000,
+            "bedrooms": 6.0,
+            "type": "overview",
+            "source_title": "6 bed detached house for sale Seven Acres, Bamford Road, Heywood OL10"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Meadowside, Newtown, Disley, Stockport SK12, price_int: £310,000\n\nDescription: No Onward Chain Two Properties In One Family Home or Investment Opportunity Extended Semi Detached With A One Bedroom Annexe Off Road Parking To Front &amp; Rear Close To All Public Transport Links Annual Rental Income Return Circa £20,000 In Need Of Some tlc +++ For A Limited Period Only The Vendor...\n\nBedrooms: 4.0\nType: semi_detached\nTenure: freehold\nCouncil Tax: C\n",
+          "metadata": {
+            "source_title": "4 bed semi-detached house for sale Meadowside, Newtown, Disley, Stockport SK12",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71082332/",
+            "bedrooms": 4.0,
+            "property_type": "semi_detached",
+            "address": "Meadowside, Newtown, Disley, Stockport SK12",
+            "property_id": 71082332,
+            "price_int": 310000,
+            "type": "overview",
+            "postcode": "SK12"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-23T22:43:38.038342",
+      "user_query": " Show me 3-bed detached-bungalow properties in Wigan between £250,000–£350,000.",
+      "ai_response": "The provided context does not contain specific listings for detached bungalows with three bedrooms in Wigan priced between £250,000 and £350,000. You may want to consider broadening your search criteria or checking with local real estate listings for the most up-to-date information.",
+      "source_documents": [
+        {
+          "content": "Property at Wigan Road, Standish, Wigan WN6, price_int: £425,000\n\nDescription: Detached True Bungalow Approx 1646 sq. Feet of Accommodation Three Bedrooms Two Reception Rooms &amp; Kitchen En Suite to the Master Bedroom Driveway and Detached Garage Gardens to Front &amp; Rear Popular Location within Standish Village True bungalows are highly sought after and difficult to find,...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: F\n",
+          "metadata": {
+            "price_int": 425000,
+            "source_title": "3 bed detached bungalow for sale Wigan Road, Standish, Wigan WN6",
+            "type": "overview",
+            "property_id": 66887483,
+            "source": "https://www.zoopla.co.uk/for-sale/details/66887483/",
+            "address": "Wigan Road, Standish, Wigan WN6",
+            "postcode": "WN6",
+            "property_type": "detached_bungalow",
+            "bedrooms": 3.0
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Cranstal Drive, Hindley Green, Wigan WN2, price_int: £350,000\n\nDescription: Immaculately Presented Detached Bungalow Three Bedrooms Contemporary Fitted Kitchen Luxurious Bathroom and En Suite to Master Bedroom Gardens to Front and Rear Detached Garage and Driveway Viewing is Highly Recommended Immaculately Presented Three-Bedroom Detached Bungalow in Sought-After Hindley Gr...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: D\n",
+          "metadata": {
+            "type": "overview",
+            "address": "Cranstal Drive, Hindley Green, Wigan WN2",
+            "source_title": "3 bed detached bungalow for sale Cranstal Drive, Hindley Green, Wigan WN2",
+            "property_id": 70944456,
+            "property_type": "detached_bungalow",
+            "source": "https://www.zoopla.co.uk/for-sale/details/70944456/",
+            "postcode": "WN2",
+            "price_int": 350000,
+            "bedrooms": 3.0
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Briar Close, Ashton-In-Makerfield WN4, price_int: £250,000\n\nDescription: Semi-detached bungalow Spacious corner plot Separate spacious lounge Open-plan kitchen with dining area/living area Three good sized bedrooms Well-maintained front and rear gardens Private driveway and garage Close to public transport links + local amenities Positioned on a substantial corner plot i...\n\nBedrooms: 3.0\nType: semi_detached_bungalow\nTenure: leasehold\nCouncil Tax: C\n",
+          "metadata": {
+            "source": "https://www.zoopla.co.uk/for-sale/details/71080575/",
+            "property_id": 71080575,
+            "postcode": "WN4",
+            "property_type": "semi_detached_bungalow",
+            "source_title": "3 bed semi-detached bungalow for sale Briar Close, Ashton-In-Makerfield WN4",
+            "bedrooms": 3.0,
+            "address": "Briar Close, Ashton-In-Makerfield WN4",
+            "price_int": 250000,
+            "type": "overview"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-23T22:43:54.744775",
+      "user_query": " Show me 3-bed detached-bungalow properties in Wigan between 250,000–350,000.",
+      "ai_response": "The provided context does not contain information about specific property listings for three-bedroom detached bungalows in Wigan priced between £250,000 and £350,000. You may want to try searching on popular real estate websites or contact local real estate agents for the most current listings.",
+      "source_documents": [
+        {
+          "content": "Property at Cranstal Drive, Hindley Green, Wigan WN2, price_int: £350,000\n\nDescription: Immaculately Presented Detached Bungalow Three Bedrooms Contemporary Fitted Kitchen Luxurious Bathroom and En Suite to Master Bedroom Gardens to Front and Rear Detached Garage and Driveway Viewing is Highly Recommended Immaculately Presented Three-Bedroom Detached Bungalow in Sought-After Hindley Gr...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: D\n",
+          "metadata": {
+            "source_title": "3 bed detached bungalow for sale Cranstal Drive, Hindley Green, Wigan WN2",
+            "source": "https://www.zoopla.co.uk/for-sale/details/70944456/",
+            "type": "overview",
+            "bedrooms": 3.0,
+            "property_id": 70944456,
+            "price_int": 350000,
+            "property_type": "detached_bungalow",
+            "address": "Cranstal Drive, Hindley Green, Wigan WN2",
+            "postcode": "WN2"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Wigan Road, Standish, Wigan WN6, price_int: £425,000\n\nDescription: Detached True Bungalow Approx 1646 sq. Feet of Accommodation Three Bedrooms Two Reception Rooms &amp; Kitchen En Suite to the Master Bedroom Driveway and Detached Garage Gardens to Front &amp; Rear Popular Location within Standish Village True bungalows are highly sought after and difficult to find,...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: F\n",
+          "metadata": {
+            "type": "overview",
+            "price_int": 425000,
+            "source": "https://www.zoopla.co.uk/for-sale/details/66887483/",
+            "property_type": "detached_bungalow",
+            "source_title": "3 bed detached bungalow for sale Wigan Road, Standish, Wigan WN6",
+            "property_id": 66887483,
+            "address": "Wigan Road, Standish, Wigan WN6",
+            "bedrooms": 3.0,
+            "postcode": "WN6"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Briar Close, Ashton-In-Makerfield WN4, price_int: £250,000\n\nDescription: Semi-detached bungalow Spacious corner plot Separate spacious lounge Open-plan kitchen with dining area/living area Three good sized bedrooms Well-maintained front and rear gardens Private driveway and garage Close to public transport links + local amenities Positioned on a substantial corner plot i...\n\nBedrooms: 3.0\nType: semi_detached_bungalow\nTenure: leasehold\nCouncil Tax: C\n",
+          "metadata": {
+            "type": "overview",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71080575/",
+            "postcode": "WN4",
+            "bedrooms": 3.0,
+            "property_id": 71080575,
+            "price_int": 250000,
+            "source_title": "3 bed semi-detached bungalow for sale Briar Close, Ashton-In-Makerfield WN4",
+            "address": "Briar Close, Ashton-In-Makerfield WN4",
+            "property_type": "semi_detached_bungalow"
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-23T22:44:18.714794",
+      "user_query": " Show me 3-bed detached-bungalow properties in Wigan between 250000–350000.",
+      "ai_response": "The provided context does not contain any listings for three-bedroom detached bungalow properties in Wigan priced between £250,000 and £350,000. You may want to consider expanding your search criteria or checking with local real estate agents for the most current listings.",
+      "source_documents": [
+        {
+          "content": "Property at Cranstal Drive, Hindley Green, Wigan WN2, price_int: £350,000\n\nDescription: Immaculately Presented Detached Bungalow Three Bedrooms Contemporary Fitted Kitchen Luxurious Bathroom and En Suite to Master Bedroom Gardens to Front and Rear Detached Garage and Driveway Viewing is Highly Recommended Immaculately Presented Three-Bedroom Detached Bungalow in Sought-After Hindley Gr...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: D\n",
+          "metadata": {
+            "address": "Cranstal Drive, Hindley Green, Wigan WN2",
+            "bedrooms": 3.0,
+            "price_int": 350000,
+            "type": "overview",
+            "source_title": "3 bed detached bungalow for sale Cranstal Drive, Hindley Green, Wigan WN2",
+            "postcode": "WN2",
+            "property_type": "detached_bungalow",
+            "source": "https://www.zoopla.co.uk/for-sale/details/70944456/",
+            "property_id": 70944456
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Wigan Road, Standish, Wigan WN6, price_int: £425,000\n\nDescription: Detached True Bungalow Approx 1646 sq. Feet of Accommodation Three Bedrooms Two Reception Rooms &amp; Kitchen En Suite to the Master Bedroom Driveway and Detached Garage Gardens to Front &amp; Rear Popular Location within Standish Village True bungalows are highly sought after and difficult to find,...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: F\n",
+          "metadata": {
+            "property_id": 66887483,
+            "source_title": "3 bed detached bungalow for sale Wigan Road, Standish, Wigan WN6",
+            "postcode": "WN6",
+            "price_int": 425000,
+            "address": "Wigan Road, Standish, Wigan WN6",
+            "type": "overview",
+            "bedrooms": 3.0,
+            "source": "https://www.zoopla.co.uk/for-sale/details/66887483/",
+            "property_type": "detached_bungalow"
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Briar Close, Ashton-In-Makerfield WN4, price_int: £250,000\n\nDescription: Semi-detached bungalow Spacious corner plot Separate spacious lounge Open-plan kitchen with dining area/living area Three good sized bedrooms Well-maintained front and rear gardens Private driveway and garage Close to public transport links + local amenities Positioned on a substantial corner plot i...\n\nBedrooms: 3.0\nType: semi_detached_bungalow\nTenure: leasehold\nCouncil Tax: C\n",
+          "metadata": {
+            "property_id": 71080575,
+            "postcode": "WN4",
+            "address": "Briar Close, Ashton-In-Makerfield WN4",
+            "type": "overview",
+            "bedrooms": 3.0,
+            "source_title": "3 bed semi-detached bungalow for sale Briar Close, Ashton-In-Makerfield WN4",
+            "property_type": "semi_detached_bungalow",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71080575/",
+            "price_int": 250000
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-23T22:44:37.361045",
+      "user_query": " Show me 3 bed detached bungalow properties in Wigan between £250,000–£350,000.",
+      "ai_response": "The provided context does not contain specific listings for three-bedroom detached bungalow properties in Wigan priced between £250,000 and £350,000. To find relevant properties, you might consider checking real estate websites or contacting local real estate agents in Wigan for the most up-to-date listings.",
+      "source_documents": [
+        {
+          "content": "Property at Cranstal Drive, Hindley Green, Wigan WN2, price_int: £350,000\n\nDescription: Immaculately Presented Detached Bungalow Three Bedrooms Contemporary Fitted Kitchen Luxurious Bathroom and En Suite to Master Bedroom Gardens to Front and Rear Detached Garage and Driveway Viewing is Highly Recommended Immaculately Presented Three-Bedroom Detached Bungalow in Sought-After Hindley Gr...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: D\n",
+          "metadata": {
+            "source": "https://www.zoopla.co.uk/for-sale/details/70944456/",
+            "property_type": "detached_bungalow",
+            "postcode": "WN2",
+            "price_int": 350000,
+            "type": "overview",
+            "source_title": "3 bed detached bungalow for sale Cranstal Drive, Hindley Green, Wigan WN2",
+            "bedrooms": 3.0,
+            "address": "Cranstal Drive, Hindley Green, Wigan WN2",
+            "property_id": 70944456
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Wigan Road, Standish, Wigan WN6, price_int: £425,000\n\nDescription: Detached True Bungalow Approx 1646 sq. Feet of Accommodation Three Bedrooms Two Reception Rooms &amp; Kitchen En Suite to the Master Bedroom Driveway and Detached Garage Gardens to Front &amp; Rear Popular Location within Standish Village True bungalows are highly sought after and difficult to find,...\n\nBedrooms: 3.0\nType: detached_bungalow\nTenure: freehold\nCouncil Tax: F\n",
+          "metadata": {
+            "postcode": "WN6",
+            "address": "Wigan Road, Standish, Wigan WN6",
+            "property_type": "detached_bungalow",
+            "type": "overview",
+            "bedrooms": 3.0,
+            "source_title": "3 bed detached bungalow for sale Wigan Road, Standish, Wigan WN6",
+            "price_int": 425000,
+            "source": "https://www.zoopla.co.uk/for-sale/details/66887483/",
+            "property_id": 66887483
+          },
+          "type": "overview"
+        },
+        {
+          "content": "Property at Briar Close, Ashton-In-Makerfield WN4, price_int: £250,000\n\nDescription: Semi-detached bungalow Spacious corner plot Separate spacious lounge Open-plan kitchen with dining area/living area Three good sized bedrooms Well-maintained front and rear gardens Private driveway and garage Close to public transport links + local amenities Positioned on a substantial corner plot i...\n\nBedrooms: 3.0\nType: semi_detached_bungalow\nTenure: leasehold\nCouncil Tax: C\n",
+          "metadata": {
+            "source_title": "3 bed semi-detached bungalow for sale Briar Close, Ashton-In-Makerfield WN4",
+            "price_int": 250000,
+            "property_type": "semi_detached_bungalow",
+            "type": "overview",
+            "property_id": 71080575,
+            "postcode": "WN4",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71080575/",
+            "address": "Briar Close, Ashton-In-Makerfield WN4",
+            "bedrooms": 3.0
+          },
+          "type": "overview"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-23T22:45:03.370784",
+      "user_query": "show me peroperties in Wigan",
+      "ai_response": "The context provided does not contain information about available properties for sale in Wigan. You may want to try searching on real estate websites or contacting a local real estate agent for the most current listings.",
+      "source_documents": [
+        {
+          "content": "Property at Standishgate, Wigan WN1, price_int: £80,000\n\nTransport Links:\nWigan Wallgate (national_rail_station) (0.4 miles), Wigan North Western (national_rail_station) (0.5 miles), Ince (Manchester) (national_rail_station) (1.0 miles), Pemberton (national_rail_station) (2.1 miles)",
+          "metadata": {
+            "bedrooms": 2.0,
+            "price_int": 80000,
+            "postcode": "WN1",
+            "source_title": "2 bed flat for sale Standishgate, Wigan WN1",
+            "property_type": "flat",
+            "source": "https://www.zoopla.co.uk/for-sale/details/68509626/",
+            "transport_count": 1,
+            "property_id": 68509626,
+            "type": "transport",
+            "address": "Standishgate, Wigan WN1"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Belldean, Wigan WN2, price_int: £140,000\n\nTransport Links:\nInce (Manchester), Hindley, Wigan Wallgate, Wigan North Western, Westhoughton, Horwich Parkway, Blackrod, Pemberton, Daisy Hill, Bryn, Liverpool Belfast Ferry Terminal Bootle, Liverpool Pier Head Ferry Terminal, Liverpool Isle of Man & Dublin Terminal",
+          "metadata": {
+            "source": "https://www.zoopla.co.uk/for-sale/details/71018641/",
+            "type": "transport",
+            "price_int": 140000,
+            "address": "Belldean, Wigan WN2",
+            "property_id": 71018641,
+            "property_type": "semi_detached",
+            "bedrooms": 2.0,
+            "source_title": "2 bed semi-detached house for sale Belldean, Wigan WN2",
+            "transport_count": 1,
+            "postcode": "WN2"
+          },
+          "type": "transport"
+        },
+        {
+          "content": "Property at Coplow Dale, Hindley, Wigan, Greater Manchester WN2, price_int: £329,995\n\nTransport Links:\nHindley, Ince (Manchester), Daisy Hill, Westhoughton, Wigan North Western, Wigan Wallgate, Hag Fold, Atherton, Horwich Parkway, Bryn, Liverpool Belfast Ferry Terminal Bootle, Liverpool Pier Head Ferry Terminal, Liverpool Isle of Man & Dublin Terminal",
+          "metadata": {
+            "address": "Coplow Dale, Hindley, Wigan, Greater Manchester WN2",
+            "transport_count": 1,
+            "property_type": "detached",
+            "price_int": 329995,
+            "bedrooms": 4.0,
+            "source_title": "4 bed detached house for sale Coplow Dale, Hindley, Wigan, Greater Manchester WN2",
+            "property_id": 71063664,
+            "postcode": "WN2",
+            "source": "https://www.zoopla.co.uk/for-sale/details/71063664/",
+            "type": "transport"
+          },
+          "type": "transport"
+        }
+      ]
+    }
+  ],
+  "app_version": "Aspect-Based Chunking v2.0",
+  "chunking_strategy": "Aspect-Based (Best Performer)",
+  "data_sources": [
+    "datasets/run_ready_904.json",
+    "datasets/legal_uk_greater_manchester.jsonl"
+  ]
+}

@@ -73,6 +73,57 @@ class RagasScorer:
         if missing_metrics:
             print(f"⚠️ Warning: Missing metrics: {missing_metrics}")
 
+    def _validate_dataset_for_evaluation(self, dataset: RagasDataset) -> bool:
+        """
+        Validate dataset before evaluation to catch potential issues.
+
+        Args:
+            dataset: Dataset to validate
+
+        Returns:
+            True if dataset is valid for evaluation
+        """
+        print("🔍 Validating dataset for evaluation...")
+
+        # Check for empty or problematic answers
+        problematic_answers = []
+        if dataset.predictions_df is not None:
+            for i, row in dataset.predictions_df.iterrows():
+                answer = row.get("answer", "")
+                if not answer or answer.strip() == "":
+                    problematic_answers.append(f"Row {i}: Empty answer")
+                elif answer.lower() in [
+                    "i don't know",
+                    "no information available",
+                    "cannot answer",
+                    "not available",
+                ]:
+                    problematic_answers.append(
+                        f"Row {i}: Non-answer response: '{answer[:50]}...'"
+                    )
+
+        if problematic_answers:
+            print("⚠️ Found problematic answers that may cause NaN scores:")
+            for issue in problematic_answers:
+                print(f"   {issue}")
+            print("   These may result in NaN scores for certain metrics")
+
+        # Check for empty contexts
+        empty_contexts = []
+        if dataset.predictions_df is not None:
+            for i, row in dataset.predictions_df.iterrows():
+                contexts = row.get("contexts", [])
+                if not contexts or (isinstance(contexts, list) and len(contexts) == 0):
+                    empty_contexts.append(f"Row {i}: Empty contexts")
+
+        if empty_contexts:
+            print("⚠️ Found empty contexts:")
+            for issue in empty_contexts:
+                print(f"   {issue}")
+            print("   This will cause context_precision and context_recall to be NaN")
+
+        return True
+
     def compute_metrics(
         self, dataset: RagasDataset, progress_callback: Optional[Any] = None
     ) -> Dict[str, Any]:
@@ -88,6 +139,9 @@ class RagasScorer:
         """
         if dataset.testset_df is None or dataset.predictions_df is None:
             raise ValueError("Dataset must have both testset and predictions loaded")
+
+        # Validate dataset before evaluation
+        self._validate_dataset_for_evaluation(dataset)
 
         print("🧮 Computing Ragas metrics...")
 
@@ -142,6 +196,28 @@ class RagasScorer:
         threshold_analysis = self._analyze_thresholds(results)
         results["threshold_analysis"] = threshold_analysis
 
+        # Provide guidance on NaN scores
+        nan_metrics = [
+            name
+            for name, score in results.items()
+            if name not in ["metadata", "threshold_analysis"]
+            and (
+                score is None
+                or (isinstance(score, float) and (pd.isna(score) or np.isnan(score)))
+            )
+        ]
+
+        if nan_metrics:
+            print(f"\n⚠️ NaN scores detected for: {nan_metrics}")
+            print("   This is common in RAGAS evaluation and can happen when:")
+            print("   - Model outputs are not JSON-parsable")
+            print("   - Non-ideal cases for scoring (e.g., 'I don't know' responses)")
+            print("   - Context retrieval issues")
+            print("   - RAGAS evaluation limitations")
+            print(
+                "   Consider improving model outputs or using more structured prompts"
+            )
+
         print("✅ All metrics computed successfully")
         return results
 
@@ -169,17 +245,60 @@ class RagasScorer:
 
         metric_func = metric_functions[metric_name]
 
-        # Compute metric
-        result = evaluate(dataset, [metric_func])
+        # Configure RAGAS to use the same OpenAI API key
+        import os
 
-        # Extract score
-        score = result[metric_name]
+        # Get API key from config or environment
+        api_key = self.config.get("judge", {}).get("api_key") or os.getenv(
+            "OPENAI_API_KEY"
+        )
 
-        # Handle case where score might be a list
-        if isinstance(score, list):
-            score = score[0] if score else 0.0
+        # Handle environment variable substitution
+        if api_key and api_key.startswith("${") and api_key.endswith("}"):
+            env_var = api_key[2:-1]  # Remove ${ and }
+            api_key = os.getenv(env_var)
 
-        return score
+        if not api_key:
+            raise ValueError("OpenAI API key required for RAGAS evaluation")
+
+        # Set environment variable for RAGAS
+        os.environ["OPENAI_API_KEY"] = api_key
+
+        try:
+            # Compute metric
+            result = evaluate(dataset, [metric_func])
+
+            # Extract score
+            score = result[metric_name]
+
+            # Handle case where score might be a list
+            if isinstance(score, list):
+                score = score[0] if score else 0.0
+
+            # Handle NaN values and non-ideal cases
+            if score is None or (
+                isinstance(score, float) and (pd.isna(score) or np.isnan(score))
+            ):
+                print(f"⚠️ {metric_name} returned NaN/None - this can happen when:")
+                print(f"   - Model output is not JSON-parsable")
+                print(
+                    f"   - Non-ideal cases for scoring (e.g., 'I don't know' responses)"
+                )
+                print(f"   - RAGAS evaluation limitations")
+                print(f"   Setting score to 0.0 for this metric")
+                score = 0.0
+
+            return score
+
+        except Exception as e:
+            print(f"⚠️ {metric_name} computation failed: {e}")
+            print(f"   Error type: {type(e).__name__}")
+            print(f"   This can happen when:")
+            print(f"   - API key issues")
+            print(f"   - Model output format problems")
+            print(f"   - RAGAS evaluation errors")
+            print(f"   Setting score to 0.0 due to error")
+            return 0.0
 
     def _analyze_thresholds(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """

@@ -1,5 +1,5 @@
 """
-Clean RAG Pipeline for AI Real Estate Advisor
+Clean RAG Pipeline for AI Real Estate Advisor - FIXED VERSION
 
 This module provides a clean interface for the RAG pipeline that can be used
 by both the Streamlit UI and evaluation code.
@@ -13,16 +13,39 @@ import traceback
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    print("⚠️ python-dotenv not installed. Using system environment variables.")
+
 from langchain.memory import ConversationSummaryBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from langchain.chains.history_aware_retriever import create_history_aware_retriever
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    PromptTemplate,
+)
 from langchain.schema.retriever import BaseRetriever
+from langchain_openai import OpenAIEmbeddings
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
 
 from prompts import CONTEXTUALIZATION_SYSTEM_PROMPT, get_prompt_template
 from retrieval import CrossEncoderRerankRetriever
+from common.cfg import get_openai_api_key, get_config
 import utils
+
+# Get configuration
+config = get_config()
+
+# Configuration constants from config
+config = get_config()
+MEMORY_TOKEN_LIMIT = config.memory_token_limit
 
 
 class RAGPipeline:
@@ -33,20 +56,31 @@ class RAGPipeline:
     for both the Streamlit UI and evaluation code.
     """
 
-    def __init__(self, openai_api_key: str):
+    def __init__(self, openai_api_key: Optional[str] = None):
         """
         Initialize the RAG pipeline.
 
         Args:
-            openai_api_key: OpenAI API key for LLM and embeddings
+            openai_api_key: OpenAI API key (optional, will use config if not provided)
         """
-        self.openai_api_key = openai_api_key
+        # Use provided API key or get from config
+        if openai_api_key:
+            self.openai_api_key = openai_api_key
+        else:
+            self.openai_api_key = get_openai_api_key()
+
+        if not self.openai_api_key:
+            raise ValueError(
+                "OpenAI API key is required. Set OPENAI_API_KEY environment variable or pass it as parameter."
+            )
+
         self.llm = None
         self.embedding_model = None
         self.vectordb = None
         self.qa_chain = None
         self.memory = None
         self.retriever = None
+        self.base_retriever = None
 
         # Initialize components
         self._setup_components()
@@ -54,9 +88,20 @@ class RAGPipeline:
     def _setup_components(self):
         """Set up all the RAG components."""
         try:
-            # Configure LLM and embedding model
-            self.llm = utils.configure_llm()
-            self.embedding_model = utils.configure_embedding_model()
+            # Configure LLM and embedding model directly
+            from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
+            self.llm = ChatOpenAI(
+                model=config.llm_model,
+                temperature=config.temperature,
+                streaming=True,
+                api_key=self.openai_api_key,
+                verbose=False,
+            )
+
+            self.embedding_model = OpenAIEmbeddings(
+                model=config.embedding_model, api_key=self.openai_api_key
+            )
 
             # Setup vector database
             self.vectordb = self._setup_vectordb()
@@ -82,13 +127,33 @@ class RAGPipeline:
         try:
             from aspect_based_chunker import create_aspect_based_vectordb
 
-            vectordb = create_aspect_based_vectordb(
-                openai_api_key=self.openai_api_key,
-                properties_file="datasets/run_ready_904.json",
-                legal_file="datasets/legal_uk_greater_manchester.jsonl",
-                embedding_model=self.embedding_model,
-                force_recreate=False,  # Use existing database if available
-            )
+            if self.embedding_model is None:
+                raise Exception("Embedding model not initialized")
+
+            # Get absolute paths
+            project_root = os.path.dirname(os.path.abspath(__file__))
+            properties_file = os.path.join(project_root, config.properties_file)
+            legal_file = os.path.join(project_root, config.legal_file)
+
+            print(f"🔄 Setting up vector database: {config.db_name}")
+            print(f"📁 Using absolute paths: {properties_file}, {legal_file}")
+
+            # Change to project root directory
+            original_cwd = os.getcwd()
+            os.chdir(project_root)
+            print(f"📁 Changed working directory to: {os.getcwd()}")
+
+            try:
+                vectordb = create_aspect_based_vectordb(
+                    openai_api_key=self.openai_api_key,
+                    properties_file=properties_file,
+                    legal_file=legal_file,
+                    embedding_model=self.embedding_model,
+                    force_recreate=False,
+                )
+            finally:
+                os.chdir(original_cwd)
+                print(f"📁 Restored working directory to: {os.getcwd()}")
 
             if vectordb is None:
                 raise Exception("Failed to create vector database")
@@ -101,102 +166,38 @@ class RAGPipeline:
             raise
 
     def _setup_retriever(self):
-        """Set up the retriever with fallback logic."""
+        """Set up the retriever with improved fallback logic."""
         try:
-            # Create the primary retriever - prefer reranker, fallback to basic
-            primary_retriever = None
+            if self.vectordb is None:
+                raise Exception("Vector database not initialized")
+            if self.llm is None:
+                raise Exception("LLM not initialized")
 
-            # Try to create CrossEncoderRerankRetriever as the primary choice
+            # Create basic retriever first (always works)
+            basic_retriever = self.vectordb.as_retriever(
+                search_type="similarity", search_kwargs={"k": config.retrieval_top_n}
+            )
+            self.base_retriever = basic_retriever
+            print("✅ Created basic similarity retriever")
+
+            # Try to enhance with reranking
             try:
-                primary_retriever = CrossEncoderRerankRetriever.from_vectorstore(
+                rerank_retriever = CrossEncoderRerankRetriever.from_vectorstore(
                     vectordb=self.vectordb,
-                    top_k=20,  # Get more candidates for reranking
-                    top_n=5,  # Return top 5 after reranking
+                    top_k=config.retrieval_top_k,
+                    top_n=config.retrieval_top_n,
                     model_name="BAAI/bge-reranker-large",
                 )
-                print("✅ Successfully created CrossEncoderRerankRetriever (Primary)")
-
+                print("✅ Successfully created CrossEncoderRerankRetriever")
+                primary_retriever = rerank_retriever
             except Exception as e:
                 print(f"⚠️ CrossEncoderRerankRetriever failed: {e}")
-                print("🔄 Falling back to basic similarity retriever")
-                # Fallback to basic retriever
-                primary_retriever = self.vectordb.as_retriever(
-                    search_type="similarity", search_kwargs={"k": 5}
-                )
+                primary_retriever = basic_retriever
 
-            # Now use the primary retriever consistently
-            base_retriever = primary_retriever
-
-            # Log which retriever type we're using
-            retriever_type = (
-                "CrossEncoderRerankRetriever"
-                if "CrossEncoderRerankRetriever" in str(type(primary_retriever))
-                else "Basic Similarity Retriever"
-            )
-            print(f"🔍 Using retriever: {retriever_type}")
-
-            # Try to enhance with SelfQueryRetriever, but fall back gracefully
-            try:
-                from langchain.chains.query_constructor.schema import AttributeInfo
-                from langchain.retrievers.self_query.base import SelfQueryRetriever
-
-                metadata_field_info = [
-                    AttributeInfo(
-                        name="price_int",
-                        description="Listing price in British pounds",
-                        type="integer",
-                    ),
-                    AttributeInfo(
-                        name="bedrooms",
-                        description="Number of bedrooms in the property",
-                        type="integer",
-                    ),
-                    AttributeInfo(
-                        name="bathrooms",
-                        description="Number of bathrooms in the property",
-                        type="integer",
-                    ),
-                    AttributeInfo(
-                        name="property_type",
-                        description="Type of property such as detached, semi-detached, terraced or apartment",
-                        type="string",
-                    ),
-                    AttributeInfo(
-                        name="postcode",
-                        description="Postcode prefix where the property is located",
-                        type="string",
-                    ),
-                    AttributeInfo(
-                        name="tenure",
-                        description="Property tenure for example freehold or leasehold",
-                        type="string",
-                    ),
-                ]
-
-                document_content_description = (
-                    "Property listings with fields such as price_int, bedrooms, bathrooms, "
-                    "property_type, postcode and tenure"
-                )
-
-                # Try to create SelfQueryRetriever with proper error handling
-                retriever = SelfQueryRetriever.from_llm(
-                    self.llm,
-                    self.vectordb,
-                    document_content_description,
-                    metadata_field_info,
-                    enable_limit=True,
-                    search_kwargs={"k": 20},  # Increased for reranking compatibility
-                    verbose=False,  # Reduce verbosity to avoid issues
-                )
-                print("✅ Successfully created SelfQueryRetriever")
-
-            except Exception as e:
-                print(f"⚠️ SelfQueryRetriever failed: {e}")
-                print("🔄 Using basic similarity retriever instead")
-                # Fallback to the basic retriever we created earlier
-                retriever = base_retriever
-
-            return retriever
+            # CRITICAL FIX: Use basic retriever instead of SelfQueryRetriever
+            # SelfQueryRetriever often fails to parse queries properly
+            print(f"🔍 Using retriever: {type(primary_retriever).__name__}")
+            return primary_retriever
 
         except Exception as e:
             print(f"❌ Retriever setup failed: {e}")
@@ -205,12 +206,15 @@ class RAGPipeline:
     def _setup_memory(self):
         """Set up conversation memory."""
         try:
+            if self.llm is None:
+                raise Exception("LLM not initialized")
+
             memory = ConversationSummaryBufferMemory(
                 llm=self.llm,
                 memory_key="chat_history",
                 output_key="answer",
                 return_messages=True,
-                max_token_limit=2000,  # Reasonable limit for memory
+                max_token_limit=MEMORY_TOKEN_LIMIT,
             )
             print("✅ Memory setup completed")
             return memory
@@ -220,142 +224,139 @@ class RAGPipeline:
             raise
 
     def _setup_qa_chain(self):
-        """Set up the QA chain."""
+        """Set up the QA chain with proper prompt handling."""
         try:
-            # Create history-aware retriever with better error handling
+            if self.llm is None or self.retriever is None or self.memory is None:
+                raise Exception("Required components not initialized")
+
+            # CRITICAL FIX: Use proper prompt template
+            # The key issue is likely in the prompt formatting
             try:
-                # Use contextualization prompt from prompts file
-                contextualize_q_system_prompt = CONTEXTUALIZATION_SYSTEM_PROMPT
-                contextualize_q_prompt = ChatPromptTemplate.from_messages(
-                    [
-                        ("system", contextualize_q_system_prompt),
-                        MessagesPlaceholder("chat_history"),
-                        ("human", "{input}"),
-                    ]
-                )
+                # Get a working prompt template
+                prompt_text = get_prompt_template("standard")
 
-                # Create the history-aware retriever chain using LCEL
-                history_aware_retriever_chain = create_history_aware_retriever(
-                    llm=self.llm,
-                    retriever=self.retriever,
-                    prompt=contextualize_q_prompt,
-                )
+                # Ensure the prompt has the right variables
+                if "{context}" not in prompt_text or "{question}" not in prompt_text:
+                    # Fallback to a known working prompt
+                    prompt_text = """You are a helpful AI assistant for real estate queries. 
+Use the following context to answer the question. If you cannot answer based on the context, say so clearly.
 
-                print("✅ Successfully created history-aware retriever using LCEL")
-                history_aware_retriever = history_aware_retriever_chain
+Context: {context}
+
+Question: {question}
+
+Answer:"""
+
+                prompt_template = PromptTemplate.from_template(prompt_text)
+                print("✅ Created prompt template successfully")
 
             except Exception as e:
-                print(f"⚠️ History-aware retriever failed: {e}")
-                print("🔄 Using basic retriever without history awareness")
-                history_aware_retriever = self.retriever
+                print(f"⚠️ Error creating prompt template: {e}")
+                # Use a simple fallback prompt
+                prompt_template = PromptTemplate.from_template(
+                    "Context: {context}\n\nQuestion: {question}\n\nAnswer:"
+                )
 
-            # Setup QA chain with comprehensive error handling
+            # CRITICAL FIX: Use ConversationalRetrievalChain properly
             try:
-                # For LCEL-based history-aware retriever, we need to configure the chain differently
-                if hasattr(history_aware_retriever, "invoke"):
-                    # This is an LCEL chain, configure ConversationalRetrievalChain to work with it
-                    qa_chain = ConversationalRetrievalChain.from_llm(
-                        llm=self.llm,
-                        retriever=self.retriever,  # Use the base retriever directly
-                        memory=self.memory,
-                        return_source_documents=True,
-                        verbose=False,
-                        combine_docs_chain_kwargs={
-                            "prompt": PromptTemplate.from_template(
-                                get_prompt_template("lcel")
-                            )
-                        },
-                    )
-                    print(
-                        "✅ Successfully created ConversationalRetrievalChain with LCEL integration"
-                    )
-                    return qa_chain
-                else:
-                    # Fallback to standard configuration
-                    qa_chain = ConversationalRetrievalChain.from_llm(
-                        llm=self.llm,
-                        retriever=history_aware_retriever,
-                        memory=self.memory,
-                        return_source_documents=True,
-                        verbose=False,
-                        combine_docs_chain_kwargs={
-                            "prompt": PromptTemplate.from_template(
-                                get_prompt_template("standard")
-                            )
-                        },
-                    )
-                    print(
-                        "✅ Successfully created ConversationalRetrievalChain with standard retriever"
-                    )
-                    return qa_chain
+                qa_chain = ConversationalRetrievalChain.from_llm(
+                    llm=self.llm,
+                    retriever=self.retriever,
+                    memory=self.memory,
+                    return_source_documents=True,
+                    verbose=True,  # Enable verbose for debugging
+                    combine_docs_chain_kwargs={"prompt": prompt_template},
+                    # CRITICAL: Set proper chain type
+                    chain_type="stuff",  # Use 'stuff' chain type for better control
+                )
+                print("✅ Successfully created ConversationalRetrievalChain")
+                return qa_chain
 
             except Exception as e:
                 print(f"❌ Failed to create ConversationalRetrievalChain: {e}")
-                print("🔄 Attempting fallback configuration...")
-
-                # Fallback: Create a simpler chain configuration
-                try:
-                    qa_chain = ConversationalRetrievalChain.from_llm(
-                        llm=self.llm,
-                        retriever=self.retriever,
-                        memory=self.memory,
-                        return_source_documents=True,
-                        verbose=False,
-                        combine_docs_chain_kwargs={
-                            "prompt": PromptTemplate.from_template(
-                                get_prompt_template("fallback")
-                            )
-                        },
-                    )
-                    print(
-                        "✅ Successfully created fallback ConversationalRetrievalChain"
-                    )
-                    return qa_chain
-
-                except Exception as fallback_error:
-                    print(f"❌ Fallback also failed: {fallback_error}")
-                    raise Exception(
-                        f"Could not create QA chain. Original error: {e}, Fallback error: {fallback_error}"
-                    )
+                raise
 
         except Exception as e:
             print(f"❌ QA chain setup failed: {e}")
             raise
 
-    def run_query(self, query: str, use_memory: bool = True) -> Dict[str, Any]:
+    def run_query(
+        self, query: str, use_memory: bool = True, callbacks: Optional[List] = None
+    ) -> Dict[str, Any]:
         """
         Run a query through the RAG pipeline.
-
-        This is the main interface expected by evaluation code.
 
         Args:
             query: The user's question
             use_memory: Whether to use conversation memory (default: True)
+            callbacks: Optional list of callbacks for streaming
 
         Returns:
-            Dict with the following structure:
-            {
-                "answer": str,           # The AI's response
-                "contexts": List[str],   # List of retrieved document contents
-                "meta": Dict             # Additional metadata
-            }
+            Dict with answer, contexts, and metadata
         """
         try:
             if not self.qa_chain:
                 raise Exception("QA chain not initialized")
 
+            print(f"🔍 Processing query: {query[:100]}...")
+
             # Clear memory if not using it
             if not use_memory and self.memory:
                 self.memory.clear()
 
-            # Process the query
-            result = self.qa_chain.invoke({"question": query})
+            # CRITICAL FIX: Test retrieval first
+            try:
+                # Test if retriever works
+                if self.retriever:
+                    test_docs = self.retriever.get_relevant_documents(query)
+                    print(f"🔍 Retriever returned {len(test_docs)} documents")
 
-            # Extract source documents
+                    if len(test_docs) == 0:
+                        print("⚠️ No documents retrieved, trying base retriever")
+                        if self.base_retriever:
+                            test_docs = self.base_retriever.get_relevant_documents(
+                                query
+                            )
+                            print(
+                                f"🔍 Base retriever returned {len(test_docs)} documents"
+                            )
+
+            except Exception as retrieval_error:
+                print(f"⚠️ Retrieval test failed: {retrieval_error}")
+                # Continue anyway, the chain might handle it
+
+            # Process the query
+            if callbacks:
+                result = self.qa_chain.invoke(
+                    {"question": query}, {"callbacks": callbacks}
+                )
+            else:
+                result = self.qa_chain.invoke({"question": query})
+
+            print(f"✅ QA chain completed")
+
+            # Extract and validate results
+            answer = result.get("answer", "")
             source_docs = result.get("source_documents", [])
+
+            # CRITICAL FIX: Ensure we have contexts
+            if not source_docs and self.base_retriever:
+                print("🔄 No source documents, using base retriever as fallback")
+                try:
+                    fallback_docs = self.base_retriever.get_relevant_documents(query)
+                    source_docs = fallback_docs
+                    print(f"🔄 Fallback retrieved {len(source_docs)} documents")
+                except Exception as fallback_error:
+                    print(f"⚠️ Fallback retrieval failed: {fallback_error}")
+
             contexts = [doc.page_content for doc in source_docs]
 
-            # Extract metadata from source documents
+            print(f"📊 Result summary:")
+            print(f"   Answer length: {len(answer)} characters")
+            print(f"   Contexts: {len(contexts)} documents")
+            print(f"   Answer preview: {answer[:100]}...")
+
+            # Prepare metadata
             meta = {
                 "source_count": len(source_docs),
                 "retriever_type": str(type(self.retriever)),
@@ -366,9 +367,8 @@ class RAGPipeline:
                 ),
             }
 
-            # Return in the expected format
             return {
-                "answer": result.get("answer", ""),
+                "answer": answer,
                 "contexts": contexts,
                 "meta": meta,
             }
@@ -377,7 +377,53 @@ class RAGPipeline:
             print(f"❌ Error in run_query: {e}")
             traceback.print_exc()
 
-            # Return error response in expected format
+            # Try a simple fallback approach
+            try:
+                print("🔄 Attempting simple fallback...")
+                if self.base_retriever and self.llm:
+                    # Get documents directly
+                    docs = self.base_retriever.get_relevant_documents(query)
+                    contexts = [doc.page_content for doc in docs]
+
+                    # Create a simple prompt
+                    context_text = "\n\n".join(contexts[:3])  # Use top 3 contexts
+                    simple_prompt = f"""Based on the following context, answer the question:
+
+Context:
+{context_text}
+
+Question: {query}
+
+Answer:"""
+
+                    # Get answer directly from LLM
+                    response = self.llm.invoke(simple_prompt)
+                    answer = (
+                        response.content
+                        if hasattr(response, "content")
+                        else str(response)
+                    )
+
+                    print(
+                        f"✅ Fallback successful: {len(answer)} char answer, {len(contexts)} contexts"
+                    )
+
+                    return {
+                        "answer": answer,
+                        "contexts": contexts,
+                        "meta": {
+                            "fallback": True,
+                            "error": str(e),
+                            "timestamp": datetime.now().isoformat(),
+                            "query": query,
+                            "source_count": len(docs),
+                        },
+                    }
+
+            except Exception as fallback_error:
+                print(f"❌ Fallback also failed: {fallback_error}")
+
+            # Final error response
             return {
                 "answer": f"Error processing query: {str(e)}",
                 "contexts": [],
@@ -405,18 +451,41 @@ class RAGPipeline:
             "embedding_model": (
                 str(self.embedding_model) if self.embedding_model else "Not configured"
             ),
+            "memory_token_limit": MEMORY_TOKEN_LIMIT,
+            "supports_streaming": True,
         }
 
+    def get_retriever_info(self) -> Dict[str, Any]:
+        """Get detailed information about the retriever configuration."""
+        if self.retriever is None:
+            return {"status": "Not initialized"}
 
-# Factory function for easy creation
-def create_rag_pipeline(openai_api_key: str) -> RAGPipeline:
+        retriever_type = str(type(self.retriever))
+        info: Dict[str, Any] = {
+            "type": retriever_type,
+            "status": "Active",
+        }
+
+        if "CrossEncoderRerankRetriever" in retriever_type:
+            info["model"] = "BAAI/bge-reranker-large"
+            info["top_k"] = config.retrieval_top_k
+            info["top_n"] = config.retrieval_top_n
+            info["description"] = "Advanced reranking with cross-encoder model"
+        else:
+            info["description"] = "Basic similarity search"
+            info["search_kwargs"] = {"k": config.retrieval_top_n}
+
+        return info
+
+
+def create_rag_pipeline(openai_api_key: Optional[str] = None) -> RAGPipeline:
     """
     Create a new RAG pipeline instance.
 
     Args:
-        openai_api_key: OpenAI API key
+        openai_api_key: OpenAI API key (optional, will use config if not provided)
 
     Returns:
         Configured RAGPipeline instance
     """
-    return RAGPipeline(openai_api_key)
+    return RAGPipeline(openai_api_key=openai_api_key)

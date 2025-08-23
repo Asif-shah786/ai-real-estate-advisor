@@ -1,4 +1,5 @@
 """Retrieval utilities with cross-encoder reranking."""
+
 from __future__ import annotations
 
 from typing import List, Tuple
@@ -15,19 +16,44 @@ class CrossEncoderRerankRetriever(BaseRetriever):
     top_k: int = 20
     top_n: int = 5
     model_name: str = "BAAI/bge-reranker-large"
-    
+
+    # Class-level cache to share model across instances
+    _shared_model = None
+    _model_lock = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._model = None
 
     def _load_model(self) -> None:
         from sentence_transformers import CrossEncoder
+        import threading
 
-        self._model = CrossEncoder(self.model_name)
+        # Use class-level cache to avoid reloading the same model
+        if CrossEncoderRerankRetriever._shared_model is None:
+            # First time loading - create a lock to prevent multiple downloads
+            if CrossEncoderRerankRetriever._model_lock is None:
+                CrossEncoderRerankRetriever._model_lock = threading.Lock()
+
+            with CrossEncoderRerankRetriever._model_lock:
+                # Double-check pattern to prevent race conditions
+                if CrossEncoderRerankRetriever._shared_model is None:
+                    print(f"🔄 Loading CrossEncoder model: {self.model_name}")
+                    CrossEncoderRerankRetriever._shared_model = CrossEncoder(
+                        self.model_name
+                    )
+                    print(f"✅ CrossEncoder model loaded successfully")
+
+        # Use the shared model instance
+        self._model = CrossEncoderRerankRetriever._shared_model
 
     @classmethod
     def from_vectorstore(
-        cls, vectordb: VectorStore, top_k: int = 20, top_n: int = 5, model_name: str = "BAAI/bge-reranker-large"
+        cls,
+        vectordb: VectorStore,
+        top_k: int = 20,
+        top_n: int = 5,
+        model_name: str = "BAAI/bge-reranker-large",
     ) -> "CrossEncoderRerankRetriever":
         return cls(vectordb=vectordb, top_k=top_k, top_n=top_n, model_name=model_name)
 
@@ -47,13 +73,13 @@ class CrossEncoderRerankRetriever(BaseRetriever):
         if model is False or model is None:
             # model failed to load; fallback to similarity scores
             return docs[: self.top_n]
-        
+
         try:
             # Type check to ensure model is a CrossEncoder
-            if hasattr(model, 'predict'):
+            if hasattr(model, "predict"):
                 pairs: List[Tuple[str, str]] = [(query, d.page_content) for d in docs]
                 # Use getattr to avoid type checker issues
-                predict_method = getattr(model, 'predict', None)
+                predict_method = getattr(model, "predict", None)
                 if predict_method:
                     scores = predict_method(pairs)
                     scored = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)

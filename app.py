@@ -209,10 +209,39 @@ class ChatbotWeb:
         Returns:
                     ConversationalRetrievalChain: The configured QA chain
         """
-        # First, create a basic retriever from the vector database
-        base_retriever = vectordb.as_retriever(
-            search_type="similarity", search_kwargs={"k": 5}
+        # Create the primary retriever - prefer reranker, fallback to basic
+        primary_retriever = None
+
+        # Try to create CrossEncoderRerankRetriever as the primary choice
+        try:
+            from retrieval import CrossEncoderRerankRetriever
+
+            primary_retriever = CrossEncoderRerankRetriever.from_vectorstore(
+                vectordb=vectordb,
+                top_k=20,  # Get more candidates for reranking
+                top_n=5,  # Return top 5 after reranking
+                model_name="BAAI/bge-reranker-large",
+            )
+            print("✅ Successfully created CrossEncoderRerankRetriever (Primary)")
+
+        except Exception as e:
+            print(f"⚠️ CrossEncoderRerankRetriever failed: {e}")
+            print("🔄 Falling back to basic similarity retriever")
+            # Fallback to basic retriever
+            primary_retriever = vectordb.as_retriever(
+                search_type="similarity", search_kwargs={"k": 5}
+            )
+
+        # Now use the primary retriever consistently
+        base_retriever = primary_retriever
+
+        # Log which retriever type we're using
+        retriever_type = (
+            "CrossEncoderRerankRetriever"
+            if "CrossEncoderRerankRetriever" in str(type(primary_retriever))
+            else "Basic Similarity Retriever"
         )
+        print(f"🔍 Using retriever: {retriever_type}")
 
         # Try to enhance with SelfQueryRetriever, but fall back gracefully
         try:
@@ -264,7 +293,7 @@ class ChatbotWeb:
                 document_content_description,
                 metadata_field_info,
                 enable_limit=True,
-                search_kwargs={"k": 5},
+                search_kwargs={"k": 20},  # Increased for reranking compatibility
                 verbose=False,  # Reduce verbosity to avoid issues
             )
             print("✅ Successfully created SelfQueryRetriever")
@@ -598,24 +627,90 @@ class ChatbotWeb:
                 source_docs = result.get("source_documents", [])
                 self.save_chat_session(user_query, response, source_docs)
 
-                # Display source references for transparency
-                for idx, doc in enumerate(result["source_documents"], 1):
-                    # Extract source information based on metadata structure
-                    src = (
-                        doc.metadata.get("source")
-                        or doc.metadata.get("property_url")
-                        or "unknown"
-                    )
-                    try:
-                        source_name = os.path.basename(src)
-                    except Exception:
-                        source_name = str(src)
+                # Display source references horizontally with clipping and expandable view
+                if result["source_documents"]:
+                    st.write("**References:**")
 
-                    # Create a reference title with clickable popup
-                    ref_title = f":blue[Reference {idx}: *{source_name}*]"
-                    # Show document content in a popup when clicked
-                    with st.popover(ref_title):
-                        st.caption(doc.page_content)
+                    # Always show first 4 references horizontally
+                    cols = st.columns(
+                        min(len(result["source_documents"]), 4)
+                    )  # Max 4 columns
+
+                    for idx, doc in enumerate(result["source_documents"]):
+                        if idx >= 4:  # Only show first 4 references initially
+                            break
+
+                        with cols[idx]:
+                            # Extract source information based on metadata structure
+                            src = (
+                                doc.metadata.get("source")
+                                or doc.metadata.get("property_url")
+                                or "unknown"
+                            )
+                            try:
+                                source_name = os.path.basename(src)
+                            except Exception:
+                                source_name = str(src)
+
+                            # Create a compact reference with clickable popup
+                            ref_title = f"📄 Ref {idx+1}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+
+                            # Show document content in a popup when clicked
+                            with st.popover(ref_title):
+                                st.caption("**Source:** " + str(src))
+                                st.text_area(
+                                    "Content:",
+                                    value=doc.page_content,
+                                    height=150,
+                                    disabled=True,
+                                )
+
+                    # Show expandable section for additional references
+                    if len(result["source_documents"]) > 4:
+                        with st.expander(
+                            f"📚 Show More References ({len(result['source_documents'])-4} more)",
+                            expanded=False,
+                        ):
+                            # Show remaining references in a grid layout
+                            remaining_docs = result["source_documents"][4:]
+
+                            # Create rows of 4 columns for remaining references
+                            for i in range(0, len(remaining_docs), 4):
+                                row_docs = remaining_docs[i : i + 4]
+                                row_cols = st.columns(len(row_docs))
+
+                                for j, doc in enumerate(row_docs):
+                                    with row_cols[j]:
+                                        # Extract source information
+                                        src = (
+                                            doc.metadata.get("source")
+                                            or doc.metadata.get("property_url")
+                                            or "unknown"
+                                        )
+                                        try:
+                                            source_name = os.path.basename(src)
+                                        except Exception:
+                                            source_name = str(src)
+
+                                        # Create reference with popup
+                                        ref_title = f"📄 Ref {i+j+5}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+
+                                        with st.popover(ref_title):
+                                            st.caption("**Source:** " + str(src))
+                                            st.text_area(
+                                                "Content:",
+                                                value=doc.page_content,
+                                                height=150,
+                                                disabled=True,
+                                            )
+
+                        st.caption(
+                            f"Showing 4 of {len(result['source_documents'])} references. Click 'Show More' to see all."
+                        )
+                    else:
+                        st.caption(
+                            f"Showing all {len(result['source_documents'])} references"
+                        )
 
 
 # Application entry point

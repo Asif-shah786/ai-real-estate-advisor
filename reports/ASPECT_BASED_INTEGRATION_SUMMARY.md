@@ -1,6 +1,6 @@
 # 🧠 Aspect-Based Chunking Integration Summary
 
-## 🎯 What We've Implemented
+## What We've Implemented
 
 ### 1. **Aspect-Based Chunker** (`aspect_based_chunker.py`)
 - **Strategy**: Creates separate chunks for different aspects (crime, schools, transport, overview, legal)
@@ -13,7 +13,7 @@
 - **Fallback**: Legacy chunking method if Aspect-Based fails
 - **Seamless**: No changes needed to existing app functionality
 
-## 📊 Chunk Distribution
+## Chunk Distribution
 
 | Aspect Type   | Count | Description                                 |
 | ------------- | ----- | ------------------------------------------- |
@@ -23,7 +23,7 @@
 | **Schools**   | 7     | Nearby schools and educational facilities   |
 | **Legal**     | 21    | Legal requirements and property regulations |
 
-## 🚀 How It Works
+## How It Works
 
 ### 1. **Data Loading**
 ```python
@@ -47,7 +47,7 @@ legal_file = "datasets/legal_uk_greater_manchester.jsonl"
 - **Search**: Cosine similarity search with scores
 - **Performance**: Fast retrieval with high accuracy
 
-## 🔍 Search Examples
+## Search Examples
 
 ### **Crime Queries**
 - Query: "Properties with low crime rates"
@@ -69,7 +69,7 @@ legal_file = "datasets/legal_uk_greater_manchester.jsonl"
 - Result: Legal chunks with regulatory information
 - Score: 0.7381 (Excellent)
 
-## 🎯 Benefits for Your RAG App
+## Benefits for Your RAG App
 
 ### 1. **Better Query Understanding**
 - Crime queries → Crime chunks
@@ -124,22 +124,22 @@ except Exception:
     # ... existing chunking logic
 ```
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 ### **Chunking Strategy Comparison**
-| Strategy           | Retrieval Score | Coverage | Chunks | Avg Size   |
-| ------------------ | --------------- | -------- | ------ | ---------- |
-| **🥇 Aspect-Based** | **0.4872**      | 1.00     | 58     | 46.9 words |
-| 🥈 Property-Based   | 0.4377          | 1.25     | 31     | 87.5 words |
-| 🥉 Semantic-256     | 0.4330          | 1.62     | 24     | 60.5 words |
+| Strategy         | Retrieval Score | Coverage | Chunks | Avg Size   |
+| ---------------- | --------------- | -------- | ------ | ---------- |
+| **Aspect-Based** | **0.4872**      | 1.00     | 58     | 46.9 words |
+| Property-Based   | 0.4377          | 1.25     | 31     | 87.5 words |
+| Semantic-256     | 0.4330          | 1.62     | 24     | 60.5 words |
 
 ### **Why Aspect-Based Wins**
-- ✅ **Highest retrieval score** (0.4872)
-- ✅ **Best precision** for focused queries
-- ✅ **Reduced noise** in retrieval
-- ✅ **Optimal chunk sizes** (46.9 words average)
+- **Highest retrieval score** (0.4872)
+- **Best precision** for focused queries
+- **Reduced noise** in retrieval
+- **Optimal chunk sizes** (46.9 words average)
 
-## 🚀 Usage
+## Usage
 
 ### **Automatic Integration**
 The Aspect-Based chunking is now **automatically used** when you run `app.py`. No additional configuration needed.
@@ -194,15 +194,15 @@ You can easily modify the chunking strategy by editing `aspect_based_chunker.py`
 - **Multiple Regions**: Extend to other UK cities
 - **Property Types**: Add commercial, rental, and other property types
 
-## ✅ Summary
+## Summary
 
 We've successfully implemented the **Aspect-Based chunking strategy** (the best performer from our evaluation) and integrated it seamlessly into your `app.py`. 
 
 **Key Benefits:**
 - 🧠 **Better chunking strategy** (Score: 0.4872 vs 0.4377)
-- 🎯 **Focused retrieval** for specific query types
-- 🚀 **Automatic integration** with existing app
-- 📊 **58 optimized chunks** with proper aspect distribution
-- 🔄 **Fallback support** to legacy method if needed
+- **Focused retrieval** for specific query types
+- **Automatic integration** with existing app
+- **58 optimized chunks** with proper aspect distribution
+-  **Fallback support** to legacy method if needed
 
 Your RAG application now uses the **best-performing chunking strategy** automatically, providing users with more accurate, relevant, and faster responses to real estate queries! 🎉

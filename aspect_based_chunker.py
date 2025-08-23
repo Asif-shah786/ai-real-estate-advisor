@@ -91,7 +91,7 @@ def filter_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
     required_fields = ["postcode", "price_int", "property_type", "bedrooms"]
     for field in required_fields:
         if field not in filtered:
-            print(f"⚠️ Warning: Missing required metadata field: {field}")
+            print(f" Warning: Missing required metadata field: {field}")
             if field == "postcode":
                 filtered[field] = "UNKNOWN"
             elif field == "price_int":
@@ -194,7 +194,7 @@ class AspectBasedChunker:
         self, properties_file: str, legal_file: str
     ) -> Tuple[List[Dict], List[Dict]]:
         """Load the two JSON files containing property and legal data"""
-        print(f"📁 Loading data files...")
+        print(f"Loading data files...")
         print(f"   Properties: {properties_file}")
         print(f"   Legal: {legal_file}")
 
@@ -202,7 +202,7 @@ class AspectBasedChunker:
             # Load properties data (JSON format)
             with open(properties_file, "r", encoding="utf-8") as f:
                 self.properties_data = json.load(f)
-            print(f"✅ Loaded {len(self.properties_data)} properties")
+            print(f"Loaded {len(self.properties_data)} properties")
 
             # Load legal data (JSONL format)
             self.legal_data = []
@@ -214,14 +214,14 @@ class AspectBasedChunker:
                             legal_item = json.loads(line)
                             self.legal_data.append(legal_item)
                         except json.JSONDecodeError as e:
-                            print(f"⚠️  Warning: Invalid JSON at line {line_num}: {e}")
+                            print(f"  Warning: Invalid JSON at line {line_num}: {e}")
                             continue
-            print(f"✅ Loaded {len(self.legal_data)} legal entries")
+            print(f"Loaded {len(self.legal_data)} legal entries")
 
             return self.properties_data, self.legal_data
 
         except Exception as e:
-            print(f"❌ Error loading data: {e}")
+            print(f"Error loading data: {e}")
             return [], []
 
     def create_aspect_chunks(self) -> List[AspectChunk]:
@@ -238,7 +238,7 @@ class AspectBasedChunker:
             List of AspectChunk objects
         """
         print(
-            f"\n🎯 Creating aspect-based chunks for {len(self.properties_data)} properties..."
+            f"\nCreating aspect-based chunks for {len(self.properties_data)} properties..."
         )
         chunks = []
 
@@ -380,11 +380,11 @@ class AspectBasedChunker:
             )
 
         # Validate metadata consistency across chunks
-        print(f"\n🔍 Validating metadata consistency...")
+        print(f"\nValidating metadata consistency...")
         self._validate_chunk_metadata(chunks)
 
         # Add legal chunks
-        print(f"\n⚖️  Creating legal chunks for {len(self.legal_data)} legal entries...")
+        print(f"\nCreating legal chunks for {len(self.legal_data)} legal entries...")
         for i, legal_item in enumerate(self.legal_data):
             if i % 10 == 0:  # Progress indicator
                 print(f"   Processing legal entry {i+1}/{len(self.legal_data)}...")
@@ -429,7 +429,7 @@ class AspectBasedChunker:
             )
 
         self.chunks = chunks
-        print(f"✅ Created {len(chunks)} aspect-based chunks")
+        print(f"Created {len(chunks)} aspect-based chunks")
         return chunks
 
     def _validate_chunk_metadata(self, chunks: List[AspectChunk]):
@@ -456,7 +456,7 @@ class AspectBasedChunker:
                     postcodes.add(postcode)
                     if not isinstance(postcode, str) or len(postcode) < 2:
                         print(
-                            f"   ⚠️ Invalid postcode in chunk {chunk.chunk_id}: {postcode}"
+                            f"    Invalid postcode in chunk {chunk.chunk_id}: {postcode}"
                         )
 
                 # Check price format
@@ -465,7 +465,7 @@ class AspectBasedChunker:
                     if isinstance(price, (int, float)):
                         price_ranges.append(price)
                     else:
-                        print(f"   ⚠️ Invalid price in chunk {chunk.chunk_id}: {price}")
+                        print(f"    Invalid price in chunk {chunk.chunk_id}: {price}")
 
                 # Check property type format
                 if "property_type" in chunk.metadata:
@@ -474,19 +474,19 @@ class AspectBasedChunker:
                         property_types.add(prop_type)
                     else:
                         print(
-                            f"   ⚠️ Invalid property_type in chunk {chunk.chunk_id}: {prop_type}"
+                            f"    Invalid property_type in chunk {chunk.chunk_id}: {prop_type}"
                         )
 
-        print(f"   ✅ Metadata fields found: {sorted(metadata_fields)}")
+        print(f"   Metadata fields found: {sorted(metadata_fields)}")
         print(
-            f"   ✅ Postcodes found: {sorted(postcodes)[:10]}{'...' if len(postcodes) > 10 else ''}"
+            f"   Postcodes found: {sorted(postcodes)[:10]}{'...' if len(postcodes) > 10 else ''}"
         )
         print(
-            f"   ✅ Price range: £{min(price_ranges):,} - £{max(price_ranges):,}"
+            f"   Price range: £{min(price_ranges):,} - £{max(price_ranges):,}"
             if price_ranges
-            else "   ⚠️ No valid prices found"
+            else "    No valid prices found"
         )
-        print(f"   ✅ Property types: {sorted(property_types)}")
+        print(f"   Property types: {sorted(property_types)}")
 
         # Validate required fields exist
         required_fields = ["postcode", "price_int", "property_type", "bedrooms"]
@@ -494,9 +494,9 @@ class AspectBasedChunker:
             field for field in required_fields if field not in metadata_fields
         ]
         if missing_fields:
-            print(f"   ❌ Missing required metadata fields: {missing_fields}")
+            print(f"   Missing required metadata fields: {missing_fields}")
         else:
-            print(f"   ✅ All required metadata fields present")
+            print(f"   All required metadata fields present")
 
     def create_vector_database(
         self, properties_file: str, legal_file: str, embedding_model=None
@@ -519,10 +519,10 @@ class AspectBasedChunker:
             VectorStore: The created vector database, or None if failed
         """
         if not self.chunks:
-            print("❌ No chunks available to create vector database")
+            print("No chunks available to create vector database")
             return None
 
-        print(f"🔍 Generating embeddings for {len(self.chunks)} chunks...")
+        print(f"Generating embeddings for {len(self.chunks)} chunks...")
 
         # Generate embeddings inline using OpenAI by default
         batch_size = 100  # OpenAI recommended batch size
@@ -542,25 +542,25 @@ class AspectBasedChunker:
                 for j, chunk in enumerate(batch):
                     chunk.embedding = response.data[j].embedding
 
-                print(f"   ✅ Batch {i//batch_size + 1} completed successfully")
+                print(f"   Batch {i//batch_size + 1} completed successfully")
 
                 # Rate limiting - be nice to OpenAI
                 time.sleep(0.1)
 
             except Exception as e:
                 print(
-                    f"   ❌ Error generating embeddings for batch {i//batch_size + 1}: {e}"
+                    f"   Error generating embeddings for batch {i//batch_size + 1}: {e}"
                 )
 
         # Debug: Check embedding dimensions
         if self.chunks and self.chunks[0].embedding:
             first_embedding = self.chunks[0].embedding
-            print(f"🔍 First chunk embedding dimension: {len(first_embedding)}")
+            print(f"First chunk embedding dimension: {len(first_embedding)}")
             print(
-                f"🔍 Total chunks with embeddings: {len([c for c in self.chunks if c.embedding])}"
+                f"Total chunks with embeddings: {len([c for c in self.chunks if c.embedding])}"
             )
 
-        print("🏗️ Creating vector database...")
+        print("Creating vector database...")
 
         try:
             # Create Chroma vector store with persistent storage
@@ -572,7 +572,7 @@ class AspectBasedChunker:
                     documents.append(doc)
 
             if not documents:
-                print("❌ No chunks with embeddings found!")
+                print("No chunks with embeddings found!")
                 return None
 
             # Create a simple embedding function that uses the stored embeddings
@@ -595,7 +595,7 @@ class AspectBasedChunker:
                     else:
                         self.embedding_dim = 1536  # OpenAI default
                         print(
-                            f"⚠️ No embeddings found, using default dimension: {self.embedding_dim}"
+                            f" No embeddings found, using default dimension: {self.embedding_dim}"
                         )
 
                 def embed_documents(self, texts: List[str]) -> List[List[float]]:
@@ -620,7 +620,7 @@ class AspectBasedChunker:
                         # Check if dimension matches stored embeddings
                         if self.embeddings and len(embedding) != self.embedding_dim:
                             print(
-                                f"⚠️ Query embedding dimension ({len(embedding)}) doesn't match stored embeddings ({self.embedding_dim})"
+                                f" Query embedding dimension ({len(embedding)}) doesn't match stored embeddings ({self.embedding_dim})"
                             )
                             # Pad or truncate to match
                             if len(embedding) < self.embedding_dim:
@@ -632,7 +632,7 @@ class AspectBasedChunker:
 
                         return embedding
                     except Exception as e:
-                        print(f"❌ Error generating query embedding: {e}")
+                        print(f"Error generating query embedding: {e}")
                         # Fallback: return zero vector with correct dimension
                         return [0.0] * self.embedding_dim
 
@@ -642,12 +642,12 @@ class AspectBasedChunker:
             db_name = get_database_name(properties_file, legal_file)
             chroma_persist_directory = f"databases/chroma_db_{db_name}"
 
-            print(f"📁 Creating database: {chroma_persist_directory}")
+            print(f"Creating database: {chroma_persist_directory}")
 
             # CRITICAL: Create Chroma with proper metadata indexing
-            print(f"   📊 Creating Chroma with {len(documents)} documents...")
+            print(f"   Creating Chroma with {len(documents)} documents...")
             print(
-                f"   🔍 Sample metadata fields: {list(documents[0].metadata.keys()) if documents else 'No documents'}"
+                f"   Sample metadata fields: {list(documents[0].metadata.keys()) if documents else 'No documents'}"
             )
 
             # CRITICAL: Fix for ChromaDB 0.4.x compatibility
@@ -658,7 +658,7 @@ class AspectBasedChunker:
                     persist_directory=chroma_persist_directory,
                 )
             except Exception as e:
-                print(f"   ⚠️ Standard Chroma creation failed: {e}")
+                print(f"    Standard Chroma creation failed: {e}")
                 print(f"   🔧 Trying alternative creation method...")
 
                 # Alternative method for ChromaDB 0.4.x
@@ -689,7 +689,7 @@ class AspectBasedChunker:
 
                     collection.add(ids=ids, documents=texts, metadatas=metadatas)
                     print(
-                        f"   📝 Added batch {i//batch_size + 1}/{(len(documents) + batch_size - 1)//batch_size}"
+                        f"   Added batch {i//batch_size + 1}/{(len(documents) + batch_size - 1)//batch_size}"
                     )
 
                 # Create LangChain wrapper
@@ -702,7 +702,7 @@ class AspectBasedChunker:
                 )
 
             # CRITICAL: Ensure metadata is properly indexed
-            print(f"   🔍 Verifying metadata indexing...")
+            print(f"   Verifying metadata indexing...")
             if self.vector_db:
                 try:
                     # Test a simple metadata query to ensure indexing works
@@ -715,27 +715,27 @@ class AspectBasedChunker:
                         and test_results["documents"]
                     ):
                         print(
-                            f"   ✅ Metadata indexing verified - test query returned {len(test_results['documents'])} results"
+                            f"   Metadata indexing verified - test query returned {len(test_results['documents'])} results"
                         )
                     else:
                         print(
-                            f"   ⚠️ Metadata indexing may have issues - test query returned no results"
+                            f"    Metadata indexing may have issues - test query returned no results"
                         )
                 except Exception as e:
-                    print(f"   ⚠️ Metadata indexing test failed: {e}")
+                    print(f"    Metadata indexing test failed: {e}")
             else:
-                print("   ⚠️ Vector database is None, cannot verify indexing")
+                print("    Vector database is None, cannot verify indexing")
 
             # Save the vector database metadata to disk for persistence
             self.save_vector_database(db_name, properties_file, legal_file)
 
             print(
-                f"✅ Chroma vector database '{db_name}' created successfully with {len(documents)} chunks!"
+                f"Chroma vector database '{db_name}' created successfully with {len(documents)} chunks!"
             )
             return self.vector_db
 
         except Exception as e:
-            print(f"❌ Error creating Chroma database: {e}")
+            print(f"Error creating Chroma database: {e}")
             return None
 
     def save_vector_database(self, db_name: str, properties_file: str, legal_file: str):
@@ -775,11 +775,11 @@ class AspectBasedChunker:
             with open(metadata_file, "w", encoding="utf-8") as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
 
-            print(f"💾 Saved {len(chunks_data)} chunks to {chunks_file}")
-            print(f"💾 Saved database metadata to {metadata_file}")
+            print(f"Saved {len(chunks_data)} chunks to {chunks_file}")
+            print(f"Saved database metadata to {metadata_file}")
 
         except Exception as e:
-            print(f"⚠️ Warning: Could not save chunks data: {e}")
+            print(f" Warning: Could not save chunks data: {e}")
 
     def load_vector_database(
         self, properties_file: str, legal_file: str, embedding_model=None
@@ -801,9 +801,7 @@ class AspectBasedChunker:
             chroma_persist_directory = f"databases/chroma_db_{db_name}"
 
             if not os.path.exists(chroma_persist_directory):
-                print(
-                    f"📁 No database '{db_name}' found, will create new vector database"
-                )
+                print(f"No database '{db_name}' found, will create new vector database")
                 return None
 
             # Check if files have been modified since database was created
@@ -811,12 +809,12 @@ class AspectBasedChunker:
                 properties_file, legal_file, chroma_persist_directory
             ):
                 print(
-                    f"📝 Dataset files have been modified since database '{db_name}' was created"
+                    f"Dataset files have been modified since database '{db_name}' was created"
                 )
-                print("🔄 Will recreate database with updated data")
+                print(" Will recreate database with updated data")
                 return None
 
-            print(f"📁 Loading existing database '{db_name}' from disk...")
+            print(f"Loading existing database '{db_name}' from disk...")
 
             # Create embedding function for loading
             from langchain_core.embeddings import Embeddings
@@ -839,7 +837,7 @@ class AspectBasedChunker:
                         )
                         return response.data[0].embedding
                     except Exception as e:
-                        print(f"❌ Error generating query embedding: {e}")
+                        print(f"Error generating query embedding: {e}")
                         return [0.0] * self.embedding_dim
 
             embedding_function = OpenAIEmbeddingFunction(self.client)
@@ -850,11 +848,11 @@ class AspectBasedChunker:
                 embedding_function=embedding_function,
             )
 
-            print(f"✅ Successfully loaded existing database '{db_name}' from disk!")
+            print(f"Successfully loaded existing database '{db_name}' from disk!")
             return self.vector_db
 
         except Exception as e:
-            print(f"⚠️ Warning: Could not load Chroma database: {e}")
+            print(f" Warning: Could not load Chroma database: {e}")
             return None
 
 
@@ -886,7 +884,7 @@ def create_aspect_based_vectordb(
         VectorStore: The created/loaded vector database
     """
     db_name = get_database_name(properties_file, legal_file)
-    print(f"🚀 Creating/Loading Aspect-Based Vector Database: '{db_name}'")
+    print(f"Creating/Loading Aspect-Based Vector Database: '{db_name}'")
 
     # Create default embedding model if none provided
     if embedding_model is None:
@@ -896,9 +894,9 @@ def create_aspect_based_vectordb(
             embedding_model = OpenAIEmbeddings(
                 model="text-embedding-3-large", api_key=openai_api_key
             )
-            print("✅ Created default OpenAI embedding model")
+            print("Created default OpenAI embedding model")
         except Exception as e:
-            print(f"❌ Failed to create default embedding model: {e}")
+            print(f"Failed to create default embedding model: {e}")
             return None
 
     # Initialize chunker
@@ -906,33 +904,33 @@ def create_aspect_based_vectordb(
 
     # Check if we should force recreation
     if force_recreate:
-        print("🔄 Force recreate flag set - ignoring existing database")
+        print(" Force recreate flag set - ignoring existing database")
     else:
         # First, try to load existing vector database from disk
-        print(f"📁 Checking for existing database '{db_name}'...")
+        print(f"Checking for existing database '{db_name}'...")
         existing_vectordb = chunker.load_vector_database(
             properties_file, legal_file, embedding_model
         )
 
         if existing_vectordb:
-            print(f"✅ Successfully loaded existing database '{db_name}' from disk!")
+            print(f"Successfully loaded existing database '{db_name}' from disk!")
             return existing_vectordb
 
     # If no existing database or force_recreate=True, create new one
-    print(f"🆕 Creating new database '{db_name}'...")
+    print(f"Creating new database '{db_name}'...")
 
     # Load data
     properties_data, legal_data = chunker.load_data(properties_file, legal_file)
 
     if not properties_data:
-        print("❌ Failed to load properties data")
+        print("Failed to load properties data")
         return None
 
     # Create aspect-based chunks
     chunks = chunker.create_aspect_chunks()
 
     if not chunks:
-        print("❌ Failed to create aspect chunks")
+        print("Failed to create aspect chunks")
         return None
 
     # Create vector database with file-based naming
@@ -942,11 +940,11 @@ def create_aspect_based_vectordb(
 
     if vectordb:
         print(
-            f"✅ Aspect-Based Vector Database '{db_name}' created and saved successfully!"
+            f"Aspect-Based Vector Database '{db_name}' created and saved successfully!"
         )
         return vectordb
     else:
-        print("❌ Failed to create vector database")
+        print("Failed to create vector database")
         return None
 
 
@@ -956,7 +954,7 @@ if __name__ == "__main__":
     api_key = os.getenv("OPENAI_API_KEY")
 
     if not api_key:
-        print("❌ Error: OPENAI_API_KEY not found in environment variables!")
+        print("Error: OPENAI_API_KEY not found in environment variables!")
         print("   Please set your OpenAI API key in the .env file")
         exit(1)
 
@@ -966,7 +964,7 @@ if __name__ == "__main__":
     vector_db = create_aspect_based_vectordb(api_key)
 
     if vector_db:
-        print("✅ Vector database created successfully!")
-        print("🎯 Ready for real estate queries!")
+        print("Vector database created successfully!")
+        print("Ready for real estate queries!")
     else:
-        print("❌ Failed to create vector database")
+        print("Failed to create vector database")

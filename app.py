@@ -131,7 +131,7 @@ class ChatbotWeb:
         self.chats_folder = "chats"
         if not os.path.exists(self.chats_folder):
             os.makedirs(self.chats_folder)
-            print(f"✅ Created chats folder: {self.chats_folder}")
+            print(f"Created chats folder: {self.chats_folder}")
 
         # Initialize chat session tracking
         if "chat_session_id" not in st.session_state:
@@ -181,7 +181,7 @@ class ChatbotWeb:
             )
 
             if vectordb:
-                print("✅ Aspect-Based Vector Database created successfully!")
+                print("Aspect-Based Vector Database created successfully!")
                 return vectordb
             else:
                 st.error(
@@ -189,8 +189,8 @@ class ChatbotWeb:
                 )
 
         except Exception as e:
-            print(f"⚠️ Aspect-Based chunking failed: {e}")
-            print("🔄 Falling back to legacy chunking method...")
+            print(f" Aspect-Based chunking failed: {e}")
+            print(" Falling back to legacy chunking method...")
             st.warning(
                 "Using legacy chunking method due to error in Aspect-Based chunking."
             )
@@ -224,7 +224,7 @@ class ChatbotWeb:
             if pipeline is None:
                 raise Exception("Failed to create RAG pipeline")
 
-            print("✅ RAG Pipeline setup completed successfully")
+            print("RAG Pipeline setup completed successfully")
             return pipeline
 
         except Exception as e:
@@ -295,10 +295,10 @@ class ChatbotWeb:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(chat_session, f, indent=2, ensure_ascii=False)
 
-            print(f"💾 Chat session saved: {filepath}")
+            print(f"Chat session saved: {filepath}")
 
         except Exception as e:
-            print(f"⚠️ Error saving chat session: {e}")
+            print(f" Error saving chat session: {e}")
             traceback.print_exc()
 
     @utils.enable_chat_history  # Decorator to enable persistent chat history
@@ -319,9 +319,9 @@ class ChatbotWeb:
 
         # Add force recreate option in sidebar
         st.sidebar.markdown("---")
-        st.sidebar.markdown("**⚙️ Database Options**")
+        st.sidebar.markdown("**Database Options**")
         force_recreate = st.sidebar.checkbox(
-            "🔄 Force Recreate Database",
+            " Force Recreate Database",
             value=False,
             help="Check this to ignore existing database and create new embeddings",
         )
@@ -329,7 +329,7 @@ class ChatbotWeb:
         # Clear cache if force recreate is enabled
         if force_recreate:
             st.cache_resource.clear()
-            st.info("🔄 Cache cleared - will create new database")
+            st.info(" Cache cleared - will create new database")
 
         # Set up vector database with JSON datasets
         vectordb = self.setup_vectordb(
@@ -345,24 +345,24 @@ class ChatbotWeb:
 
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
-        st.sidebar.markdown("**📊 Data Sources**")
+        st.sidebar.markdown("**Data Sources**")
         st.sidebar.markdown("🧠 **Strategy:** Aspect-Based Chunking (Best Performer)")
-        st.sidebar.markdown("💾 **Storage:** Persistent (saved to disk)")
+        st.sidebar.markdown("**Storage:** Persistent (saved to disk)")
         st.sidebar.markdown("🤖 **Embeddings:** OpenAI (default)")
         st.sidebar.markdown(
-            f"📄 **Primary:** `{os.path.basename(LOCAL_DATASET_PATH_LISTING_JSON)}` (v2)"
+            f"**Primary:** `{os.path.basename(LOCAL_DATASET_PATH_LISTING_JSON)}` (v2)"
         )
         st.sidebar.markdown(
-            f"📁 **Legal Data:** `{os.path.basename(LOCAL_DATASET_PATH_LEGAL_JSONL)}`"
+            f"**Legal Data:** `{os.path.basename(LOCAL_DATASET_PATH_LEGAL_JSONL)}`"
         )
 
         # Show chat session info
         st.sidebar.markdown("---")
         st.sidebar.markdown("**💬 Chat Session**")
         st.sidebar.markdown(f"🆔 **Session ID:** `{st.session_state.chat_session_id}`")
-        st.sidebar.markdown(f"💾 **Messages:** {len(st.session_state.chat_messages)}")
+        st.sidebar.markdown(f"**Messages:** {len(st.session_state.chat_messages)}")
         st.sidebar.markdown(
-            f"📁 **Saved to:** `chats/{st.session_state.chat_session_id}.json`"
+            f"**Saved to:** `chats/{st.session_state.chat_session_id}.json`"
         )
 
         # Display chat history
@@ -417,13 +417,13 @@ class ChatbotWeb:
                         result = ui_result
 
                         # Debug logging
-                        print(f"🔍 Query processed: {corrected_query}")
+                        print(f"Query processed: {corrected_query}")
                         print(
-                            f"🔍 Source documents retrieved: {len(result.get('source_documents', []))}"
+                            f"Source documents retrieved: {len(result.get('source_documents', []))}"
                         )
 
                     except Exception as e:
-                        print(f"❌ Error in QA chain: {e}")
+                        print(f"Error in QA chain: {e}")
                         st.error(
                             f"Sorry, I encountered an error processing your query: {str(e)}"
                         )
@@ -482,7 +482,7 @@ class ChatbotWeb:
                                     source_name = str(src)
 
                                 # Create a compact reference with clickable popup
-                                ref_title = f"📄 Ref {idx+1}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+                                ref_title = f"Ref {idx+1}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
 
                                 # Show document content in a popup when clicked
                                 with st.popover(ref_title):
@@ -523,7 +523,7 @@ class ChatbotWeb:
                                                 source_name = str(src)
 
                                             # Create reference with popup
-                                            ref_title = f"📄 Ref {i+j+5}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+                                            ref_title = f"Ref {i+j+5}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
 
                                             with st.popover(ref_title):
                                                 st.caption("**Source:** " + str(src))

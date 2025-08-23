@@ -129,7 +129,7 @@ def validate_testset(df: pd.DataFrame) -> pd.DataFrame:
     try:
         # Validate the dataframe
         testset = TestsetDataFrame.from_dataframe(df)
-        print(f"✅ Testset validation passed: {len(testset.data)} rows")
+        print(f"Testset validation passed: {len(testset.data)} rows")
         return testset.to_dataframe()
     except Exception as e:
         raise ValueError(f"Testset validation failed: {str(e)}")
@@ -151,7 +151,7 @@ def validate_predictions(df: pd.DataFrame) -> pd.DataFrame:
     try:
         # Validate the dataframe
         predictions = PredictionDataFrame.from_dataframe(df)
-        print(f"✅ Predictions validation passed: {len(predictions.data)} rows")
+        print(f"Predictions validation passed: {len(predictions.data)} rows")
         return predictions.to_dataframe()
     except Exception as e:
         raise ValueError(f"Predictions validation failed: {str(e)}")
@@ -187,8 +187,8 @@ if __name__ == "__main__":
     test_df = pd.DataFrame(test_data)
     try:
         validated_df = validate_testset(test_df)
-        print("✅ Testset validation test passed")
+        print("Testset validation test passed")
     except Exception as e:
-        print(f"❌ Testset validation test failed: {e}")
+        print(f"Testset validation test failed: {e}")
 
-    print("✅ Schema validation tests completed")
+    print("Schema validation tests completed")

@@ -24,7 +24,7 @@ try:
     SEABORN_AVAILABLE = True
 except ImportError:
     SEABORN_AVAILABLE = False
-    print("⚠️ Seaborn not available. Install with: pip install seaborn")
+    print(" Seaborn not available. Install with: pip install seaborn")
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -57,7 +57,7 @@ class EvaluationReporter:
             if SEABORN_AVAILABLE:
                 sns.set_palette("husl")
         except Exception as e:
-            print(f"⚠️ Plotting style setup failed: {e}")
+            print(f" Plotting style setup failed: {e}")
 
     def generate_report(
         self,
@@ -80,7 +80,7 @@ class EvaluationReporter:
         Returns:
             Path to generated report
         """
-        print("📊 Generating evaluation report...")
+        print("Generating evaluation report...")
 
         # Create output directory
         report_dir = os.path.join(output_dir, run_id, "reports")
@@ -116,8 +116,8 @@ class EvaluationReporter:
         self._generate_summary_report(results, analysis, summary_path)
         reports["summary"] = summary_path
 
-        print(f"✅ Report generated successfully")
-        print(f"📁 Reports saved to: {report_dir}")
+        print(f"Report generated successfully")
+        print(f"Reports saved to: {report_dir}")
 
         return report_dir
 
@@ -149,7 +149,7 @@ class EvaluationReporter:
         with open(output_path, "w") as f:
             json.dump(report_data, f, indent=2, default=str)
 
-        print(f"💾 JSON report saved to: {output_path}")
+        print(f"JSON report saved to: {output_path}")
 
     def _generate_markdown_report(
         self,
@@ -170,20 +170,20 @@ class EvaluationReporter:
         md_content.append("")
 
         # Executive Summary
-        md_content.append("## 🎯 Executive Summary")
+        md_content.append("## Executive Summary")
         overall_status = analysis.get("threshold_analysis", {}).get(
             "overall_status", "UNKNOWN"
         )
         status_emoji = (
-            "✅"
+            "PASS"
             if overall_status == "PASS"
-            else "❌" if overall_status == "FAIL" else "⚠️"
+            else "FAIL" if overall_status == "FAIL" else ""
         )
         md_content.append(f"**Overall Status:** {status_emoji} {overall_status}")
         md_content.append("")
 
         # Metrics Overview
-        md_content.append("## 📊 Metrics Overview")
+        md_content.append("## Metrics Overview")
         md_content.append("| Metric | Score | Threshold | Status |")
         md_content.append("|--------|-------|-----------|---------|")
 
@@ -193,7 +193,7 @@ class EvaluationReporter:
 
             if score is not None:
                 threshold = self.config.get("thresholds", {}).get(metric_name, 0.0)
-                status = "✅ PASS" if score >= threshold else "❌ FAIL"
+                status = "PASS" if score >= threshold else "FAIL"
                 md_content.append(
                     f"| {metric_name} | {score:.4f} | {threshold:.4f} | {status} |"
                 )
@@ -202,7 +202,7 @@ class EvaluationReporter:
 
         # Dataset Summary
         if "dataset_summary" in analysis:
-            md_content.append("## 📁 Dataset Summary")
+            md_content.append("## Dataset Summary")
             ds = analysis["dataset_summary"]
             md_content.append(f"- **Total Questions:** {ds.get('total_questions', 0)}")
             md_content.append(
@@ -224,7 +224,7 @@ class EvaluationReporter:
 
         # Performance Analysis
         if "performance_metrics" in analysis:
-            md_content.append("## 🚀 Performance Analysis")
+            md_content.append("## Performance Analysis")
             for metric_name, metric_data in analysis["performance_metrics"].items():
                 md_content.append(f"### {metric_name.title()}")
                 md_content.append(f"- **Score:** {metric_data.get('score', 0):.4f}")
@@ -244,7 +244,7 @@ class EvaluationReporter:
             md_content.append("")
 
         # Configuration
-        md_content.append("## ⚙️ Configuration")
+        md_content.append("## Configuration")
         md_content.append("```yaml")
         md_content.append(json.dumps(self.config, indent=2, default=str))
         md_content.append("```")
@@ -253,7 +253,7 @@ class EvaluationReporter:
         with open(output_path, "w") as f:
             f.write("\n".join(md_content))
 
-        print(f"💾 Markdown report saved to: {output_path}")
+        print(f"Markdown report saved to: {output_path}")
 
     def _generate_html_report(
         self,
@@ -301,7 +301,7 @@ class EvaluationReporter:
         # Title
         html_content.append(
             f"""
-        <h1>🚀 RAG Pipeline Evaluation Report</h1>
+        <h1>RAG Pipeline Evaluation Report</h1>
         <p><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         <p><strong>Run ID:</strong> {datetime.now().strftime('%Y%m%d_%H%M%S')}</p>
         """
@@ -313,14 +313,14 @@ class EvaluationReporter:
         )
         status_class = f"status-{overall_status.lower()}"
         status_emoji = (
-            "✅"
+            "PASS"
             if overall_status == "PASS"
-            else "❌" if overall_status == "FAIL" else "⚠️"
+            else "FAIL" if overall_status == "FAIL" else ""
         )
 
         html_content.append(
             f"""
-        <h2>🎯 Executive Summary</h2>
+        <h2>Executive Summary</h2>
         <div class="metric-card">
             <div class="metric-score {status_class}">{status_emoji} {overall_status}</div>
             <p>Overall Evaluation Status</p>
@@ -329,7 +329,7 @@ class EvaluationReporter:
         )
 
         # Metrics Overview
-        html_content.append("<h2>📊 Metrics Overview</h2>")
+        html_content.append("<h2>Metrics Overview</h2>")
         html_content.append("<table>")
         html_content.append(
             "<tr><th>Metric</th><th>Score</th><th>Threshold</th><th>Status</th></tr>"
@@ -351,7 +351,7 @@ class EvaluationReporter:
 
         # Dataset Summary
         if "dataset_summary" in analysis:
-            html_content.append("<h2>📁 Dataset Summary</h2>")
+            html_content.append("<h2>Dataset Summary</h2>")
             ds = analysis["dataset_summary"]
             html_content.append(
                 f"<p><strong>Total Questions:</strong> {ds.get('total_questions', 0)}</p>"
@@ -380,7 +380,7 @@ class EvaluationReporter:
             html_content.append("</div>")
 
         # Topic Slices (Required for Definition of Done)
-        html_content.append("<h2>📊 Topic Analysis</h2>")
+        html_content.append("<h2>Topic Analysis</h2>")
         if dataset.predictions_df is not None:
             topic_analysis = self._generate_topic_slices(results, dataset)
             html_content.append("<div class='topic-slices'>")
@@ -403,7 +403,7 @@ class EvaluationReporter:
             html_content.append("</div>")
 
         # Worst Examples (Required for Definition of Done)
-        html_content.append("<h2>⚠️ Worst Performing Examples</h2>")
+        html_content.append("<h2> Worst Performing Examples</h2>")
         if dataset.predictions_df is not None:
             worst_examples = self._generate_worst_examples(
                 results, dataset, n_examples=5
@@ -454,7 +454,7 @@ class EvaluationReporter:
         with open(output_path, "w") as f:
             f.write("\n".join(html_content))
 
-        print(f"💾 HTML report saved to: {output_path}")
+        print(f"HTML report saved to: {output_path}")
 
     def _generate_visualizations(
         self,
@@ -488,7 +488,7 @@ class EvaluationReporter:
             viz_paths.append(os.path.join(output_dir, "performance_vs_thresholds.png"))
 
         except Exception as e:
-            print(f"⚠️ Visualization generation failed: {e}")
+            print(f" Visualization generation failed: {e}")
 
         return viz_paths
 
@@ -719,7 +719,7 @@ class EvaluationReporter:
         with open(output_path, "w") as f:
             f.write("\n".join(summary_lines))
 
-        print(f"💾 Summary report saved to: {output_path}")
+        print(f"Summary report saved to: {output_path}")
 
     def _generate_topic_slices(
         self, results: Dict[str, Any], dataset: RagasDataset
@@ -812,6 +812,6 @@ if __name__ == "__main__":
 
     try:
         reporter = EvaluationReporter(config)
-        print("✅ EvaluationReporter initialized successfully")
+        print("EvaluationReporter initialized successfully")
     except Exception as e:
-        print(f"❌ Failed to initialize EvaluationReporter: {e}")
+        print(f"Failed to initialize EvaluationReporter: {e}")

@@ -4,7 +4,7 @@
 
 This system allows you to compare **5 different chunking strategies** for your Manchester Real Estate RAG application and see which one performs best for different types of questions.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Interactive Question Mode
 ```bash
@@ -22,17 +22,17 @@ python batch_question_tester.py
 - Provides comprehensive performance analysis
 - Generates detailed reports and rankings
 
-## 📊 Available Chunking Strategies
+## Available Chunking Strategies
 
 | Strategy             | Description                                   | Best For                                     |
 | -------------------- | --------------------------------------------- | -------------------------------------------- |
 | **🏠 Property-Based** | Each property as a complete chunk             | Property comparison, comprehensive queries   |
-| **🎯 Aspect-Based**   | Separate chunks for crime, schools, transport | Specific aspect queries, focused searches    |
+| **Aspect-Based**     | Separate chunks for crime, schools, transport | Specific aspect queries, focused searches    |
 | **🧠 Semantic-256**   | Balanced chunks (max 256 words)               | Balanced performance, consistent chunk sizes |
 | **🧠 Semantic-512**   | Medium chunks (max 512 words)                 | Good balance of context and specificity      |
 | **🧠 Semantic-1024**  | Large chunks (max 1024 words)                 | Maximum context, fewer chunks                |
 
-## 🎯 Question Categories for Testing
+## Question Categories for Testing
 
 ### Crime & Safety
 - "What are the crime rates in Manchester city center?"
@@ -64,7 +64,7 @@ python batch_question_tester.py
 - "Property market trends in Greater Manchester"
 - "Affordable housing options in Manchester"
 
-## 🔍 How to Use Interactive Mode
+## How to Use Interactive Mode
 
 1. **Start the system**: `python chunking_comparison_system.py`
 2. **Wait for initialization**: System loads data and prepares all strategies
@@ -77,29 +77,29 @@ python batch_question_tester.py
 ```
 ❓ Your question: Properties near good schools in Greater Manchester
 
-🔍 Asking question across all strategies: 'Properties near good schools in Greater Manchester'
+Asking question across all strategies: 'Properties near good schools in Greater Manchester'
 ================================================================================
 
-📊 Testing Property-Based...
-   📈 Score: 0.4523
-   🎯 Coverage: 2 content types
-   ⏱️  Response time: 0.234s
-   🥇 Top result (Score: 0.4523):
+Testing Property-Based...
+   Score: 0.4523
+   Coverage: 2 content types
+   Response time: 0.234s
+   Top result (Score: 0.4523):
       Type: property
       Content: Property Address: New Lane, Eccles M30...
 
-📊 Testing Aspect-Based...
-   📈 Score: 0.4872
-   🎯 Coverage: 1 content types
-   ⏱️  Response time: 0.198s
-   🥇 Top result (Score: 0.4872):
+Testing Aspect-Based...
+   Score: 0.4872
+   Coverage: 1 content types
+   Response time: 0.198s
+   Top result (Score: 0.4872):
       Type: schools
       Content: Property at New Lane, Eccles M30...
 
 [continues for all strategies...]
 ```
 
-## 📈 Understanding Results
+## Understanding Results
 
 ### Score Metrics
 - **Average Score**: Overall retrieval quality (0.0 to 1.0, higher is better)
@@ -116,16 +116,16 @@ python batch_question_tester.py
 ## 🏆 Previous Results
 
 Based on our evaluation, **Aspect-Based chunking** typically performs best because:
-- ✅ Highest average retrieval score (0.4872)
-- ✅ Excellent for specific aspect queries
-- ✅ Reduces noise in retrieval
-- ✅ Better precision for focused questions
+- Highest average retrieval score (0.4872)
+- Excellent for specific aspect queries
+- Reduces noise in retrieval
+- Better precision for focused questions
 
 ## 💡 Tips for Best Results
 
 ### 1. **Ask Specific Questions**
-- ❌ "Tell me about Manchester properties"
-- ✅ "Properties with low crime rates under £300k"
+- "Tell me about Manchester properties"
+- "Properties with low crime rates under £300k"
 
 ### 2. **Use Relevant Keywords**
 - Include property features: "schools", "transport", "crime"
@@ -137,7 +137,7 @@ Based on our evaluation, **Aspect-Based chunking** typically performs best becau
 - **Comparative**: "Properties with better schools than..."
 - **Specific**: "Legal requirements for first-time buyers"
 
-## 📁 Generated Files
+## Generated Files
 
 ### Interactive Mode
 - `comparison_report_[timestamp].md` - Individual question reports
@@ -168,19 +168,19 @@ Based on our evaluation, **Aspect-Based chunking** typically performs best becau
 
 1. **API Key Error**
    ```
-   ❌ Error: OPENAI_API_KEY not found in environment variables!
+   Error: OPENAI_API_KEY not found in environment variables!
    ```
    **Solution**: Create `.env` file with `OPENAI_API_KEY=your_key_here`
 
 2. **Data Loading Error**
    ```
-   ❌ Failed to load data files!
+   Failed to load data files!
    ```
    **Solution**: Check file paths and ensure data files exist
 
 3. **Memory Issues**
    ```
-   ❌ Error during embedding generation
+   Error during embedding generation
    ```
    **Solution**: Reduce batch size or use smaller embedding model
 
@@ -198,7 +198,7 @@ If you encounter issues:
 3. Ensure all data files are in the correct locations
 4. Check that all dependencies are installed
 
-## 🎯 Next Steps
+## Next Steps
 
 After finding the best chunking strategy:
 1. **Integrate** the winning strategy into your main RAG app

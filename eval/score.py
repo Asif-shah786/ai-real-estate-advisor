@@ -31,7 +31,7 @@ try:
 
     RAGAS_AVAILABLE = True
 except ImportError:
-    print("⚠️ Ragas not available. Install with: pip install ragas")
+    print(" Ragas not available. Install with: pip install ragas")
     RAGAS_AVAILABLE = False
 
 from dataset_schemas import validate_predictions
@@ -71,7 +71,7 @@ class RagasScorer:
         ]
         missing_metrics = [m for m in required_metrics if m not in self.metrics]
         if missing_metrics:
-            print(f"⚠️ Warning: Missing metrics: {missing_metrics}")
+            print(f" Warning: Missing metrics: {missing_metrics}")
 
     def _validate_dataset_for_evaluation(self, dataset: RagasDataset) -> bool:
         """
@@ -83,7 +83,7 @@ class RagasScorer:
         Returns:
             True if dataset is valid for evaluation
         """
-        print("🔍 Validating dataset for evaluation...")
+        print("Validating dataset for evaluation...")
 
         # Check for empty or problematic answers
         problematic_answers = []
@@ -103,7 +103,7 @@ class RagasScorer:
                     )
 
         if problematic_answers:
-            print("⚠️ Found problematic answers that may cause NaN scores:")
+            print(" Found problematic answers that may cause NaN scores:")
             for issue in problematic_answers:
                 print(f"   {issue}")
             print("   These may result in NaN scores for certain metrics")
@@ -117,7 +117,7 @@ class RagasScorer:
                     empty_contexts.append(f"Row {i}: Empty contexts")
 
         if empty_contexts:
-            print("⚠️ Found empty contexts:")
+            print(" Found empty contexts:")
             for issue in empty_contexts:
                 print(f"   {issue}")
             print("   This will cause context_precision and context_recall to be NaN")
@@ -143,7 +143,7 @@ class RagasScorer:
         # Validate dataset before evaluation
         self._validate_dataset_for_evaluation(dataset)
 
-        print("🧮 Computing Ragas metrics...")
+        print("Computing Ragas metrics...")
 
         # Get evaluation data in Ragas format
         eval_data = dataset.get_evaluation_data()
@@ -163,7 +163,7 @@ class RagasScorer:
             pd.concat([questions_df, ground_truths_df, contexts_df, answers_df], axis=1)
         )
 
-        print(f"📊 Dataset prepared: {len(ragas_dataset)} samples")
+        print(f"Dataset prepared: {len(ragas_dataset)} samples")
 
         # Compute metrics
         results = {}
@@ -173,15 +173,15 @@ class RagasScorer:
             if progress_callback:
                 progress_callback(i + 1, total_metrics, f"Computing {metric_name}")
             else:
-                print(f"📊 Computing {metric_name}...")
+                print(f"Computing {metric_name}...")
 
             try:
                 metric_result = self._compute_single_metric(metric_name, ragas_dataset)
                 results[metric_name] = metric_result
-                print(f"✅ {metric_name}: {metric_result:.4f}")
+                print(f"{metric_name}: {metric_result:.4f}")
 
             except Exception as e:
-                print(f"❌ Failed to compute {metric_name}: {e}")
+                print(f"Failed to compute {metric_name}: {e}")
                 results[metric_name] = None
 
         # Add metadata
@@ -208,7 +208,7 @@ class RagasScorer:
         ]
 
         if nan_metrics:
-            print(f"\n⚠️ NaN scores detected for: {nan_metrics}")
+            print(f"\n NaN scores detected for: {nan_metrics}")
             print("   This is common in RAGAS evaluation and can happen when:")
             print("   - Model outputs are not JSON-parsable")
             print("   - Non-ideal cases for scoring (e.g., 'I don't know' responses)")
@@ -218,7 +218,7 @@ class RagasScorer:
                 "   Consider improving model outputs or using more structured prompts"
             )
 
-        print("✅ All metrics computed successfully")
+        print("All metrics computed successfully")
         return results
 
     def _compute_single_metric(self, metric_name: str, dataset) -> float:
@@ -279,7 +279,7 @@ class RagasScorer:
             if score is None or (
                 isinstance(score, float) and (pd.isna(score) or np.isnan(score))
             ):
-                print(f"⚠️ {metric_name} returned NaN/None - this can happen when:")
+                print(f" {metric_name} returned NaN/None - this can happen when:")
                 print(f"   - Model output is not JSON-parsable")
                 print(
                     f"   - Non-ideal cases for scoring (e.g., 'I don't know' responses)"
@@ -291,7 +291,7 @@ class RagasScorer:
             return score
 
         except Exception as e:
-            print(f"⚠️ {metric_name} computation failed: {e}")
+            print(f" {metric_name} computation failed: {e}")
             print(f"   Error type: {type(e).__name__}")
             print(f"   This can happen when:")
             print(f"   - API key issues")
@@ -536,7 +536,7 @@ class RagasScorer:
             with open(output_path, "w") as f:
                 json.dump(output_data, f, indent=2, default=str)
 
-        print(f"💾 Results saved to: {output_path}")
+        print(f"Results saved to: {output_path}")
 
     def save_metrics_csv(
         self, results: Dict[str, Any], dataset: RagasDataset, output_dir: str
@@ -578,7 +578,7 @@ class RagasScorer:
         per_sample_df = pd.DataFrame(per_sample_data)
         per_sample_path = os.path.join(output_dir, "metrics_per_sample.csv")
         per_sample_df.to_csv(str(per_sample_path), index=False)
-        print(f"💾 Per-sample metrics saved: {per_sample_path}")
+        print(f"Per-sample metrics saved: {per_sample_path}")
 
         # Create metrics_aggregate.csv
         aggregate_data = []
@@ -607,7 +607,7 @@ class RagasScorer:
         aggregate_df = pd.DataFrame(aggregate_data)
         aggregate_path = os.path.join(output_dir, "metrics_aggregate.csv")
         aggregate_df.to_csv(str(aggregate_path), index=False)
-        print(f"💾 Aggregate metrics saved: {aggregate_path}")
+        print(f"Aggregate metrics saved: {aggregate_path}")
 
         return per_sample_path, aggregate_path
 
@@ -664,7 +664,7 @@ class RagasScorer:
         with open(meta_path, "w") as f:
             json.dump(meta_data, f, indent=2, default=str)
 
-        print(f"💾 Run metadata saved: {meta_path}")
+        print(f"Run metadata saved: {meta_path}")
         return meta_path
 
 
@@ -673,9 +673,9 @@ if __name__ == "__main__":
     print("🧪 Testing RagasScorer...")
 
     if not RAGAS_AVAILABLE:
-        print("❌ Ragas not available. Install with: pip install ragas")
+        print("Ragas not available. Install with: pip install ragas")
     else:
-        print("✅ RagasScorer module imported successfully")
+        print("RagasScorer module imported successfully")
 
         # Example configuration
         config = {
@@ -695,6 +695,6 @@ if __name__ == "__main__":
 
         try:
             scorer = RagasScorer(config)
-            print("✅ RagasScorer initialized successfully")
+            print("RagasScorer initialized successfully")
         except Exception as e:
-            print(f"❌ Failed to initialize RagasScorer: {e}")
+            print(f"Failed to initialize RagasScorer: {e}")

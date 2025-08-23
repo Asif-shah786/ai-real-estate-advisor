@@ -26,11 +26,11 @@ def run_complete_evaluation(
     force_recreate_db: bool = False, force_recreate_testset: bool = False
 ):
     """Run the complete evaluation pipeline."""
-    print("🚀 Starting RAG Pipeline Evaluation...")
+    print("Starting RAG Pipeline Evaluation...")
 
     # Load configuration
     config = load_config()
-    print(f"📋 Loaded config: {config.get('run_id_prefix', 'ragas')}")
+    print(f"Loaded config: {config.get('run_id_prefix', 'ragas')}")
 
     # Generate run ID
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -40,18 +40,18 @@ def run_complete_evaluation(
     # Create output directory
     output_dir = os.path.join("outputs", run_id)
     os.makedirs(output_dir, exist_ok=True)
-    print(f"📁 Output directory: {output_dir}")
+    print(f"Output directory: {output_dir}")
 
     # Step 1: Generate or use existing testset
     print("\n" + "=" * 50)
-    print("📝 STEP 1: Testset Management")
+    print("STEP 1: Testset Management")
     print("=" * 50)
 
     from testset_gen import build_synthetic_testset
 
     # Check if we need to create a new testset
     if force_recreate_testset:
-        print("🔄 Force recreating testset...")
+        print(" Force recreating testset...")
         n_questions = (
             config.get("testset", {}).get("synthetic", {}).get("n_questions", 5)
         )
@@ -68,7 +68,7 @@ def run_complete_evaluation(
             n_questions=n_questions,
             seed=config.get("seed", 42),
         )
-        print(f"✅ New testset created with {len(testset)} questions")
+        print(f" New testset created with {len(testset)} questions")
     else:
         # Use existing testset from most recent output
         existing_outputs = [d for d in os.listdir("outputs") if d.startswith("ragas_")]
@@ -82,10 +82,10 @@ def run_complete_evaluation(
 
                 testset = pd.read_parquet(existing_testset_path)
                 print(
-                    f"✅ Using existing testset from {latest_output} with {len(testset)} questions"
+                    f" Using existing testset from {latest_output} with {len(testset)} questions"
                 )
             else:
-                print("⚠️ Existing testset not found, creating new one...")
+                print(" Existing testset not found, creating new one...")
                 testset = build_synthetic_testset(
                     cfg={},
                     outdir=output_dir,
@@ -94,7 +94,7 @@ def run_complete_evaluation(
                     seed=config.get("seed", 42),
                 )
         else:
-            print("🆕 No existing testsets found, creating new one...")
+            print("No existing testsets found, creating new one...")
             testset = build_synthetic_testset(
                 cfg={},
                 outdir=output_dir,
@@ -106,7 +106,7 @@ def run_complete_evaluation(
     # Save testset in output directory
     testset_path = os.path.join(output_dir, "testset.parquet")
     testset.to_parquet(testset_path, index=False)
-    print(f"💾 Testset saved: {testset_path}")
+    print(f"Testset saved: {testset_path}")
 
     # Create dataset for predictions
     from ragas_dataset import RagasDataset
@@ -116,7 +116,7 @@ def run_complete_evaluation(
 
     # Step 2: Use existing RAG pipeline (don't recreate)
     print("\n" + "=" * 50)
-    print("🔄 STEP 2: Using Existing RAG Pipeline")
+    print(" STEP 2: Using Existing RAG Pipeline")
     print("=" * 50)
 
     # Add parent directory to path to import rag_pipeline
@@ -132,7 +132,7 @@ def run_complete_evaluation(
 
         # Check if we need to recreate the database
         if force_recreate_db:
-            print("🔄 Force recreating vector database...")
+            print(" Force recreating vector database...")
             from aspect_based_chunker import create_aspect_based_vectordb
             from langchain_community.embeddings import OpenAIEmbeddings
 
@@ -146,26 +146,26 @@ def run_complete_evaluation(
                 embedding_model=embedding_model,
                 force_recreate=True,
             )
-            print("✅ New vector database created")
+            print(" New vector database created")
 
             # IMPORTANT: Pass the existing database to RAG pipeline to avoid double creation
             print("🔧 Loading RAG pipeline with existing database...")
             from rag_pipeline import RAGPipeline
 
             pipeline = RAGPipeline(openai_api_key, existing_vectordb=vectordb)
-            print("✅ RAG Pipeline loaded successfully with existing database")
+            print(" RAG Pipeline loaded successfully with existing database")
         else:
-            print("📁 Using existing vector database (no recreation needed)")
+            print("Using existing vector database (no recreation needed)")
 
             # Import and use existing RAG pipeline
             print("🔧 Loading existing RAG pipeline...")
             from rag_pipeline import RAGPipeline
 
             pipeline = RAGPipeline(openai_api_key)
-            print("✅ RAG Pipeline loaded successfully")
+            print(" RAG Pipeline loaded successfully")
 
         # Step 3: Run evaluation on testset (no testing, just evaluation)
-        print(f"🚀 Running evaluation on {len(testset)} questions...")
+        print(f"Running evaluation on {len(testset)} questions...")
         predictions = []
 
         for idx, (_, row) in enumerate(testset.iterrows()):
@@ -201,7 +201,7 @@ def run_complete_evaluation(
                 }
 
             except Exception as e:
-                print(f"⚠️ Error processing question {idx + 1}: {e}")
+                print(f" Error processing question {idx + 1}: {e}")
                 # Create error prediction record
                 prediction = {
                     "question": row["question"],
@@ -222,21 +222,21 @@ def run_complete_evaluation(
 
             predictions.append(prediction)
 
-        print(f"✅ Evaluation completed: {len(predictions)} predictions generated")
+        print(f" Evaluation completed: {len(predictions)} predictions generated")
 
         # Save predictions
         dataset.add_predictions(predictions)
         predictions_path = os.path.join(output_dir, "predictions.parquet")
         dataset.save_predictions(predictions_path)
-        print(f"💾 Predictions saved: {predictions_path}")
+        print(f"Predictions saved: {predictions_path}")
 
     except Exception as e:
-        print(f"❌ Pipeline execution failed: {e}")
+        print(f"Pipeline execution failed: {e}")
         raise RuntimeError(f"Pipeline execution failed: {e}")
 
     # Step 4: Score results using RagasScorer
     print("\n" + "=" * 50)
-    print("📊 STEP 4: Computing Metrics")
+    print("STEP 4: Computing Metrics")
     print("=" * 50)
 
     try:
@@ -246,13 +246,13 @@ def run_complete_evaluation(
         scorer = RagasScorer(config=config)
 
         # Compute metrics using real Ragas
-        print("🧮 Computing Ragas metrics...")
+        print("Computing Ragas metrics...")
         results = scorer.compute_metrics(dataset)
 
-        print(f"✅ Metrics computed successfully:")
+        print(f" Metrics computed successfully:")
 
         # Display detailed per-sample results
-        print("\n📊 **Detailed Per-Sample Results:**")
+        print("\n**Detailed Per-Sample Results:**")
         detailed_results = []
         for metric, score in results.items():
             if metric in ["metadata", "threshold_analysis"]:
@@ -265,23 +265,23 @@ def run_complete_evaluation(
                 detailed_results.append(f"{metric}: {score:.3f}")
 
         # Display the detailed results in the format requested
-        print(f"\n📋 **Per-Sample Breakdown:**")
+        print(f"\n**Per-Sample Breakdown:**")
         print("Results:", " ".join(detailed_results))
 
         # Save metrics using RagasScorer methods
-        print("💾 Saving metrics...")
+        print("Saving metrics...")
         scorer.save_metrics_csv(results, dataset, output_dir)
         scorer.save_run_meta(results, dataset, output_dir, run_id)
 
-        print("✅ Real metrics saved using RagasScorer")
+        print(" Real metrics saved using RagasScorer")
 
     except Exception as e:
-        print(f"❌ Real scoring failed: {e}")
+        print(f"Real scoring failed: {e}")
         raise RuntimeError(f"Real scoring failed: {e}")
 
     # Step 5: Generate reports
     print("\n" + "=" * 50)
-    print("📋 STEP 5: Generating Reports")
+    print("STEP 5: Generating Reports")
     print("=" * 50)
 
     from reporting import EvaluationReporter
@@ -327,35 +327,35 @@ def run_complete_evaluation(
     reporter._generate_html_report(results, analysis, dataset, report_path)
 
     print("\n" + "=" * 50)
-    print("✅ EVALUATION COMPLETE - DEFINITION OF DONE ✅")
+    print(" EVALUATION COMPLETE - DEFINITION OF DONE ")
     print("=" * 50)
-    print(f"📁 All outputs saved to: {output_dir}")
-    print(f"📝 Testset used: {len(testset)} questions")
-    print(f"🎯 Predictions created: {len(predictions)} samples")
+    print(f"All outputs saved to: {output_dir}")
+    print(f"Testset used: {len(testset)} questions")
+    print(f"Predictions created: {len(predictions)} samples")
 
-    print("\n📋 Required files created (Definition of Done):")
-    print("   ✅ testset.parquet")
-    print("   ✅ predictions.parquet")
-    print("   ✅ metrics_per_sample.csv")
-    print("   ✅ metrics_aggregate.csv")
-    print("   ✅ report.html (with topic slices & worst examples)")
-    print("   ✅ run_meta.json")
+    print("\nRequired files created (Definition of Done):")
+    print("    testset.parquet")
+    print("    predictions.parquet")
+    print("    metrics_per_sample.csv")
+    print("    metrics_aggregate.csv")
+    print("    report.html (with topic slices & worst examples)")
+    print("    run_meta.json")
 
-    print("\n📊 **Current Results:**")
+    print("\n**Current Results:**")
     for metric, score in results.items():
         if metric in ["metadata", "threshold_analysis"]:
             continue
         threshold = config.get("thresholds", {}).get(metric, 0.0)
         if score is None or (isinstance(score, float) and np.isnan(score)):
-            status = "❌ FAIL"
-            print(f"   - **{metric}**: {score} ❌ (FAIL - below {threshold} threshold)")
+            status = "FAIL"
+            print(f"   - **{metric}**: {score} (FAIL - below {threshold} threshold)")
         else:
-            status = "✅ PASS" if score >= threshold else "❌ FAIL"
+            status = " PASS" if score >= threshold else "FAIL"
             print(
-                f"   - **{metric}**: {score:.3f} {'✅' if score >= threshold else '❌'} ({status} - {'above' if score >= threshold else 'below'} {threshold} threshold)"
+                f"   - **{metric}**: {score:.3f} {'' if score >= threshold else ''} ({status} - {'above' if score >= threshold else 'below'} {threshold} threshold)"
             )
 
-    print(f"\n🎯 Overall Status: {analysis['threshold_analysis']['overall_status']}")
+    print(f"\nOverall Status: {analysis['threshold_analysis']['overall_status']}")
 
 
 if __name__ == "__main__":

@@ -65,7 +65,7 @@ class RagasDataset:
 
         # Validate the testset
         self.testset_df = validate_testset(df)
-        print(f"✅ Loaded testset: {len(self.testset_df)} questions")
+        print(f"Loaded testset: {len(self.testset_df)} questions")
         return self.testset_df
 
     def create_synthetic_testset(
@@ -206,12 +206,12 @@ class RagasDataset:
         self.testset_df = pd.DataFrame(questions)
         self.testset_df = validate_testset(self.testset_df)
 
-        print(f"✅ Created synthetic testset: {len(self.testset_df)} questions")
+        print(f"Created synthetic testset: {len(self.testset_df)} questions")
         print(
-            f"📊 Topic distribution: {self.testset_df['topic'].value_counts().to_dict()}"
+            f"Topic distribution: {self.testset_df['topic'].value_counts().to_dict()}"
         )
         print(
-            f"📊 Difficulty distribution: {self.testset_df['difficulty'].value_counts().to_dict()}"
+            f"Difficulty distribution: {self.testset_df['difficulty'].value_counts().to_dict()}"
         )
 
         return self.testset_df
@@ -235,7 +235,7 @@ class RagasDataset:
         # Validate predictions
         self.predictions_df = validate_predictions(predictions_df)
 
-        print(f"✅ Added predictions: {len(self.predictions_df)} rows")
+        print(f"Added predictions: {len(self.predictions_df)} rows")
         return self.predictions_df
 
     def to_ragas_format(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -302,7 +302,7 @@ class RagasDataset:
         else:
             raise ValueError(f"Unsupported format: {format}")
 
-        print(f"✅ Saved testset to: {path}")
+        print(f"Saved testset to: {path}")
 
     def save_predictions(self, path: str, format: str = "parquet"):
         """Save predictions to file."""
@@ -318,7 +318,7 @@ class RagasDataset:
         else:
             raise ValueError(f"Unsupported format: {format}")
 
-        print(f"✅ Saved predictions to: {path}")
+        print(f"Saved predictions to: {path}")
 
 
 # Example usage
@@ -334,4 +334,4 @@ if __name__ == "__main__":
     # Save testset
     dataset.save_testset("outputs/test_synthetic.parquet")
 
-    print("✅ RagasDataset tests completed")
+    print("RagasDataset tests completed")

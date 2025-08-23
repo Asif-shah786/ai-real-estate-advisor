@@ -1,10 +1,10 @@
 # 🧠 RAG Evaluation System for AI Real Estate Assistant
 
-## 🎯 Overview
+## Overview
 
 This RAG evaluation system provides comprehensive assessment of your AI Real Estate Assistant's performance using custom metrics optimized for the real estate domain. It evaluates your aspect-based chunking strategy (which achieved a 0.4872 retrieval score) across multiple dimensions.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Test the System
 ```bash
@@ -22,7 +22,7 @@ python simple_rag_evaluator.py
 - **JSON Results**: `simple_evaluation_results_[timestamp].json`
 - **Summary Report**: `simple_evaluation_summary_[timestamp].md`
 
-## 📊 What Gets Evaluated
+## What Gets Evaluated
 
 ### **Test Dataset: 30 Comprehensive Queries**
 - **Crime & Safety** (3 queries): Crime rates, safe areas, neighborhood safety
@@ -62,7 +62,7 @@ python simple_rag_evaluator.py
 - Complex queries get longer, more detailed responses
 - Simple queries get concise, focused answers
 
-## 🔍 How It Works
+## How It Works
 
 ### **Evaluation Process**
 1. **Query Analysis**: Categorizes queries and identifies expected aspects
@@ -78,7 +78,7 @@ python simple_rag_evaluator.py
 - **Works with current data sources**: 904+ properties, 410+ chunks
 - **No external dependencies** required for basic evaluation
 
-## 📈 Expected Results
+## Expected Results
 
 ### **Based on Your Current Performance**
 - **Aspect-Based Chunking**: 0.4872 retrieval score (best performer)
@@ -92,7 +92,7 @@ python simple_rag_evaluator.py
 - **Fair**: 0.55-0.69
 - **Poor**: 0.00-0.54
 
-## 🛠️ Advanced Features
+## Advanced Features
 
 ### **Full Ragas + LangSmith Evaluation**
 For advanced evaluation with industry-standard metrics:
@@ -117,7 +117,7 @@ python rag_evaluator.py
 - **Advanced visualization and analysis**
 - **Requires LangSmith API key**
 
-## 📁 File Structure
+## File Structure
 
 ```
 ├── simple_rag_evaluator.py      # Main evaluation system (recommended)
@@ -128,7 +128,7 @@ python rag_evaluator.py
 └── app.py                     # Your existing chatbot system
 ```
 
-## 🎯 Use Cases
+## Use Cases
 
 ### **1. Development Testing**
 - **Validate chunking strategy improvements**
@@ -188,7 +188,7 @@ def _categorize_question(self, question: str) -> str:
     # ... existing logic
 ```
 
-## 📊 Interpreting Results
+## Interpreting Results
 
 ### **Overall Score Analysis**
 - **≥0.85**: Excellent performance, ready for production
@@ -211,7 +211,7 @@ def _categorize_question(self, question: str) -> str:
 
 #### **1. OpenAI API Key Error**
 ```
-❌ OPENAI_API_KEY not found in environment variables!
+OPENAI_API_KEY not found in environment variables!
 ```
 **Solution**: Set your API key:
 ```bash
@@ -220,7 +220,7 @@ export OPENAI_API_KEY='your-api-key-here'
 
 #### **2. Import Errors**
 ```
-❌ ModuleNotFoundError: No module named 'app'
+ModuleNotFoundError: No module named 'app'
 ```
 **Solution**: Ensure you're in the project directory:
 ```bash
@@ -229,7 +229,7 @@ cd /Users/syedasif/development/ai-real-estate-assistant
 
 #### **3. ChatbotWeb Initialization Error**
 ```
-❌ Failed to initialize chatbot
+Failed to initialize chatbot
 ```
 **Solution**: Check if your app.py is working:
 ```bash

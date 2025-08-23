@@ -54,7 +54,7 @@ class Config:
     def validate(self) -> bool:
         """Validate that required configuration is present."""
         if not self.openai_api_key:
-            print("❌ OPENAI_API_KEY is required but not set")
+            print("OPENAI_API_KEY is required but not set")
             return False
         return True
 
@@ -98,4 +98,4 @@ def get_config() -> Config:
 
 # Quick validation on import
 if not config.validate():
-    print("⚠️ Configuration validation failed. Some features may not work.")
+    print(" Configuration validation failed. Some features may not work.")

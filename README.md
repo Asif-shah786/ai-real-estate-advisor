@@ -2,7 +2,7 @@
 
 This module provides comprehensive evaluation capabilities for RAG pipelines, generating all required outputs according to the Definition of Done.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Generate Testset Only
 ```bash
@@ -16,7 +16,7 @@ cd eval
 python3 run_evaluation.py
 ```
 
-## 📋 Required Outputs (Definition of Done)
+## Required Outputs (Definition of Done)
 
 The evaluation system generates all required files in `outputs/{run_id}/`:
 
@@ -27,7 +27,7 @@ The evaluation system generates all required files in `outputs/{run_id}/`:
 5. **report.html** - Comprehensive HTML report with topic slices and worst examples
 6. **run_meta.json** - Run metadata and configuration
 
-## 📊 Four Core Metrics
+## Four Core Metrics
 
 - **Faithfulness** - How well answers stick to retrieved context
 - **Answer Relevancy** - How relevant answers are to questions
@@ -42,14 +42,14 @@ Edit `configs.yaml` to customize:
 - Difficulty distribution
 - Metric thresholds
 
-## 🚀 Next Steps for Production
+## Next Steps for Production
 
 1. Install dependencies: `pip install ragas langchain`
 2. Set `OPENAI_API_KEY` environment variable
 3. Replace mock data with real RAG pipeline execution
 4. System is ready for evaluation testing!
 
-## 📁 File Structure
+## File Structure
 
 ```
 eval/

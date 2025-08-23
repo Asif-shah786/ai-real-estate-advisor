@@ -223,7 +223,7 @@ def _build_data_grounded_catalog(props: List[Dict[str, Any]]) -> Dict[str, Any]:
     This prevents generating impossible queries by ensuring every question uses
     real data combinations.
     """
-    print("🔍 Building data-grounded catalog...")
+    print("Building data-grounded catalog...")
 
     # Track what actually exists
     existing_combinations = {
@@ -285,7 +285,7 @@ def _build_data_grounded_catalog(props: List[Dict[str, Any]]) -> Dict[str, Any]:
     grounded_catalog = {}
     for key, combinations in existing_combinations.items():
         grounded_catalog[key] = list(combinations)
-        print(f"   ✅ {key}: {len(combinations)} valid combinations")
+        print(f"   {key}: {len(combinations)} valid combinations")
 
     return grounded_catalog
 
@@ -529,14 +529,14 @@ def _validate_question_answerability(
     matching_count = sum(1 for prop in props if _match_filters(prop, filters))
 
     if matching_count == 0:
-        print(f"⚠️  WARNING: Question '{question}' has no matching properties!")
+        print(f"  WARNING: Question '{question}' has no matching properties!")
         print(f"   Filters: {filters}")
         print(f"   This question will return no results and hurt RAGAS scores")
         return False
 
     if matching_count < 3:
         print(
-            f"⚠️  WARNING: Question '{question}' only has {matching_count} matching properties"
+            f"  WARNING: Question '{question}' only has {matching_count} matching properties"
         )
         print(f"   Filters: {filters}")
         print(f"   This may lead to poor retrieval performance")
@@ -573,7 +573,7 @@ def build_synthetic_testset(
     # CRITICAL: Build data-grounded catalog to ensure all questions use valid combinations
     grounded_catalog = _build_data_grounded_catalog(props)
     print(
-        f"✅ Data-grounded catalog built with {sum(len(v) for v in grounded_catalog.values())} valid combinations"
+        f"Data-grounded catalog built with {sum(len(v) for v in grounded_catalog.values())} valid combinations"
     )
 
     # Default mix (sum to 1)
@@ -635,13 +635,13 @@ def build_synthetic_testset(
         if not ground_truth:  # Only validate search/filter questions
             is_answerable = _validate_question_answerability(q, filters, props)
             if not is_answerable:
-                print(f"   🔄 Regenerating question {i+1} due to poor answerability...")
+                print(f"    Regenerating question {i+1} due to poor answerability...")
                 # Try to regenerate with a simpler approach using grounded catalog
                 q, filters = _q_search_area_beds_price_grounded(cat, grounded_catalog)
                 is_answerable = _validate_question_answerability(q, filters, props)
                 if not is_answerable:
                     print(
-                        f"   ⚠️  Even grounded fallback question has poor answerability"
+                        f"     Even grounded fallback question has poor answerability"
                     )
                     # Final fallback: simple area query
                     area = random.choice(cat.areas)
@@ -673,7 +673,7 @@ def build_synthetic_testset(
     df = pd.DataFrame(rows)
 
     # CRITICAL: Final validation - ensure every question has results
-    print(f"\n🔍 Final validation of generated questions...")
+    print(f"\nFinal validation of generated questions...")
     for idx, row in df.iterrows():
         if not row["ground_truth"]:  # Only check search/filter questions
             matching_count = sum(
@@ -682,15 +682,15 @@ def build_synthetic_testset(
             question_num = int(idx) + 1
             if matching_count == 0:
                 print(
-                    f"   ❌ Question {question_num} has no matching properties: {row['question']}"
+                    f"   Question {question_num} has no matching properties: {row['question']}"
                 )
             elif matching_count < 3:
                 print(
-                    f"   ⚠️  Question {question_num} has only {matching_count} matching properties: {row['question']}"
+                    f"     Question {question_num} has only {matching_count} matching properties: {row['question']}"
                 )
             else:
                 print(
-                    f"   ✅ Question {question_num} has {matching_count} matching properties: {row['question']}"
+                    f"   Question {question_num} has {matching_count} matching properties: {row['question']}"
                 )
 
     df = validate_testset(
@@ -699,8 +699,8 @@ def build_synthetic_testset(
     path = os.path.join(outdir, "testset.parquet")
     os.makedirs(outdir, exist_ok=True)
     df.to_parquet(path, index=False)
-    print(f"\n✅ Realistic testset saved → {path} ({len(df)} rows)")
-    print(f"✅ All questions guaranteed to have matching properties in the dataset!")
+    print(f"\nRealistic testset saved → {path} ({len(df)} rows)")
+    print(f"All questions guaranteed to have matching properties in the dataset!")
     return df
 
 

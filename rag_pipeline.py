@@ -22,7 +22,7 @@ try:
 
     load_dotenv()
 except ImportError:
-    print("⚠️ python-dotenv not installed. Using system environment variables.")
+    print(" python-dotenv not installed. Using system environment variables.")
 
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
@@ -121,10 +121,10 @@ class RAGPipeline:
             # Setup QA chain
             self.qa_chain = self._setup_qa_chain()
 
-            print("✅ RAG Pipeline components initialized successfully")
+            print("RAG Pipeline components initialized successfully")
 
         except Exception as e:
-            print(f"❌ Failed to initialize RAG Pipeline: {e}")
+            print(f"Failed to initialize RAG Pipeline: {e}")
             traceback.print_exc()
             raise
 
@@ -133,7 +133,7 @@ class RAGPipeline:
         try:
             # If we already have a database, use it
             if self.vectordb is not None:
-                print(f"✅ Using existing vector database (no recreation needed)")
+                print(f"Using existing vector database (no recreation needed)")
                 return self.vectordb
 
             from aspect_based_chunker import create_aspect_based_vectordb
@@ -146,13 +146,13 @@ class RAGPipeline:
             properties_file = os.path.join(project_root, config.properties_file)
             legal_file = os.path.join(project_root, config.legal_file)
 
-            print(f"🔄 Setting up vector database: {config.db_name}")
-            print(f"📁 Using absolute paths: {properties_file}, {legal_file}")
+            print(f" Setting up vector database: {config.db_name}")
+            print(f"Using absolute paths: {properties_file}, {legal_file}")
 
             # Change to project root directory
             original_cwd = os.getcwd()
             os.chdir(project_root)
-            print(f"📁 Changed working directory to: {os.getcwd()}")
+            print(f"Changed working directory to: {os.getcwd()}")
 
             try:
                 vectordb = create_aspect_based_vectordb(
@@ -164,16 +164,16 @@ class RAGPipeline:
                 )
             finally:
                 os.chdir(original_cwd)
-                print(f"📁 Restored working directory to: {os.getcwd()}")
+                print(f"Restored working directory to: {os.getcwd()}")
 
             if vectordb is None:
                 raise Exception("Failed to create vector database")
 
-            print("✅ Vector database setup completed")
+            print("Vector database setup completed")
             return vectordb
 
         except Exception as e:
-            print(f"❌ Vector database setup failed: {e}")
+            print(f"Vector database setup failed: {e}")
             raise
 
     def _setup_retriever(self):
@@ -195,7 +195,7 @@ class RAGPipeline:
                 },
             )
             self.base_retriever = mmr_retriever
-            print("✅ Created MMR retriever for better relevance")
+            print("Created MMR retriever for better relevance")
 
             # CRITICAL FIX: Add SelfQueryRetriever for structured queries
             # This is essential for handling price, bedroom, postcode filters
@@ -264,21 +264,21 @@ class RAGPipeline:
                     ],
                 )
                 self.self_query_retriever = self_query_retriever
-                print("✅ Created SelfQueryRetriever for structured queries")
+                print("Created SelfQueryRetriever for structured queries")
 
                 # Use SelfQueryRetriever as primary
                 primary_retriever = self_query_retriever
-                print("🔍 Using SelfQueryRetriever as primary retriever")
+                print("Using SelfQueryRetriever as primary retriever")
 
             except Exception as e:
-                print(f"⚠️ SelfQueryRetriever failed: {e}")
-                print("🔄 Using MMR retriever as fallback")
+                print(f" SelfQueryRetriever failed: {e}")
+                print(" Using MMR retriever as fallback")
                 primary_retriever = mmr_retriever
 
             return primary_retriever
 
         except Exception as e:
-            print(f"❌ Retriever setup failed: {e}")
+            print(f"Retriever setup failed: {e}")
             raise
 
     def _setup_memory(self):
@@ -294,11 +294,11 @@ class RAGPipeline:
                 return_messages=True,
                 max_token_limit=MEMORY_TOKEN_LIMIT,
             )
-            print("✅ Memory setup completed")
+            print("Memory setup completed")
             return memory
 
         except Exception as e:
-            print(f"❌ Memory setup failed: {e}")
+            print(f"Memory setup failed: {e}")
             raise
 
     def _setup_qa_chain(self):
@@ -328,10 +328,10 @@ Question: {question}
 Answer:"""
 
                 prompt_template = PromptTemplate.from_template(ragas_optimized_prompt)
-                print("✅ Created RAGAS-optimized prompt template")
+                print("Created RAGAS-optimized prompt template")
 
             except Exception as e:
-                print(f"⚠️ Error creating prompt template: {e}")
+                print(f" Error creating prompt template: {e}")
                 # Fallback to simple prompt
                 prompt_template = PromptTemplate.from_template(
                     "Context: {context}\n\nQuestion: {question}\n\nAnswer:"
@@ -349,18 +349,18 @@ Answer:"""
                     chain_type="stuff",
                 )
                 print(
-                    "✅ Successfully created ConversationalRetrievalChain with RAGAS optimization"
+                    "Successfully created ConversationalRetrievalChain with RAGAS optimization"
                 )
-                print(f"🔍 Using prompt template: {type(prompt_template).__name__}")
-                print(f"🔍 Prompt variables: {prompt_template.input_variables}")
+                print(f"Using prompt template: {type(prompt_template).__name__}")
+                print(f"Prompt variables: {prompt_template.input_variables}")
                 return qa_chain
 
             except Exception as e:
-                print(f"❌ Failed to create ConversationalRetrievalChain: {e}")
+                print(f"Failed to create ConversationalRetrievalChain: {e}")
                 raise
 
         except Exception as e:
-            print(f"❌ QA chain setup failed: {e}")
+            print(f"QA chain setup failed: {e}")
             raise
 
     def _get_relevant_documents_with_fallback(self, query: str) -> List:
@@ -393,20 +393,20 @@ Answer:"""
         )
 
         if is_structured_query and self.self_query_retriever:
-            print(f"🔍 Detected structured query: '{query[:50]}...'")
-            print(f"🎯 Using SelfQueryRetriever for metadata-based filtering")
+            print(f"Detected structured query: '{query[:50]}...'")
+            print(f"Using SelfQueryRetriever for metadata-based filtering")
 
             try:
                 docs = self.self_query_retriever.invoke(query)
                 if docs:
-                    print(f"✅ SelfQueryRetriever found {len(docs)} documents")
+                    print(f"SelfQueryRetriever found {len(docs)} documents")
                     print(
-                        f"🔍 SelfQueryRetriever query type: 'structured' (good for filters)"
+                        f"SelfQueryRetriever query type: 'structured' (good for filters)"
                     )
 
                     # Log metadata filtering results
                     if docs and hasattr(docs[0], "metadata"):
-                        print(f"🔍 Sample metadata from SelfQueryRetriever:")
+                        print(f"Sample metadata from SelfQueryRetriever:")
                         sample_meta = docs[0].metadata
                         for key in [
                             "price_int",
@@ -419,37 +419,37 @@ Answer:"""
 
                     return docs
                 else:
-                    print("⚠️ SelfQueryRetriever returned no documents")
+                    print(" SelfQueryRetriever returned no documents")
                     print(
-                        f"🔍 SelfQueryRetriever query type: 'structured' (may be too specific)"
+                        f"SelfQueryRetriever query type: 'structured' (may be too specific)"
                     )
             except Exception as e:
-                print(f"⚠️ SelfQueryRetriever failed: {e}")
-                print(f"🔍 SelfQueryRetriever error type: {type(e).__name__}")
-                print(f"🔄 Falling back to semantic search...")
+                print(f" SelfQueryRetriever failed: {e}")
+                print(f"SelfQueryRetriever error type: {type(e).__name__}")
+                print(f" Falling back to semantic search...")
 
         # Strategy 2: Try primary retriever (usually SelfQueryRetriever)
         if self.retriever and self.retriever != self.self_query_retriever:
             try:
                 docs = self.retriever.invoke(query)
                 if docs:
-                    print(f"✅ Primary retriever found {len(docs)} documents")
-                    print(f"🔍 Primary retriever type: {type(self.retriever).__name__}")
+                    print(f"Primary retriever found {len(docs)} documents")
+                    print(f"Primary retriever type: {type(self.retriever).__name__}")
                     return docs
             except Exception as e:
-                print(f"⚠️ Primary retriever failed: {e}")
+                print(f" Primary retriever failed: {e}")
 
         # Strategy 3: Fall back to MMR base retriever (semantic similarity)
         if self.base_retriever:
             try:
                 docs = self.base_retriever.invoke(query)
-                print(f"✅ MMR base retriever found {len(docs)} documents")
+                print(f"MMR base retriever found {len(docs)} documents")
                 print(
-                    f"🔍 MMR retriever: 'semantic similarity' (good for general queries)"
+                    f"MMR retriever: 'semantic similarity' (good for general queries)"
                 )
                 return docs
             except Exception as e:
-                print(f"⚠️ MMR base retriever failed: {e}")
+                print(f" MMR base retriever failed: {e}")
 
         return docs
 
@@ -471,7 +471,7 @@ Answer:"""
             if not self.qa_chain:
                 raise Exception("QA chain not initialized")
 
-            print(f"🔍 Processing query: {query[:100]}...")
+            print(f"Processing query: {query[:100]}...")
 
             # Clear memory if not using it
             if not use_memory and self.memory:
@@ -486,7 +486,7 @@ Answer:"""
 
                 # Log retrieval results for debugging
                 print(
-                    f"🔍 Retrieval results: {len(test_docs)} docs, {len(contexts_for_chain)} valid contexts"
+                    f"Retrieval results: {len(test_docs)} docs, {len(contexts_for_chain)} valid contexts"
                 )
                 for i, doc in enumerate(test_docs[:3]):  # Show first 3 docs
                     print(
@@ -494,7 +494,7 @@ Answer:"""
                     )
 
             except Exception as retrieval_error:
-                print(f"⚠️ Enhanced retrieval failed: {retrieval_error}")
+                print(f" Enhanced retrieval failed: {retrieval_error}")
                 # Fallback to basic retrieval
                 try:
                     if self.base_retriever:
@@ -505,36 +505,34 @@ Answer:"""
                             if doc.page_content.strip()
                         ]
                         print(
-                            f"🔄 Basic retrieval fallback: {len(test_docs)} docs, {len(contexts_for_chain)} valid contexts"
+                            f" Basic retrieval fallback: {len(test_docs)} docs, {len(contexts_for_chain)} valid contexts"
                         )
                     else:
                         contexts_for_chain = []
                         test_docs = []
                 except Exception as basic_error:
-                    print(f"⚠️ Basic retrieval also failed: {basic_error}")
+                    print(f" Basic retrieval also failed: {basic_error}")
                     contexts_for_chain = []
                     test_docs = []
 
-            print(f"📊 Pre-retrieval test: {len(contexts_for_chain)} valid contexts")
+            print(f"Pre-retrieval test: {len(contexts_for_chain)} valid contexts")
 
             # Process the query through the chain
             try:
                 # CRITICAL DEBUG: Test what the chain's retriever is actually doing
                 if self.retriever and hasattr(self.retriever, "invoke"):
-                    print(
-                        f"🔍 Testing chain's retriever: {type(self.retriever).__name__}"
-                    )
+                    print(f"Testing chain's retriever: {type(self.retriever).__name__}")
                     try:
                         chain_test_docs = self.retriever.invoke(query)
-                        print(f"🔍 Chain retriever test: {len(chain_test_docs)} docs")
+                        print(f"Chain retriever test: {len(chain_test_docs)} docs")
                         for i, doc in enumerate(chain_test_docs[:2]):
                             print(
                                 f"   Chain Doc {i+1}: content_length={len(doc.page_content)}, has_content={bool(doc.page_content.strip())}"
                             )
                     except Exception as retriever_test_error:
-                        print(f"⚠️ Chain retriever test failed: {retriever_test_error}")
+                        print(f" Chain retriever test failed: {retriever_test_error}")
                 else:
-                    print("⚠️ Chain retriever is None or missing invoke method!")
+                    print(" Chain retriever is None or missing invoke method!")
 
                 if callbacks:
                     result = self.qa_chain.invoke(
@@ -543,7 +541,7 @@ Answer:"""
                 else:
                     result = self.qa_chain.invoke({"question": query})
 
-                print("✅ QA chain completed successfully")
+                print("QA chain completed successfully")
 
                 # Extract results
                 answer = result.get("answer", "")
@@ -553,7 +551,7 @@ Answer:"""
                 # The chain's source_documents are the ones that actually get processed
                 if source_docs:
                     contexts = [doc.page_content for doc in source_docs]
-                    print(f"🔍 Chain returned {len(source_docs)} source documents")
+                    print(f"Chain returned {len(source_docs)} source documents")
 
                     # Log each source document to debug
                     for i, doc in enumerate(source_docs):
@@ -561,18 +559,18 @@ Answer:"""
                             f"   Doc {i+1}: content_length={len(doc.page_content)}, metadata={doc.metadata}"
                         )
                         if not doc.page_content.strip():
-                            print(f"   ⚠️ WARNING: Doc {i+1} has EMPTY page_content!")
+                            print(f"    WARNING: Doc {i+1} has EMPTY page_content!")
                 else:
-                    print("⚠️ Chain returned NO source documents, using fallback")
+                    print(" Chain returned NO source documents, using fallback")
                     # Fallback to our pre-retrieved contexts
                     contexts = contexts_for_chain
                     source_docs = test_docs
 
             except Exception as chain_error:
-                print(f"⚠️ QA chain failed: {chain_error}")
+                print(f" QA chain failed: {chain_error}")
                 # Fall back to direct LLM call with pre-retrieved contexts
                 if contexts_for_chain and self.llm:
-                    print("🔄 Using direct LLM fallback...")
+                    print(" Using direct LLM fallback...")
                     context_text = "\n\n".join(contexts_for_chain[:5])
 
                     direct_prompt = f"""Based on the following real estate context, provide a helpful and accurate answer to the question.
@@ -599,17 +597,17 @@ Answer:"""
                     contexts = contexts_for_chain
                     source_docs = test_docs
 
-                    print(f"✅ Direct LLM fallback successful")
+                    print(f"Direct LLM fallback successful")
                 else:
                     raise chain_error
 
-            print(f"📊 Result summary:")
+            print(f"Result summary:")
             print(f"   Answer length: {len(answer)} characters")
             print(f"   Contexts: {len(contexts)} documents")
             print(f"   Answer preview: {answer[:100]}...")
 
             # ENHANCED LOGGING: Show exactly what's being passed to evaluation
-            print(f"🔍 DETAILED CONTEXT ANALYSIS:")
+            print(f"DETAILED CONTEXT ANALYSIS:")
             print(f"   Total contexts retrieved: {len(contexts)}")
             print(
                 f"   Contexts source: {'chain source_documents' if source_docs and len(source_docs) == len(contexts) else 'fallback test_docs'}"
@@ -625,18 +623,18 @@ Answer:"""
             # CRITICAL: Check if any contexts are empty
             empty_contexts = [i for i, ctx in enumerate(contexts) if not ctx.strip()]
             if empty_contexts:
-                print(f"⚠️ WARNING: Empty contexts found at positions: {empty_contexts}")
-                print(f"⚠️ This will cause RAGAS evaluation to fail!")
+                print(f" WARNING: Empty contexts found at positions: {empty_contexts}")
+                print(f" This will cause RAGAS evaluation to fail!")
 
             # Show metadata for debugging
             if source_docs:
-                print(f"🔍 SOURCE DOCUMENT METADATA:")
+                print(f"SOURCE DOCUMENT METADATA:")
                 for i, doc in enumerate(source_docs[:3]):
                     print(f"   Doc {i+1} metadata: {doc.metadata}")
                     print(f"   Doc {i+1} content length: {len(doc.page_content)}")
 
             # Validate answer quality
-            print(f"🔍 ANSWER QUALITY CHECK:")
+            print(f"ANSWER QUALITY CHECK:")
 
             # Ensure answer is a string for analysis
             answer_str = str(answer) if answer else ""
@@ -670,12 +668,12 @@ Answer:"""
             }
 
         except Exception as e:
-            print(f"❌ Error in run_query: {e}")
+            print(f"Error in run_query: {e}")
             traceback.print_exc()
 
             # Final emergency fallback
             try:
-                print("🔄 Attempting emergency fallback...")
+                print(" Attempting emergency fallback...")
                 emergency_docs = self._get_relevant_documents_with_fallback(query)
                 if emergency_docs and self.llm:
                     emergency_contexts = [doc.page_content for doc in emergency_docs]
@@ -708,7 +706,7 @@ Answer:"""
                         },
                     }
             except Exception as emergency_error:
-                print(f"❌ Emergency fallback failed: {emergency_error}")
+                print(f"Emergency fallback failed: {emergency_error}")
 
             # Absolute final error response
             return {
@@ -725,7 +723,7 @@ Answer:"""
         """Clear the conversation memory."""
         if self.memory:
             self.memory.clear()
-            print("✅ Memory cleared")
+            print("Memory cleared")
 
     def get_pipeline_info(self) -> Dict[str, Any]:
         """Get information about the current pipeline configuration."""

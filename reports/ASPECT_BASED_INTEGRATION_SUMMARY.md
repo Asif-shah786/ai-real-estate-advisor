@@ -15,21 +15,21 @@
 
 ## 📊 Chunk Distribution
 
-| Aspect Type | Count | Description |
-|-------------|-------|-------------|
-| **Crime** | 10 | Crime data and summaries for each property |
-| **Transport** | 10 | Transport links and station information |
-| **Overview** | 10 | Basic property information and descriptions |
-| **Schools** | 7 | Nearby schools and educational facilities |
-| **Legal** | 21 | Legal requirements and property regulations |
+| Aspect Type   | Count | Description                                 |
+| ------------- | ----- | ------------------------------------------- |
+| **Crime**     | 10    | Crime data and summaries for each property  |
+| **Transport** | 10    | Transport links and station information     |
+| **Overview**  | 10    | Basic property information and descriptions |
+| **Schools**   | 7     | Nearby schools and educational facilities   |
+| **Legal**     | 21    | Legal requirements and property regulations |
 
 ## 🚀 How It Works
 
 ### 1. **Data Loading**
 ```python
 # Loads from your existing dataset files
-properties_file = "dataset_v2/properties_with_crime_data.json"
-legal_file = "dataset_v2/legal_uk_greater_manchester.jsonl"
+properties_file = "datasets/properties_with_crime_data.json"
+legal_file = "datasets/legal_uk_greater_manchester.jsonl"
 ```
 
 ### 2. **Chunk Creation**
@@ -43,7 +43,7 @@ legal_file = "dataset_v2/legal_uk_greater_manchester.jsonl"
 - **Quality**: High-quality embeddings for semantic search
 
 ### 4. **Vector Database**
-- **Type**: DocArrayInMemorySearch (with Chroma fallback)
+- **Type**: FIASS
 - **Search**: Cosine similarity search with scores
 - **Performance**: Fast retrieval with high accuracy
 
@@ -108,8 +108,8 @@ from aspect_based_chunker import create_aspect_based_vectordb
 
 vectordb = create_aspect_based_vectordb(
     openai_api_key=openai_api_key,
-    properties_file="dataset_v2/properties_with_crime_data.json",
-    legal_file="dataset_v2/legal_uk_greater_manchester.jsonl",
+    properties_file="datasets/properties_with_crime_data.json",
+    legal_file="datasets/legal_uk_greater_manchester.jsonl",
     embedding_model=_self.embedding_model
 )
 ```
@@ -127,11 +127,11 @@ except Exception:
 ## 📈 Performance Metrics
 
 ### **Chunking Strategy Comparison**
-| Strategy | Retrieval Score | Coverage | Chunks | Avg Size |
-|----------|----------------|----------|---------|----------|
-| **🥇 Aspect-Based** | **0.4872** | 1.00 | 58 | 46.9 words |
-| 🥈 Property-Based | 0.4377 | 1.25 | 31 | 87.5 words |
-| 🥉 Semantic-256 | 0.4330 | 1.62 | 24 | 60.5 words |
+| Strategy           | Retrieval Score | Coverage | Chunks | Avg Size   |
+| ------------------ | --------------- | -------- | ------ | ---------- |
+| **🥇 Aspect-Based** | **0.4872**      | 1.00     | 58     | 46.9 words |
+| 🥈 Property-Based   | 0.4377          | 1.25     | 31     | 87.5 words |
+| 🥉 Semantic-256     | 0.4330          | 1.62     | 24     | 60.5 words |
 
 ### **Why Aspect-Based Wins**
 - ✅ **Highest retrieval score** (0.4872)
@@ -163,7 +163,7 @@ You can easily modify the chunking strategy by editing `aspect_based_chunker.py`
 - Adjust metadata fields
 - Change embedding models
 
-## 🎉 What This Means for Users
+##  What This Means for Users
 
 ### **Better Answers**
 - **Crime questions** → Get crime-specific information

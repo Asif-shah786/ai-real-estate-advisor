@@ -44,8 +44,8 @@ class Config:
         )
         # Memory and retrieval settings
         self.memory_token_limit: int = int(os.getenv("MEMORY_TOKEN_LIMIT", "2000"))
-        self.retrieval_top_k: int = int(os.getenv("RETRIEVAL_TOP_K", "20"))
-        self.retrieval_top_n: int = int(os.getenv("RETRIEVAL_TOP_N", "5"))
+        self.retrieval_top_k: int = int(os.getenv("RETRIEVAL_TOP_K", "15"))
+        self.retrieval_top_n: int = int(os.getenv("RETRIEVAL_TOP_N", "3"))
 
         # Evaluation settings
         self.evaluation_seed: int = int(os.getenv("EVALUATION_SEED", "42"))

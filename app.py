@@ -23,6 +23,7 @@ from prompts import (
     CONTEXTUALIZATION_SYSTEM_PROMPT,
     get_prompt_template,
 )  # Import prompts from dedicated file
+from rag_pipeline import create_rag_pipeline  # Import clean RAG pipeline
 from langchain.memory import (
     ConversationSummaryBufferMemory,
 )  # For storing conversation context
@@ -194,230 +195,41 @@ class ChatbotWeb:
                 "Using legacy chunking method due to error in Aspect-Based chunking."
             )
 
-    def setup_qa_chain(self, vectordb):
+    @st.cache_resource(show_spinner="Setting up RAG Pipeline", ttl=86400)
+    def setup_rag_pipeline(_self):
         """
-                Set up a Conversational Retrieval Chain for question answering.
+        Set up the clean RAG pipeline using the new RAGPipeline class.
 
-                This method configures:
-                1. A retriever from the vector database with Maximum Marginal Relevance (MMR)
-                2. Conversation memory to maintain context across interactions
-                3. A QA chain that combines the retriever, memory, and LLM
-
-        Parameters:
-                    vectordb: The vector database to use for retrieval
+        This method:
+        1. Creates a clean RAG pipeline instance
+        2. Handles all the complex setup internally
+        3. Provides a simple interface for the UI
 
         Returns:
-                    ConversationalRetrievalChain: The configured QA chain
+            RAGPipeline: The configured RAG pipeline instance
         """
-        # Create the primary retriever - prefer reranker, fallback to basic
-        primary_retriever = None
-
-        # Try to create CrossEncoderRerankRetriever as the primary choice
         try:
-            from retrieval import CrossEncoderRerankRetriever
+            import os
 
-            primary_retriever = CrossEncoderRerankRetriever.from_vectorstore(
-                vectordb=vectordb,
-                top_k=20,  # Get more candidates for reranking
-                top_n=5,  # Return top 5 after reranking
-                model_name="BAAI/bge-reranker-large",
-            )
-            print("✅ Successfully created CrossEncoderRerankRetriever (Primary)")
+            openai_api_key = os.getenv("OPENAI_API_KEY")
+            if not openai_api_key:
+                st.error(
+                    "OpenAI API key not found. Please set OPENAI_API_KEY in your environment."
+                )
+                return None
+
+            # Create the clean RAG pipeline
+            pipeline = create_rag_pipeline(openai_api_key)
+
+            if pipeline is None:
+                raise Exception("Failed to create RAG pipeline")
+
+            print("✅ RAG Pipeline setup completed successfully")
+            return pipeline
 
         except Exception as e:
-            print(f"⚠️ CrossEncoderRerankRetriever failed: {e}")
-            print("🔄 Falling back to basic similarity retriever")
-            # Fallback to basic retriever
-            primary_retriever = vectordb.as_retriever(
-                search_type="similarity", search_kwargs={"k": 5}
-            )
-
-        # Now use the primary retriever consistently
-        base_retriever = primary_retriever
-
-        # Log which retriever type we're using
-        retriever_type = (
-            "CrossEncoderRerankRetriever"
-            if "CrossEncoderRerankRetriever" in str(type(primary_retriever))
-            else "Basic Similarity Retriever"
-        )
-        print(f"🔍 Using retriever: {retriever_type}")
-
-        # Try to enhance with SelfQueryRetriever, but fall back gracefully
-        try:
-            from langchain.chains.query_constructor.schema import AttributeInfo
-            from langchain.retrievers.self_query.base import SelfQueryRetriever
-
-            metadata_field_info = [
-                AttributeInfo(
-                    name="price_int",
-                    description="Listing price in British pounds",
-                    type="integer",
-                ),
-                AttributeInfo(
-                    name="bedrooms",
-                    description="Number of bedrooms in the property",
-                    type="integer",
-                ),
-                AttributeInfo(
-                    name="bathrooms",
-                    description="Number of bathrooms in the property",
-                    type="integer",
-                ),
-                AttributeInfo(
-                    name="property_type",
-                    description="Type of property such as detached, semi-detached, terraced or apartment",
-                    type="string",
-                ),
-                AttributeInfo(
-                    name="postcode",
-                    description="Postcode prefix where the property is located",
-                    type="string",
-                ),
-                AttributeInfo(
-                    name="tenure",
-                    description="Property tenure for example freehold or leasehold",
-                    type="string",
-                ),
-            ]
-
-            document_content_description = (
-                "Property listings with fields such as price_int, bedrooms, bathrooms, "
-                "property_type, postcode and tenure"
-            )
-
-            # Try to create SelfQueryRetriever with proper error handling
-            retriever = SelfQueryRetriever.from_llm(
-                self.llm,
-                vectordb,
-                document_content_description,
-                metadata_field_info,
-                enable_limit=True,
-                search_kwargs={"k": 20},  # Increased for reranking compatibility
-                verbose=False,  # Reduce verbosity to avoid issues
-            )
-            print("✅ Successfully created SelfQueryRetriever")
-
-        except Exception as e:
-            print(f"⚠️ SelfQueryRetriever failed: {e}")
-            print("🔄 Using basic similarity retriever instead")
-            # Fallback to the basic retriever we created earlier
-            retriever = base_retriever
-
-        # Setup memory for contextual conversation using automatic summarization
-        memory = ConversationSummaryBufferMemory(
-            llm=self.llm,
-            memory_key="chat_history",  # Key used to access chat history in the chain
-            output_key="answer",  # Key used to store the final answer
-            return_messages=True,  # Return chat history as message objects
-            max_token_limit=MEMORY_TOKEN_LIMIT,  # Summarize when token limit is reached
-        )
-
-        # Create history-aware retriever with better error handling
-        try:
-            # Use contextualization prompt from prompts file
-            contextualize_q_system_prompt = CONTEXTUALIZATION_SYSTEM_PROMPT
-            contextualize_q_prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", contextualize_q_system_prompt),
-                    MessagesPlaceholder("chat_history"),
-                    ("human", "{input}"),
-                ]
-            )
-
-            # Create the history-aware retriever chain using LCEL
-            # This returns a Runnable that we can use directly
-            history_aware_retriever_chain = create_history_aware_retriever(
-                llm=self.llm, retriever=retriever, prompt=contextualize_q_prompt
-            )
-
-            print("✅ Successfully created history-aware retriever using LCEL")
-
-            # Use the LCEL chain directly - it's already a proper retriever-like object
-            history_aware_retriever = history_aware_retriever_chain
-
-        except Exception as e:
-            print(f"⚠️ History-aware retriever failed: {e}")
-            print("🔄 Using basic retriever without history awareness")
-            # Fall back to the basic retriever
-            history_aware_retriever = retriever
-
-        # Identity prompt ensures the user's question is passed unchanged to the
-        # history-aware retriever, which will handle rewriting using memory.
-        identity_prompt = PromptTemplate.from_template("{question}")
-
-        # Setup QA chain with comprehensive error handling
-        try:
-            # For LCEL-based history-aware retriever, we need to configure the chain differently
-            if hasattr(history_aware_retriever, "invoke"):
-                # This is an LCEL chain, configure ConversationalRetrievalChain to work with it
-                qa_chain = ConversationalRetrievalChain.from_llm(
-                    llm=self.llm,  # Language model configured in __init__
-                    retriever=retriever,  # Use the base retriever directly
-                    memory=memory,  # Conversation memory
-                    return_source_documents=True,  # Include source documents in the output
-                    verbose=False,  # Don't print debug info
-                    # Add custom prompt for better responses - LCEL VERSION WITH CONTEXT HANDLING
-                    combine_docs_chain_kwargs={
-                        "prompt": PromptTemplate.from_template(
-                            get_prompt_template("lcel")
-                        )
-                    },
-                )
-
-                # Now we'll manually integrate the history-aware retriever in the question processing
-                # This is a more advanced approach that gives us full control
-                print(
-                    "✅ Successfully created ConversationalRetrievalChain with LCEL integration"
-                )
-                return qa_chain
-            else:
-                # Fallback to standard configuration
-                qa_chain = ConversationalRetrievalChain.from_llm(
-                    llm=self.llm,
-                    retriever=history_aware_retriever,
-                    memory=memory,
-                    return_source_documents=True,
-                    verbose=False,
-                    # Add custom prompt for better responses - STANDARD VERSION WITH CONTEXT HANDLING
-                    combine_docs_chain_kwargs={
-                        "prompt": PromptTemplate.from_template(
-                            get_prompt_template("standard")
-                        )
-                    },
-                )
-                print(
-                    "✅ Successfully created ConversationalRetrievalChain with standard retriever"
-                )
-                return qa_chain
-
-        except Exception as e:
-            print(f"❌ Failed to create ConversationalRetrievalChain: {e}")
-            print("🔄 Attempting fallback configuration...")
-
-            # Fallback: Create a simpler chain configuration
-            try:
-                qa_chain = ConversationalRetrievalChain.from_llm(
-                    llm=self.llm,
-                    retriever=base_retriever,  # Use the basic retriever
-                    memory=memory,
-                    return_source_documents=True,
-                    verbose=False,
-                    # Add custom prompt for better responses - FALLBACK VERSION WITH CONTEXT HANDLING
-                    combine_docs_chain_kwargs={
-                        "prompt": PromptTemplate.from_template(
-                            get_prompt_template("fallback")
-                        )
-                    },
-                )
-                print("✅ Successfully created fallback ConversationalRetrievalChain")
-                return qa_chain
-
-            except Exception as fallback_error:
-                print(f"❌ Fallback also failed: {fallback_error}")
-                raise Exception(
-                    f"Could not create QA chain. Original error: {e}, Fallback error: {fallback_error}"
-                )
+            st.error(f"Error setting up RAG pipeline: {e}")
+            return None
 
     def save_chat_session(
         self, user_query: str, response: str, source_documents: Optional[list] = None
@@ -525,12 +337,11 @@ class ChatbotWeb:
             jsonl_file=jsonl_dataset_path,
             force_recreate=force_recreate,
         )
-        if vectordb is None:
-            st.error(
-                "Failed to create vector database. Please check your data sources."
-            )
+        # Set up the RAG pipeline
+        pipeline = self.setup_rag_pipeline()
+        if pipeline is None:
+            st.error("Failed to create RAG pipeline. Please check your configuration.")
             st.stop()
-        qa_chain = self.setup_qa_chain(vectordb)  # Configure the QA chain
 
         # Show data sources info in compact sidebar format
         st.sidebar.markdown("---")
@@ -580,12 +391,30 @@ class ChatbotWeb:
                     # Set up streaming handler to show response as it's generated
                     st_cb = StreamHandler(st.empty())
 
-                    # Process the corrected query through the QA chain
+                    # Process the corrected query through the RAG pipeline
                     try:
-                        result = qa_chain.invoke(
-                            {"question": corrected_query},
-                            {"callbacks": [st_cb]},  # Use streaming callback
-                        )
+                        # Use the pipeline's run_query method
+                        result = pipeline.run_query(corrected_query)
+
+                        # Convert to the format expected by the UI
+                        ui_result = {"answer": result["answer"], "source_documents": []}
+
+                        # Convert contexts back to document format for UI compatibility
+                        for i, context in enumerate(result["contexts"]):
+                            from langchain_core.documents.base import Document
+
+                            doc = Document(
+                                page_content=context,
+                                metadata=(
+                                    result["meta"].get("source_metadata", [{}])[i]
+                                    if i
+                                    < len(result["meta"].get("source_metadata", []))
+                                    else {}
+                                ),
+                            )
+                            ui_result["source_documents"].append(doc)
+
+                        result = ui_result
 
                         # Debug logging
                         print(f"🔍 Query processed: {corrected_query}")
@@ -623,94 +452,96 @@ class ChatbotWeb:
                     st_cb.container.empty()
                     st.write(response)
 
-                # Save chat session to JSON file
-                source_docs = result.get("source_documents", [])
-                self.save_chat_session(user_query, response, source_docs)
+                    # Save chat session to JSON file
+                    source_docs = result.get("source_documents", [])
+                    self.save_chat_session(user_query, response, source_docs)
 
-                # Display source references horizontally with clipping and expandable view
-                if result["source_documents"]:
-                    st.write("**References:**")
+                    # Display source references horizontally with clipping and expandable view
+                    if result["source_documents"]:
+                        st.write("**References:**")
 
-                    # Always show first 4 references horizontally
-                    cols = st.columns(
-                        min(len(result["source_documents"]), 4)
-                    )  # Max 4 columns
+                        # Always show first 4 references horizontally
+                        cols = st.columns(
+                            min(len(result["source_documents"]), 4)
+                        )  # Max 4 columns
 
-                    for idx, doc in enumerate(result["source_documents"]):
-                        if idx >= 4:  # Only show first 4 references initially
-                            break
+                        for idx, doc in enumerate(result["source_documents"]):
+                            if idx >= 4:  # Only show first 4 references initially
+                                break
 
-                        with cols[idx]:
-                            # Extract source information based on metadata structure
-                            src = (
-                                doc.metadata.get("source")
-                                or doc.metadata.get("property_url")
-                                or "unknown"
-                            )
-                            try:
-                                source_name = os.path.basename(src)
-                            except Exception:
-                                source_name = str(src)
-
-                            # Create a compact reference with clickable popup
-                            ref_title = f"📄 Ref {idx+1}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
-
-                            # Show document content in a popup when clicked
-                            with st.popover(ref_title):
-                                st.caption("**Source:** " + str(src))
-                                st.text_area(
-                                    "Content:",
-                                    value=doc.page_content,
-                                    height=150,
-                                    disabled=True,
+                            with cols[idx]:
+                                # Extract source information based on metadata structure
+                                src = (
+                                    doc.metadata.get("source")
+                                    or doc.metadata.get("property_url")
+                                    or "unknown"
                                 )
+                                try:
+                                    source_name = os.path.basename(src)
+                                except Exception:
+                                    source_name = str(src)
 
-                    # Show expandable section for additional references
-                    if len(result["source_documents"]) > 4:
-                        with st.expander(
-                            f"📚 Show More References ({len(result['source_documents'])-4} more)",
-                            expanded=False,
-                        ):
-                            # Show remaining references in a grid layout
-                            remaining_docs = result["source_documents"][4:]
+                                # Create a compact reference with clickable popup
+                                ref_title = f"📄 Ref {idx+1}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
 
-                            # Create rows of 4 columns for remaining references
-                            for i in range(0, len(remaining_docs), 4):
-                                row_docs = remaining_docs[i : i + 4]
-                                row_cols = st.columns(len(row_docs))
+                                # Show document content in a popup when clicked
+                                with st.popover(ref_title):
+                                    st.caption("**Source:** " + str(src))
+                                    st.text_area(
+                                        "Content:",
+                                        value=doc.page_content,
+                                        height=150,
+                                        disabled=True,
+                                        key=f"ref_content_{idx}_1",
+                                    )
 
-                                for j, doc in enumerate(row_docs):
-                                    with row_cols[j]:
-                                        # Extract source information
-                                        src = (
-                                            doc.metadata.get("source")
-                                            or doc.metadata.get("property_url")
-                                            or "unknown"
-                                        )
-                                        try:
-                                            source_name = os.path.basename(src)
-                                        except Exception:
-                                            source_name = str(src)
+                        # Show expandable section for additional references
+                        if len(result["source_documents"]) > 4:
+                            with st.expander(
+                                f"📚 Show More References ({len(result['source_documents'])-4} more)",
+                                expanded=False,
+                            ):
+                                # Show remaining references in a grid layout
+                                remaining_docs = result["source_documents"][4:]
 
-                                        # Create reference with popup
-                                        ref_title = f"📄 Ref {i+j+5}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+                                # Create rows of 4 columns for remaining references
+                                for i in range(0, len(remaining_docs), 4):
+                                    row_docs = remaining_docs[i : i + 4]
+                                    row_cols = st.columns(len(row_docs))
 
-                                        with st.popover(ref_title):
-                                            st.caption("**Source:** " + str(src))
-                                            st.text_area(
-                                                "Content:",
-                                                value=doc.page_content,
-                                                height=150,
-                                                disabled=True,
+                                    for j, doc in enumerate(row_docs):
+                                        with row_cols[j]:
+                                            # Extract source information
+                                            src = (
+                                                doc.metadata.get("source")
+                                                or doc.metadata.get("property_url")
+                                                or "unknown"
                                             )
+                                            try:
+                                                source_name = os.path.basename(src)
+                                            except Exception:
+                                                source_name = str(src)
 
-                        st.caption(
-                            f"Showing 4 of {len(result['source_documents'])} references. Click 'Show More' to see all."
-                        )
-                    else:
-                        st.caption(
-                            f"Showing all {len(result['source_documents'])} references"
-                        )
+                                            # Create reference with popup
+                                            ref_title = f"📄 Ref {i+j+5}: {source_name[:20]}{'...' if len(source_name) > 20 else ''}"
+
+                                            with st.popover(ref_title):
+                                                st.caption("**Source:** " + str(src))
+                                                st.text_area(
+                                                    "Content:",
+                                                    value=doc.page_content,
+                                                    height=150,
+                                                    disabled=True,
+                                                    key=f"ref_content_{i+j+5}_2",
+                                                )
+
+                            st.caption(
+                                f"Showing 4 of {len(result['source_documents'])} references. Click 'Show More' to see all."
+                            )
+                        else:
+                            st.caption(
+                                f"Showing all {len(result['source_documents'])} references"
+                            )
 
 
 # Application entry point

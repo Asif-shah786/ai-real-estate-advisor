@@ -26,11 +26,82 @@ from langchain_core.documents.base import Document
 from langchain_community.vectorstores import Chroma
 from langchain_core.vectorstores import VectorStore
 
-from app import LOCAL_DATASET_PATH_LEGAL_JSONL, LOCAL_DATASET_PATH_LISTING_JSON
+# Define constants directly instead of importing from app.py to avoid circular dependency
+LOCAL_DATASET_PATH_LEGAL_JSONL = "../datasets/legal_uk_greater_manchester.jsonl"
+LOCAL_DATASET_PATH_LISTING_JSON = "../datasets/run_ready_904.json"
+
 import utils
 
 # Load environment variables
 load_dotenv()
+
+
+def filter_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Filter metadata to remove None values and convert to Chroma-compatible types.
+
+    CRITICAL: Ensure metadata fields are properly typed for SelfQueryRetriever filtering.
+
+    Args:
+        metadata: Original metadata dictionary
+
+    Returns:
+        Filtered metadata dictionary with only str, int, float, bool values
+    """
+    filtered = {}
+    for key, value in metadata.items():
+        if value is not None:
+            # CRITICAL: Handle specific fields for proper filtering
+            if key == "postcode":
+                # Ensure postcode is a clean string for filtering
+                filtered[key] = str(value).strip().upper()
+            elif key == "price_int":
+                # Ensure price is an integer for range filtering
+                try:
+                    filtered[key] = int(float(value)) if value else 0
+                except (ValueError, TypeError):
+                    filtered[key] = 0
+            elif key == "bedrooms":
+                # Ensure bedrooms is a number for filtering
+                try:
+                    filtered[key] = float(value) if value else 0.0
+                except (ValueError, TypeError):
+                    filtered[key] = 0.0
+            elif key == "property_type":
+                # Ensure property type is a clean string for filtering
+                filtered[key] = str(value).strip().lower() if value else ""
+            elif key == "tenure":
+                # Ensure tenure is a clean string for filtering
+                filtered[key] = str(value).strip().lower() if value else ""
+            elif isinstance(value, (str, int, float, bool)):
+                # Handle other basic types
+                filtered[key] = value
+            elif isinstance(value, (list, dict)):
+                # Convert complex types to strings but preserve key info
+                if key == "tags" and isinstance(value, list):
+                    # For tags, join into a searchable string
+                    filtered[key] = ", ".join(str(tag) for tag in value)
+                else:
+                    filtered[key] = str(value)
+            else:
+                # Convert other types to strings
+                filtered[key] = str(value)
+
+    # CRITICAL: Add validation that required fields exist
+    required_fields = ["postcode", "price_int", "property_type", "bedrooms"]
+    for field in required_fields:
+        if field not in filtered:
+            print(f"⚠️ Warning: Missing required metadata field: {field}")
+            if field == "postcode":
+                filtered[field] = "UNKNOWN"
+            elif field == "price_int":
+                filtered[field] = 0
+            elif field == "property_type":
+                filtered[field] = "unknown"
+            elif field == "bedrooms":
+                filtered[field] = 0.0
+
+    return filtered
 
 
 def get_database_name(properties_file: str, legal_file: str) -> str:
@@ -193,17 +264,19 @@ class AspectBasedChunker:
                     AspectChunk(
                         chunk_id=f"property_{i}_crime",
                         content=crime_content,
-                        metadata={
-                            "type": "crime",
-                            "property_id": prop.get("property_id", i),
-                            "address": prop.get("address", ""),
-                            "postcode": prop.get("postcode", ""),
-                            "price_int": prop.get("price_int", 0),
-                            "property_type": prop.get("property_type", ""),
-                            "bedrooms": prop.get("bedrooms", ""),
-                            "source": prop.get("property_url", f"property_{i}"),
-                            "source_title": prop.get("title", f"Property {i}"),
-                        },
+                        metadata=filter_metadata(
+                            {
+                                "type": "crime",
+                                "property_id": prop.get("property_id", i),
+                                "address": prop.get("address", ""),
+                                "postcode": prop.get("postcode", ""),
+                                "price_int": prop.get("price_int", 0),
+                                "property_type": prop.get("property_type", ""),
+                                "bedrooms": prop.get("bedrooms", ""),
+                                "source": prop.get("property_url", f"property_{i}"),
+                                "source_title": prop.get("title", f"Property {i}"),
+                            }
+                        ),
                         aspect_type="crime",
                         property_id=prop.get("property_id", i),
                         source_file="properties",
@@ -220,18 +293,20 @@ class AspectBasedChunker:
                     AspectChunk(
                         chunk_id=f"property_{i}_schools",
                         content=schools_content,
-                        metadata={
-                            "type": "schools",
-                            "property_id": prop.get("property_id", i),
-                            "address": prop.get("address", ""),
-                            "postcode": prop.get("postcode", ""),
-                            "price_int": prop.get("price_int", 0),
-                            "property_type": prop.get("property_type", ""),
-                            "bedrooms": prop.get("bedrooms", ""),
-                            "school_count": 1,
-                            "source": prop.get("property_url", f"property_{i}"),
-                            "source_title": prop.get("title", f"Property {i}"),
-                        },
+                        metadata=filter_metadata(
+                            {
+                                "type": "schools",
+                                "property_id": prop.get("property_id", i),
+                                "address": prop.get("address", ""),
+                                "postcode": prop.get("postcode", ""),
+                                "price_int": prop.get("price_int", 0),
+                                "property_type": prop.get("property_type", ""),
+                                "bedrooms": prop.get("bedrooms", ""),
+                                "school_count": 1,
+                                "source": prop.get("property_url", f"property_{i}"),
+                                "source_title": prop.get("title", f"Property {i}"),
+                            }
+                        ),
                         aspect_type="schools",
                         property_id=prop.get("property_id", i),
                         source_file="properties",
@@ -248,18 +323,20 @@ class AspectBasedChunker:
                     AspectChunk(
                         chunk_id=f"property_{i}_transport",
                         content=transport_content,
-                        metadata={
-                            "type": "transport",
-                            "property_id": prop.get("property_id", i),
-                            "address": prop.get("address", ""),
-                            "postcode": prop.get("postcode", ""),
-                            "price_int": prop.get("price_int", 0),
-                            "property_type": prop.get("property_type", ""),
-                            "bedrooms": prop.get("bedrooms", ""),
-                            "transport_count": 1,
-                            "source": prop.get("property_url", f"property_{i}"),
-                            "source_title": prop.get("title", f"Property {i}"),
-                        },
+                        metadata=filter_metadata(
+                            {
+                                "type": "transport",
+                                "property_id": prop.get("property_id", i),
+                                "address": prop.get("address", ""),
+                                "postcode": prop.get("postcode", ""),
+                                "price_int": prop.get("price_int", 0),
+                                "property_type": prop.get("property_type", ""),
+                                "bedrooms": prop.get("bedrooms", ""),
+                                "transport_count": 1,
+                                "source": prop.get("property_url", f"property_{i}"),
+                                "source_title": prop.get("title", f"Property {i}"),
+                            }
+                        ),
                         aspect_type="transport",
                         property_id=prop.get("property_id", i),
                         source_file="properties",
@@ -283,22 +360,28 @@ class AspectBasedChunker:
                 AspectChunk(
                     chunk_id=f"property_{i}_overview",
                     content=overview_content,
-                    metadata={
-                        "type": "overview",
-                        "property_id": prop.get("property_id", i),
-                        "address": prop.get("address", ""),
-                        "postcode": prop.get("postcode", ""),
-                        "price_int": prop.get("price_int", 0),
-                        "property_type": prop.get("property_type", ""),
-                        "bedrooms": prop.get("bedrooms", ""),
-                        "source": prop.get("property_url", f"property_{i}"),
-                        "source_title": prop.get("title", f"Property {i}"),
-                    },
+                    metadata=filter_metadata(
+                        {
+                            "type": "overview",
+                            "property_id": prop.get("property_id", i),
+                            "address": prop.get("address", ""),
+                            "postcode": prop.get("postcode", ""),
+                            "price_int": prop.get("price_int", 0),
+                            "property_type": prop.get("property_type", ""),
+                            "bedrooms": prop.get("bedrooms", ""),
+                            "source": prop.get("property_url", f"property_{i}"),
+                            "source_title": prop.get("title", f"Property {i}"),
+                        }
+                    ),
                     aspect_type="overview",
                     property_id=prop.get("property_id", i),
                     source_file="properties",
                 )
             )
+
+        # Validate metadata consistency across chunks
+        print(f"\n🔍 Validating metadata consistency...")
+        self._validate_chunk_metadata(chunks)
 
         # Add legal chunks
         print(f"\n⚖️  Creating legal chunks for {len(self.legal_data)} legal entries...")
@@ -324,20 +407,22 @@ class AspectBasedChunker:
                 AspectChunk(
                     chunk_id=f"legal_{i}",
                     content=content,
-                    metadata={
-                        "type": "legal",
-                        "category": (
-                            legal_item.get("tags", ["general"])[0]
-                            if legal_item.get("tags")
-                            else "general"
-                        ),
-                        "topic": legal_item.get("id", ""),
-                        "complexity": "medium",
-                        "jurisdiction": legal_item.get("jurisdiction", ""),
-                        "source_name": legal_item.get("source_name", ""),
-                        "source": legal_item.get("url", f"legal_{i}"),
-                        "source_title": legal_item.get("id", f"Legal {i}"),
-                    },
+                    metadata=filter_metadata(
+                        {
+                            "type": "legal",
+                            "category": (
+                                legal_item.get("tags", ["general"])[0]
+                                if legal_item.get("tags")
+                                else "general"
+                            ),
+                            "topic": legal_item.get("id", ""),
+                            "complexity": "medium",
+                            "jurisdiction": legal_item.get("jurisdiction", ""),
+                            "source_name": legal_item.get("source_name", ""),
+                            "source": legal_item.get("url", f"legal_{i}"),
+                            "source_title": legal_item.get("id", f"Legal {i}"),
+                        }
+                    ),
                     aspect_type="legal",
                     source_file="legal",
                 )
@@ -346,6 +431,72 @@ class AspectBasedChunker:
         self.chunks = chunks
         print(f"✅ Created {len(chunks)} aspect-based chunks")
         return chunks
+
+    def _validate_chunk_metadata(self, chunks: List[AspectChunk]):
+        """
+        Validate that all chunks have consistent and properly typed metadata.
+
+        This is critical for SelfQueryRetriever to work properly.
+        """
+        print(f"   Validating {len(chunks)} chunks...")
+
+        # Check metadata field consistency
+        metadata_fields = set()
+        postcodes = set()
+        price_ranges = []
+        property_types = set()
+
+        for chunk in chunks:
+            if hasattr(chunk, "metadata") and chunk.metadata:
+                metadata_fields.update(chunk.metadata.keys())
+
+                # Check postcode format
+                if "postcode" in chunk.metadata:
+                    postcode = chunk.metadata["postcode"]
+                    postcodes.add(postcode)
+                    if not isinstance(postcode, str) or len(postcode) < 2:
+                        print(
+                            f"   ⚠️ Invalid postcode in chunk {chunk.chunk_id}: {postcode}"
+                        )
+
+                # Check price format
+                if "price_int" in chunk.metadata:
+                    price = chunk.metadata["price_int"]
+                    if isinstance(price, (int, float)):
+                        price_ranges.append(price)
+                    else:
+                        print(f"   ⚠️ Invalid price in chunk {chunk.chunk_id}: {price}")
+
+                # Check property type format
+                if "property_type" in chunk.metadata:
+                    prop_type = chunk.metadata["property_type"]
+                    if isinstance(prop_type, str):
+                        property_types.add(prop_type)
+                    else:
+                        print(
+                            f"   ⚠️ Invalid property_type in chunk {chunk.chunk_id}: {prop_type}"
+                        )
+
+        print(f"   ✅ Metadata fields found: {sorted(metadata_fields)}")
+        print(
+            f"   ✅ Postcodes found: {sorted(postcodes)[:10]}{'...' if len(postcodes) > 10 else ''}"
+        )
+        print(
+            f"   ✅ Price range: £{min(price_ranges):,} - £{max(price_ranges):,}"
+            if price_ranges
+            else "   ⚠️ No valid prices found"
+        )
+        print(f"   ✅ Property types: {sorted(property_types)}")
+
+        # Validate required fields exist
+        required_fields = ["postcode", "price_int", "property_type", "bedrooms"]
+        missing_fields = [
+            field for field in required_fields if field not in metadata_fields
+        ]
+        if missing_fields:
+            print(f"   ❌ Missing required metadata fields: {missing_fields}")
+        else:
+            print(f"   ✅ All required metadata fields present")
 
     def create_vector_database(
         self, properties_file: str, legal_file: str, embedding_model=None
@@ -493,11 +644,87 @@ class AspectBasedChunker:
 
             print(f"📁 Creating database: {chroma_persist_directory}")
 
-            self.vector_db = Chroma.from_documents(
-                documents=documents,
-                embedding=embedding_function,
-                persist_directory=chroma_persist_directory,
+            # CRITICAL: Create Chroma with proper metadata indexing
+            print(f"   📊 Creating Chroma with {len(documents)} documents...")
+            print(
+                f"   🔍 Sample metadata fields: {list(documents[0].metadata.keys()) if documents else 'No documents'}"
             )
+
+            # CRITICAL: Fix for ChromaDB 0.4.x compatibility
+            try:
+                self.vector_db = Chroma.from_documents(
+                    documents=documents,
+                    embedding=embedding_function,
+                    persist_directory=chroma_persist_directory,
+                )
+            except Exception as e:
+                print(f"   ⚠️ Standard Chroma creation failed: {e}")
+                print(f"   🔧 Trying alternative creation method...")
+
+                # Alternative method for ChromaDB 0.4.x
+                import chromadb
+                from chromadb.config import Settings
+
+                # Create client with settings
+                client = chromadb.PersistentClient(
+                    path=chroma_persist_directory,
+                    settings=Settings(anonymized_telemetry=False),
+                )
+
+                # Create collection
+                collection = client.create_collection(
+                    name="aspect_chunks", metadata={"hnsw:space": "cosine"}
+                )
+
+                # Add documents in batches
+                batch_size = 100
+                for i in range(0, len(documents), batch_size):
+                    batch = documents[i : i + batch_size]
+                    ids = [
+                        f"doc_{j}"
+                        for j in range(i, min(i + batch_size, len(documents)))
+                    ]
+                    texts = [doc.page_content for doc in batch]
+                    metadatas = [doc.metadata for doc in batch]
+
+                    collection.add(ids=ids, documents=texts, metadatas=metadatas)
+                    print(
+                        f"   📝 Added batch {i//batch_size + 1}/{(len(documents) + batch_size - 1)//batch_size}"
+                    )
+
+                # Create LangChain wrapper
+                from langchain_community.vectorstores import Chroma as LangChainChroma
+
+                self.vector_db = LangChainChroma(
+                    client=client,
+                    collection_name="aspect_chunks",
+                    embedding_function=embedding_function,
+                )
+
+            # CRITICAL: Ensure metadata is properly indexed
+            print(f"   🔍 Verifying metadata indexing...")
+            if self.vector_db:
+                try:
+                    # Test a simple metadata query to ensure indexing works
+                    test_results = self.vector_db.get(
+                        where={"type": "overview"}, limit=1
+                    )
+                    if (
+                        test_results
+                        and "documents" in test_results
+                        and test_results["documents"]
+                    ):
+                        print(
+                            f"   ✅ Metadata indexing verified - test query returned {len(test_results['documents'])} results"
+                        )
+                    else:
+                        print(
+                            f"   ⚠️ Metadata indexing may have issues - test query returned no results"
+                        )
+                except Exception as e:
+                    print(f"   ⚠️ Metadata indexing test failed: {e}")
+            else:
+                print("   ⚠️ Vector database is None, cannot verify indexing")
 
             # Save the vector database metadata to disk for persistence
             self.save_vector_database(db_name, properties_file, legal_file)
@@ -635,7 +862,7 @@ def create_aspect_based_vectordb(
     openai_api_key: str,
     properties_file: str = LOCAL_DATASET_PATH_LISTING_JSON,
     legal_file: str = LOCAL_DATASET_PATH_LEGAL_JSONL,
-    embedding_model=utils.configure_embedding_model(),
+    embedding_model=None,
     force_recreate: bool = False,
 ):
     """
@@ -660,6 +887,19 @@ def create_aspect_based_vectordb(
     """
     db_name = get_database_name(properties_file, legal_file)
     print(f"🚀 Creating/Loading Aspect-Based Vector Database: '{db_name}'")
+
+    # Create default embedding model if none provided
+    if embedding_model is None:
+        try:
+            from langchain_community.embeddings import OpenAIEmbeddings
+
+            embedding_model = OpenAIEmbeddings(
+                model="text-embedding-3-large", api_key=openai_api_key
+            )
+            print("✅ Created default OpenAI embedding model")
+        except Exception as e:
+            print(f"❌ Failed to create default embedding model: {e}")
+            return None
 
     # Initialize chunker
     chunker = AspectBasedChunker(openai_api_key)

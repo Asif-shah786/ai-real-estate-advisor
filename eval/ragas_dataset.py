@@ -332,6 +332,6 @@ if __name__ == "__main__":
     testset = dataset.create_synthetic_testset(n_questions=5, seed=42)
 
     # Save testset
-    dataset.save_testset("eval/outputs/test_synthetic.parquet")
+    dataset.save_testset("outputs/test_synthetic.parquet")
 
     print("✅ RagasDataset tests completed")

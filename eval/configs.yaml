@@ -1,0 +1,72 @@
+# Ragas Evaluation Configuration
+# Configuration for RAG pipeline evaluation using Ragas metrics
+
+run_id_prefix: "ragas"
+seed: 42
+
+# use one OR a sweep; runner will honor retrieval_k_list if present
+retrieval_k: 4
+retrieval_k_list: [4] # simplified for testing; use [2, 4, 8] for full ablation
+
+# Judge configuration for metrics computation
+judge:
+  provider: "openai"
+  model: "gpt-4o"
+  temperature: 0
+  max_tokens: 1024
+
+# Metrics to compute
+metrics:
+  - faithfulness
+  - answer_relevancy
+  - context_precision
+  - context_recall
+
+# Testset configuration
+testset:
+  mode: "synthetic" # or "curated"
+  synthetic:
+    properties_path: "../datasets/run_ready_904.json" # <-- set to your full file when ready
+    n_questions: 5 # real run (reduced for testing)
+    smoke_n_questions: 5 # quick check; your runner can override to this if needed
+
+  curated:
+    path: "eval/inputs/curated.parquet" # columns: question, ground_truth, topic, difficulty
+
+# Performance thresholds
+thresholds:
+  faithfulness: 0.85
+  answer_relevancy: 0.85
+  context_precision: 0.60
+  context_recall: 0.70
+
+# Output configuration
+outputs:
+  base_dir: "outputs"
+  save_predictions: true
+  save_metrics: true
+  save_reports: true
+  formats: ["parquet"] # artifacts; per-sample CSV is written by scorer/report anyway
+
+# RAG pipeline configuration
+pipeline:
+  use_memory: false # Disable memory for evaluation
+  max_retries: 3
+  timeout_s: 30
+  rate_limit_qps: 1.5 # guardrail for judge/model APIs
+  answer_model_hint: "gpt-4" # for metadata only
+
+# Reporting configuration
+reporting:
+  show_worst_n: 25
+  slice_by: ["topic", "difficulty"]
+  topics_expected:
+    [
+      "search",
+      "amenities",
+      "crime",
+      "legal",
+      "summary",
+      "property-facts",
+      "other",
+    ]

@@ -171,3 +171,12 @@ tmp/
 /.history/
 /.github/
 /.devcontainer/
+
+# Database files (too large for GitHub)
+databases/
+eval/databases/
+eval/outputs/
+*.sqlite3
+*.bin
+*.pickle
+*.parquet

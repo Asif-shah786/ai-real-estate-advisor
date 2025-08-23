@@ -24,13 +24,13 @@ python batch_question_tester.py
 
 ## 📊 Available Chunking Strategies
 
-| Strategy | Description | Best For |
-|----------|-------------|----------|
-| **🏠 Property-Based** | Each property as a complete chunk | Property comparison, comprehensive queries |
-| **🎯 Aspect-Based** | Separate chunks for crime, schools, transport | Specific aspect queries, focused searches |
-| **🧠 Semantic-256** | Balanced chunks (max 256 words) | Balanced performance, consistent chunk sizes |
-| **🧠 Semantic-512** | Medium chunks (max 512 words) | Good balance of context and specificity |
-| **🧠 Semantic-1024** | Large chunks (max 1024 words) | Maximum context, fewer chunks |
+| Strategy             | Description                                   | Best For                                     |
+| -------------------- | --------------------------------------------- | -------------------------------------------- |
+| **🏠 Property-Based** | Each property as a complete chunk             | Property comparison, comprehensive queries   |
+| **🎯 Aspect-Based**   | Separate chunks for crime, schools, transport | Specific aspect queries, focused searches    |
+| **🧠 Semantic-256**   | Balanced chunks (max 256 words)               | Balanced performance, consistent chunk sizes |
+| **🧠 Semantic-512**   | Medium chunks (max 512 words)                 | Good balance of context and specificity      |
+| **🧠 Semantic-1024**  | Large chunks (max 1024 words)                 | Maximum context, fewer chunks                |
 
 ## 🎯 Question Categories for Testing
 
@@ -149,8 +149,8 @@ Based on our evaluation, **Aspect-Based chunking** typically performs best becau
 ## 🔧 Technical Details
 
 ### Data Sources
-- **Properties**: `dataset_v2/properties_with_crime_data.json`
-- **Legal**: `dataset_v2/legal_uk_greater_manchester.jsonl`
+- **Properties**: `datasets/properties_with_crime_data.json`
+- **Legal**: `datasets/legal_uk_greater_manchester.jsonl`
 
 ### Embedding Model
 - **Model**: `text-embedding-3-large` (3072 dimensions)

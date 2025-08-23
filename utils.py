@@ -1,15 +1,17 @@
 import os
 import openai
+from pydantic import SecretStr
 import streamlit as st
 from datetime import datetime
 from streamlit.logger import get_logger
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.chat_models import ChatOllama
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
+from langchain_openai import ChatOpenAI as LangChainChatOpenAI
 
-logger = get_logger('Langchain-Chatbot')
+logger = get_logger("Langchain-Chatbot")
 
-#decorator
+
+# decorator
 def enable_chat_history(func):
     if os.environ.get("OPENAI_API_KEY"):
 
@@ -25,16 +27,23 @@ def enable_chat_history(func):
             except:
                 pass
 
-        # to show chat history on ui
+        # Initialize messages if not exists (but don't display them here)
         if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "Advisor", "content": "How can I help you with finding real "
-                                                                             "estate properties?"}]
-        for msg in st.session_state["messages"]:
-            st.chat_message(msg["role"]).write(msg["content"])
+            st.session_state["messages"] = [
+                {
+                    "role": "Advisor",
+                    "content": "How can I help you with finding real "
+                    "estate properties?",
+                }
+            ]
+        # Note: We don't display messages here to avoid duplicates
+        # Messages are displayed in the main app loop
 
     def execute(*args, **kwargs):
         func(*args, **kwargs)
+
     return execute
+
 
 def display_msg(msg, author):
     """Method to display message on the UI
@@ -46,29 +55,34 @@ def display_msg(msg, author):
     st.session_state.messages.append({"role": author, "content": msg})
     st.chat_message(author).write(msg)
 
+
 def choose_custom_openai_key():
     openai_api_key = st.sidebar.text_input(
         label="OpenAI API Key",
         type="password",
         placeholder="sk-...",
-        key="SELECTED_OPENAI_API_KEY"
-        )
+        key="SELECTED_OPENAI_API_KEY",
+    )
     if not openai_api_key:
         st.error("Please add your OpenAI API key to continue.")
-        st.info("Obtain your key from this link: https://platform.openai.com/account/api-keys")
+        st.info(
+            "Obtain your key from this link: https://platform.openai.com/account/api-keys"
+        )
         st.stop()
 
-    model = "gpt-4o-mini"
+    model = "gpt-4o"
     try:
         client = openai.OpenAI(api_key=openai_api_key)
-        available_models = [{"id": i.id, "created":datetime.fromtimestamp(i.created)} for i in client.models.list() if str(i.id).startswith("gpt")]
+        available_models = [
+            {"id": i.id, "created": datetime.fromtimestamp(i.created)}
+            for i in client.models.list()
+            if str(i.id).startswith("gpt")
+        ]
         available_models = sorted(available_models, key=lambda x: x["created"])
         available_models = [i["id"] for i in available_models]
 
         model = st.sidebar.selectbox(
-            label="Model",
-            options=available_models,
-            key="SELECTED_OPENAI_MODEL"
+            label="Model", options=available_models, key="SELECTED_OPENAI_MODEL"
         )
     except openai.AuthenticationError as e:
         st.error(str(e))
@@ -77,54 +91,40 @@ def choose_custom_openai_key():
         print(e)
         st.error("Something went wrong. Please try again later.")
         st.stop()
-    
+
     # Ensure we have valid values before returning
     if not model or not openai_api_key:
         st.error("Failed to get model or API key")
         st.stop()
-    
+
     return model, openai_api_key
 
-def configure_llm():
-    available_llms = [
-        "gpt-3.5-turbo",
-        "gpt-4o-mini",
-        "llama3.1:8b",
-        "llama3.2:3b",
-        "use your openai api key"
-    ]
-    llm_opt = st.sidebar.radio(
-        label="LLM",
-        options=available_llms,
-        key="SELECTED_LLM"
-        )
 
-    if llm_opt == "llama3.1:8b":
-        llm = ChatOllama(model="llama3.1", base_url=st.secrets["OLLAMA_ENDPOINT"])
-    elif llm_opt == "llama3.2:3b":
-        llm = ChatOllama(model="llama3.2", base_url=st.secrets["OLLAMA_ENDPOINT"])
-    elif llm_opt == "gpt-4o-mini":
-        llm = ChatOpenAI(model=llm_opt, temperature=0, streaming=True, api_key=st.secrets["OPENAI_API_KEY"])
-    elif llm_opt == "gpt-3.5-turbo":
-        llm = ChatOpenAI(model=llm_opt, temperature=0, streaming=True, api_key=st.secrets["OPENAI_API_KEY"])
-    else:
-        model, openai_api_key = choose_custom_openai_key()
-        llm = ChatOpenAI(model=model, temperature=0, streaming=True, api_key=st.secrets["OPENAI_API_KEY"])
+def configure_llm():
+    llm = ChatOpenAI(
+        model="gpt-4o",  # Upgraded from gpt-4o-mini to gpt-4o for better performance
+        temperature=0.3,  # Balanced creativity and accuracy
+        streaming=True,
+        api_key=SecretStr(
+            st.secrets["OPENAI_API_KEY"]
+        ),  # Use SecretStr wrapper like app.py
+        verbose=False,  # Suppress verbose output
+    )
     return llm
 
+
 def print_qa(cls, question, answer):
-    log_str = "\nUsecase: {}\nQuestion: {}\nAnswer: {}\n" + "------"*10
+    log_str = "\nUsecase: {}\nQuestion: {}\nAnswer: {}\n" + "------" * 10
     logger.info(log_str.format(cls.__name__, question, answer))
+
 
 @st.cache_resource
 def configure_embedding_model():
-    embedding_model = FastEmbedEmbeddings(
-        model_name="BAAI/bge-small-en-v1.5",
-        cache_dir=None,
-        threads=4,
-        _model="BAAI/bge-small-en-v1.5"
+    embedding_model = OpenAIEmbeddings(
+        model="text-embedding-3-large", api_key=SecretStr(st.secrets["OPENAI_API_KEY"])
     )
     return embedding_model
+
 
 def sync_st_session():
     for k, v in st.session_state.items():

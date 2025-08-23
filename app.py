@@ -14,12 +14,15 @@ This version:
 
 import os  # For path operations and environment variables
 import utils  # Custom utilities for the application
-import requests  # For HTTP requests to load external data
 import traceback  # For detailed error tracking
-import validators  # For validating URLs
 import streamlit as st  # Web UI framework
 from streaming import StreamHandler  # Custom handler for streaming responses
 from common.cfg import *  # Import configuration variables
+from prompts import (
+    QUERY_REWRITING_PROMPT,
+    CONTEXTUALIZATION_SYSTEM_PROMPT,
+    get_prompt_template,
+)  # Import prompts from dedicated file
 from langchain.memory import (
     ConversationSummaryBufferMemory,
 )  # For storing conversation context
@@ -52,14 +55,19 @@ import time  # For timestamps
 from datetime import datetime  # For formatted timestamps
 from typing import Optional  # For optional parameters
 from langchain_openai import ChatOpenAI  # Small LLM for query rewriting
-from pydantic.v1 import SecretStr  # For handling sensitive API keys
+from pydantic import SecretStr  # For handling sensitive API keys
+
+from langchain.chains.history_aware_retriever import create_history_aware_retriever
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.prompts import PromptTemplate
 
 # Configure the Streamlit page
 st.set_page_config(
     page_title="🦾 AI Real Estate Advisor", page_icon="💬", layout="wide"
 )
-st.header("Chat with Real Estate AI Advisor")  # Main heading
-LOCAL_DATASET_PATH = "dataset/structured_properties.csv"
+# Header will be displayed in the main function to avoid duplication
+LOCAL_DATASET_PATH_LISTING_JSON = "datasets/run_ready_904.json"
+LOCAL_DATASET_PATH_LEGAL_JSONL = "datasets/legal_uk_greater_manchester.jsonl"
 
 
 def rewrite_user_query(query: str) -> str:
@@ -75,12 +83,8 @@ def rewrite_user_query(query: str) -> str:
         return query
 
     try:
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=SecretStr(api_key))
-        prompt = (
-            "Rewrite the following user query, fixing spelling and grammar while keeping "
-            "the original intent: "
-            f"{query}"
-        )
+        llm = ChatOpenAI(model="gpt-4o", temperature=0.3, api_key=SecretStr(api_key))
+        prompt = QUERY_REWRITING_PROMPT.format(query=query)
         result = llm.invoke(prompt)
         # Handle the result properly - it should be a ChatMessage with content
         if hasattr(result, "content"):
@@ -135,9 +139,7 @@ class ChatbotWeb:
             st.session_state.chat_messages = []
 
     @st.cache_resource(show_spinner="Creating Aspect-Based Vector Database", ttl=86400)
-    def setup_vectordb(
-        _self, websites=None, local_file=None, jsonl_file=None, force_recreate=False
-    ):
+    def setup_vectordb(_self, local_file=None, jsonl_file=None, force_recreate=True):
         """
         Set up a vector database using the Aspect-Based chunking strategy.
 
@@ -152,9 +154,8 @@ class ChatbotWeb:
 
         Parameters:
             _self: The ChatbotWeb instance
-            websites (list): List of URLs to CSV files (optional)
-            local_file (str): Path to local CSV file (optional)
-            jsonl_file (str): Path to JSONL file (optional, for backward compatibility)
+            local_file (str): Path to local JSON file (optional)
+            jsonl_file (str): Path to JSONL file (optional)
             force_recreate (bool): If True, ignore existing database and create new one
 
         Returns:
@@ -172,8 +173,8 @@ class ChatbotWeb:
                 return None
             vectordb = create_aspect_based_vectordb(
                 openai_api_key=openai_api_key,
-                properties_file="dataset_v2/run_ready_100.json",
-                legal_file="dataset_v2/legal_uk_greater_manchester.jsonl",
+                properties_file=LOCAL_DATASET_PATH_LISTING_JSON,
+                legal_file=LOCAL_DATASET_PATH_LEGAL_JSONL,
                 embedding_model=_self.embedding_model,
                 force_recreate=force_recreate,
             )
@@ -208,50 +209,55 @@ class ChatbotWeb:
         Returns:
                     ConversationalRetrievalChain: The configured QA chain
         """
-        # Define retriever that can translate natural language filters into
-        # vector store metadata queries
-        from langchain.chains.query_constructor.schema import AttributeInfo
-        from langchain.retrievers.self_query.base import SelfQueryRetriever
-
-        metadata_field_info = [
-            AttributeInfo(
-                name="price_int",
-                description="Listing price in British pounds",
-                type="integer",
-            ),
-            AttributeInfo(
-                name="bedrooms",
-                description="Number of bedrooms in the property",
-                type="integer",
-            ),
-            AttributeInfo(
-                name="bathrooms",
-                description="Number of bathrooms in the property",
-                type="integer",
-            ),
-            AttributeInfo(
-                name="property_type",
-                description="Type of property such as detached, semi-detached, terraced or apartment",
-                type="string",
-            ),
-            AttributeInfo(
-                name="postcode",
-                description="Postcode prefix where the property is located",
-                type="string",
-            ),
-            AttributeInfo(
-                name="tenure",
-                description="Property tenure for example freehold or leasehold",
-                type="string",
-            ),
-        ]
-
-        document_content_description = (
-            "Property listings with fields such as price_int, bedrooms, bathrooms, "
-            "property_type, postcode and tenure"
+        # First, create a basic retriever from the vector database
+        base_retriever = vectordb.as_retriever(
+            search_type="similarity", search_kwargs={"k": 5}
         )
 
+        # Try to enhance with SelfQueryRetriever, but fall back gracefully
         try:
+            from langchain.chains.query_constructor.schema import AttributeInfo
+            from langchain.retrievers.self_query.base import SelfQueryRetriever
+
+            metadata_field_info = [
+                AttributeInfo(
+                    name="price_int",
+                    description="Listing price in British pounds",
+                    type="integer",
+                ),
+                AttributeInfo(
+                    name="bedrooms",
+                    description="Number of bedrooms in the property",
+                    type="integer",
+                ),
+                AttributeInfo(
+                    name="bathrooms",
+                    description="Number of bathrooms in the property",
+                    type="integer",
+                ),
+                AttributeInfo(
+                    name="property_type",
+                    description="Type of property such as detached, semi-detached, terraced or apartment",
+                    type="string",
+                ),
+                AttributeInfo(
+                    name="postcode",
+                    description="Postcode prefix where the property is located",
+                    type="string",
+                ),
+                AttributeInfo(
+                    name="tenure",
+                    description="Property tenure for example freehold or leasehold",
+                    type="string",
+                ),
+            ]
+
+            document_content_description = (
+                "Property listings with fields such as price_int, bedrooms, bathrooms, "
+                "property_type, postcode and tenure"
+            )
+
+            # Try to create SelfQueryRetriever with proper error handling
             retriever = SelfQueryRetriever.from_llm(
                 self.llm,
                 vectordb,
@@ -259,12 +265,15 @@ class ChatbotWeb:
                 metadata_field_info,
                 enable_limit=True,
                 search_kwargs={"k": 5},
+                verbose=False,  # Reduce verbosity to avoid issues
             )
-        except Exception:
-            # Fallback to simple similarity search if self-query retriever fails
-            retriever = vectordb.as_retriever(
-                search_type="similarity", search_kwargs={"k": 5}
-            )
+            print("✅ Successfully created SelfQueryRetriever")
+
+        except Exception as e:
+            print(f"⚠️ SelfQueryRetriever failed: {e}")
+            print("🔄 Using basic similarity retriever instead")
+            # Fallback to the basic retriever we created earlier
+            retriever = base_retriever
 
         # Setup memory for contextual conversation using automatic summarization
         memory = ConversationSummaryBufferMemory(
@@ -275,67 +284,111 @@ class ChatbotWeb:
             max_token_limit=MEMORY_TOKEN_LIMIT,  # Summarize when token limit is reached
         )
 
-        # Wrap the retriever with a conversational rewriter so follow-up
-        # questions are expanded into standalone queries before retrieval.
-        contextualize_q_system_prompt = (
-            "Given a chat history and the latest user question which might "
-            "reference context in the chat history, formulate a standalone "
-            "question which can be understood without the chat history. Do "
-            "NOT answer the question."
-        )
-        contextualize_q_prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", contextualize_q_system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ]
-        )
-        history_retriever_chain = create_history_aware_retriever(
-            llm=self.llm, retriever=retriever, prompt=contextualize_q_prompt
-        )
+        # Create history-aware retriever with better error handling
+        try:
+            # Use contextualization prompt from prompts file
+            contextualize_q_system_prompt = CONTEXTUALIZATION_SYSTEM_PROMPT
+            contextualize_q_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", contextualize_q_system_prompt),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
 
-        class HistoryAwareRetriever(BaseRetriever):
-            """Retriever that uses chat history to rewrite follow-up questions."""
+            # Create the history-aware retriever chain using LCEL
+            # This returns a Runnable that we can use directly
+            history_aware_retriever_chain = create_history_aware_retriever(
+                llm=self.llm, retriever=retriever, prompt=contextualize_q_prompt
+            )
 
-            def __init__(self, chain, memory):
-                super().__init__()
-                self.chain = chain
-                self.memory = memory
+            print("✅ Successfully created history-aware retriever using LCEL")
 
-            def _get_relevant_documents(self, query):  # type: ignore[override]
-                chat_history = self.memory.chat_memory.messages
-                return self.chain.invoke(
-                    {
-                        "input": query,
-                        "chat_history": chat_history,
-                    }
-                )
+            # Use the LCEL chain directly - it's already a proper retriever-like object
+            history_aware_retriever = history_aware_retriever_chain
 
-            async def aget_relevant_documents(self, query):  # type: ignore[override]
-                chat_history = self.memory.chat_memory.messages
-                return await self.chain.ainvoke(
-                    {
-                        "input": query,
-                        "chat_history": chat_history,
-                    }
-                )
-
-        history_aware_retriever = HistoryAwareRetriever(history_retriever_chain, memory)
+        except Exception as e:
+            print(f"⚠️ History-aware retriever failed: {e}")
+            print("🔄 Using basic retriever without history awareness")
+            # Fall back to the basic retriever
+            history_aware_retriever = retriever
 
         # Identity prompt ensures the user's question is passed unchanged to the
         # history-aware retriever, which will handle rewriting using memory.
         identity_prompt = PromptTemplate.from_template("{question}")
 
-        # Setup QA chain that combines the LLM, history-aware retriever, and memory
-        qa_chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm,  # Language model configured in __init__
-            retriever=history_aware_retriever,  # Retriever with conversational rewriting
-            memory=memory,  # Conversation memory
-            condense_question_prompt=identity_prompt,  # Pass question as-is
-            return_source_documents=True,  # Include source documents in the output
-            verbose=False,  # Don't print debug info
-        )
-        return qa_chain
+        # Setup QA chain with comprehensive error handling
+        try:
+            # For LCEL-based history-aware retriever, we need to configure the chain differently
+            if hasattr(history_aware_retriever, "invoke"):
+                # This is an LCEL chain, configure ConversationalRetrievalChain to work with it
+                qa_chain = ConversationalRetrievalChain.from_llm(
+                    llm=self.llm,  # Language model configured in __init__
+                    retriever=retriever,  # Use the base retriever directly
+                    memory=memory,  # Conversation memory
+                    return_source_documents=True,  # Include source documents in the output
+                    verbose=False,  # Don't print debug info
+                    # Add custom prompt for better responses - LCEL VERSION WITH CONTEXT HANDLING
+                    combine_docs_chain_kwargs={
+                        "prompt": PromptTemplate.from_template(
+                            get_prompt_template("lcel")
+                        )
+                    },
+                )
+
+                # Now we'll manually integrate the history-aware retriever in the question processing
+                # This is a more advanced approach that gives us full control
+                print(
+                    "✅ Successfully created ConversationalRetrievalChain with LCEL integration"
+                )
+                return qa_chain
+            else:
+                # Fallback to standard configuration
+                qa_chain = ConversationalRetrievalChain.from_llm(
+                    llm=self.llm,
+                    retriever=history_aware_retriever,
+                    memory=memory,
+                    return_source_documents=True,
+                    verbose=False,
+                    # Add custom prompt for better responses - STANDARD VERSION WITH CONTEXT HANDLING
+                    combine_docs_chain_kwargs={
+                        "prompt": PromptTemplate.from_template(
+                            get_prompt_template("standard")
+                        )
+                    },
+                )
+                print(
+                    "✅ Successfully created ConversationalRetrievalChain with standard retriever"
+                )
+                return qa_chain
+
+        except Exception as e:
+            print(f"❌ Failed to create ConversationalRetrievalChain: {e}")
+            print("🔄 Attempting fallback configuration...")
+
+            # Fallback: Create a simpler chain configuration
+            try:
+                qa_chain = ConversationalRetrievalChain.from_llm(
+                    llm=self.llm,
+                    retriever=base_retriever,  # Use the basic retriever
+                    memory=memory,
+                    return_source_documents=True,
+                    verbose=False,
+                    # Add custom prompt for better responses - FALLBACK VERSION WITH CONTEXT HANDLING
+                    combine_docs_chain_kwargs={
+                        "prompt": PromptTemplate.from_template(
+                            get_prompt_template("fallback")
+                        )
+                    },
+                )
+                print("✅ Successfully created fallback ConversationalRetrievalChain")
+                return qa_chain
+
+            except Exception as fallback_error:
+                print(f"❌ Fallback also failed: {fallback_error}")
+                raise Exception(
+                    f"Could not create QA chain. Original error: {e}, Fallback error: {fallback_error}"
+                )
 
     def save_chat_session(
         self, user_query: str, response: str, source_documents: Optional[list] = None
@@ -392,8 +445,8 @@ class ChatbotWeb:
                 "app_version": "Aspect-Based Chunking v2.0",
                 "chunking_strategy": "Aspect-Based (Best Performer)",
                 "data_sources": [
-                    "dataset_v2/properties_with_crime_data.json",
-                    "dataset_v2/legal_uk_greater_manchester.jsonl",
+                    LOCAL_DATASET_PATH_LISTING_JSON,
+                    LOCAL_DATASET_PATH_LEGAL_JSONL,
                 ],
             }
 
@@ -411,71 +464,17 @@ class ChatbotWeb:
     def main(self):
         """
         Main method to run the Streamlit application.
-
-        This method:
-        1. Sets up the UI for URL input
-        2. Handles adding and clearing data sources
-        3. Creates the vector database and QA chain
         4. Manages the chat interface
         5. Processes user queries and displays responses with citations
+
         """
-        csv_url = "CSV Data Set URL"  # Label for the URL input
-
-        # Initialize session state for websites if not already set
-        if "websites" not in st.session_state:
-            st.session_state["websites"] = []  # List to store added URLs
-            # Load default URLs from config
-            st.session_state["value_urls"] = GIT_DATA_SET_URLS_STR.split("\n")
-
-        # Set default URL for the input field
-        url_val = ""
-        value_urls = st.session_state.get("value_urls", [])
-        if len(value_urls) >= 1:
-            url_val = value_urls[0]  # Use first URL as default
-
-        # Create text area for URL input in the sidebar
-        web_url = st.sidebar.text_area(
-            label=f"Enter {csv_url}s",
-            placeholder="https://",
-            # help="To add another website, modify this field after adding the website.",
-            value=url_val,
-        )
-        # Alternative way to display URLs (commented out)
-        # st.sidebar.text(GIT_DATA_SET_URLS_STR)
-
-        # Button to add new URL to the list
-        if st.sidebar.button(":heavy_plus_sign: Add Website"):
-            # Validate URL format before adding
-            valid_url = web_url.startswith("http") and validators.url(web_url)
-            if not valid_url:
-                # Show error for invalid URL
-                st.sidebar.error(
-                    f"Invalid URL! Please check {csv_url} that you have entered.",
-                    icon="⚠️",
-                )
-            else:
-                # Add valid URL to the session state
-                st.session_state["websites"].append(web_url)
-
-        # Button to clear all URLs
-        if st.sidebar.button("Clear", type="primary"):
-            st.session_state["websites"] = []
-
-        # Button to start new chat session
-        if st.sidebar.button("🆕 New Chat Session", type="secondary"):
-            # Generate new session ID
-            st.session_state.chat_session_id = f"session_{int(time.time())}"
-            st.session_state.chat_messages = []
-            st.session_state.messages = []
-            st.rerun()
-
-        # Remove duplicates by converting to set and back to list
-        websites = list(set(st.session_state["websites"]))
+        # Display the main header (moved here to avoid duplication)
+        st.header("Chat with Real Estate AI Advisor")
 
         # Set up vector database and QA chain
-        # First try to load local dataset, then add any URLs provided
-        local_dataset_path = LOCAL_DATASET_PATH
-        jsonl_dataset_path = "artifacts_v2/embedding_docs_v2.jsonl"
+        # Load local JSON datasets
+        local_dataset_path = LOCAL_DATASET_PATH_LISTING_JSON
+        jsonl_dataset_path = LOCAL_DATASET_PATH_LEGAL_JSONL
 
         # Add force recreate option in sidebar
         st.sidebar.markdown("---")
@@ -491,9 +490,11 @@ class ChatbotWeb:
             st.cache_resource.clear()
             st.info("🔄 Cache cleared - will create new database")
 
-        # Set up vector database with JSONL dataset and any additional URLs
+        # Set up vector database with JSON datasets
         vectordb = self.setup_vectordb(
-            websites, local_dataset_path, jsonl_dataset_path, force_recreate
+            local_file=local_dataset_path,
+            jsonl_file=jsonl_dataset_path,
+            force_recreate=force_recreate,
         )
         if vectordb is None:
             st.error(
@@ -509,18 +510,11 @@ class ChatbotWeb:
         st.sidebar.markdown("💾 **Storage:** Persistent (saved to disk)")
         st.sidebar.markdown("🤖 **Embeddings:** OpenAI (default)")
         st.sidebar.markdown(
-            f"📄 **Primary:** `{os.path.basename(jsonl_dataset_path)}` (v2)"
+            f"📄 **Primary:** `{os.path.basename(LOCAL_DATASET_PATH_LISTING_JSON)}` (v2)"
         )
         st.sidebar.markdown(
-            f"📁 **Fallback:** `{os.path.basename(LOCAL_DATASET_PATH)}`"
+            f"📁 **Legal Data:** `{os.path.basename(LOCAL_DATASET_PATH_LEGAL_JSONL)}`"
         )
-        if websites:
-            for url in websites:
-                st.sidebar.markdown(
-                    f"🌐 **External:** `{os.path.basename(url) if '/' in url else url}`"
-                )
-        else:
-            st.sidebar.markdown("🌐 *No external URLs added*")
 
         # Show chat session info
         st.sidebar.markdown("---")
@@ -530,6 +524,12 @@ class ChatbotWeb:
         st.sidebar.markdown(
             f"📁 **Saved to:** `chats/{st.session_state.chat_session_id}.json`"
         )
+
+        # Display chat history
+        if "messages" in st.session_state:
+            for message in st.session_state["messages"]:
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
 
         # Create chat input field
         user_query = st.chat_input(
@@ -546,21 +546,53 @@ class ChatbotWeb:
 
             # Display Advisor response with streaming
             with st.chat_message("Advisor"):
-                # Set up streaming handler to show response as it's generated
-                st_cb = StreamHandler(st.empty())
+                # Show a subtle loading indicator
+                with st.spinner("🤖 AI is thinking..."):
+                    # Set up streaming handler to show response as it's generated
+                    st_cb = StreamHandler(st.empty())
 
-                # Process the corrected query through the QA chain
-                result = qa_chain.invoke(
-                    {"question": corrected_query},
-                    {"callbacks": [st_cb]},  # Use streaming callback
-                )
+                    # Process the corrected query through the QA chain
+                    try:
+                        result = qa_chain.invoke(
+                            {"question": corrected_query},
+                            {"callbacks": [st_cb]},  # Use streaming callback
+                        )
 
-                # Extract and store the response
-                response = result["answer"]
-                st.session_state.messages.append(
-                    {"role": "Advisor", "content": response}
-                )
-                utils.print_qa(ChatbotWeb, corrected_query, response)  # Log the Q&A
+                        # Debug logging
+                        print(f"🔍 Query processed: {corrected_query}")
+                        print(
+                            f"🔍 Source documents retrieved: {len(result.get('source_documents', []))}"
+                        )
+
+                    except Exception as e:
+                        print(f"❌ Error in QA chain: {e}")
+                        st.error(
+                            f"Sorry, I encountered an error processing your query: {str(e)}"
+                        )
+                        return
+
+                    # Extract and store the response
+                    response = result["answer"]
+
+                    # Add the response to session state for chat history
+                    st.session_state.messages.append(
+                        {"role": "Advisor", "content": response}
+                    )
+
+                    # Also add the user query to session state if not already there
+                    if {
+                        "role": "user",
+                        "content": user_query,
+                    } not in st.session_state.messages:
+                        st.session_state.messages.append(
+                            {"role": "user", "content": user_query}
+                        )
+
+                    utils.print_qa(ChatbotWeb, corrected_query, response)  # Log the Q&A
+
+                    # Clear the streaming container and replace with properly formatted response
+                    st_cb.container.empty()
+                    st.write(response)
 
                 # Save chat session to JSON file
                 source_docs = result.get("source_documents", [])

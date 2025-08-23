@@ -18,15 +18,73 @@ from typing import List, Dict, Any, Tuple, Optional
 import openai
 from dataclasses import dataclass
 import time
-from sklearn.metrics.pairwise import cosine_similarity
 import os
+import hashlib
+from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.documents.base import Document
-from langchain_community.vectorstores import DocArrayInMemorySearch, Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_core.vectorstores import VectorStore
+
+from app import LOCAL_DATASET_PATH_LEGAL_JSONL, LOCAL_DATASET_PATH_LISTING_JSON
+import utils
 
 # Load environment variables
 load_dotenv()
+
+
+def get_database_name(properties_file: str, legal_file: str) -> str:
+    """
+    Generate a unique database name based on dataset files
+
+    Args:
+        properties_file: Path to properties JSON file
+        legal_file: Path to legal JSONL file
+
+    Returns:
+        str: Unique database name based on file names
+    """
+    # Extract base names without extensions
+    prop_name = Path(properties_file).stem
+    legal_name = Path(legal_file).stem
+
+    # Create a unique identifier
+    db_name = f"{prop_name}_{legal_name}"
+
+    # Clean the name to make it filesystem-safe
+    db_name = "".join(c for c in db_name if c.isalnum() or c in ["_", "-"])
+
+    return db_name
+
+
+def check_files_modified(properties_file: str, legal_file: str, db_path: str) -> bool:
+    """
+    Check if dataset files have been modified since database was created
+
+    Args:
+        properties_file: Path to properties JSON file
+        legal_file: Path to legal JSONL file
+        db_path: Path to database directory
+
+    Returns:
+        bool: True if files have been modified, False otherwise
+    """
+    try:
+        if not os.path.exists(db_path):
+            return True  # Database doesn't exist, consider it modified
+
+        db_modified_time = os.path.getmtime(db_path)
+
+        # Check if either file is newer than the database
+        for file_path in [properties_file, legal_file]:
+            if os.path.exists(file_path):
+                file_modified_time = os.path.getmtime(file_path)
+                if file_modified_time > db_modified_time:
+                    return True
+
+        return False
+    except Exception:
+        return True  # If we can't check, assume files are modified
 
 
 @dataclass
@@ -289,23 +347,35 @@ class AspectBasedChunker:
         print(f"✅ Created {len(chunks)} aspect-based chunks")
         return chunks
 
-    def generate_embeddings(
-        self, model: str = "text-embedding-3-large"
-    ) -> List[AspectChunk]:
+    def create_vector_database(
+        self, properties_file: str, legal_file: str, embedding_model=None
+    ) -> Optional[VectorStore]:
         """
-        Generate embeddings for chunks using OpenAI's embedding models
+        Create a vector database from the aspect chunks with file-based naming
 
-        Args:
-            model: OpenAI embedding model to use
+        This method:
+        1. Generates embeddings for all chunks using OpenAI (default) or provided model
+        2. Creates a Chroma vector store with persistent storage
+        3. Uses file-based naming for the database
+        4. Saves the vector database to disk for persistence
+
+        Parameters:
+            properties_file: Path to properties JSON file (for database naming)
+            legal_file: Path to legal JSONL file (for database naming)
+            embedding_model: The embedding model to use (if None, uses OpenAI)
 
         Returns:
-            List of AspectChunk objects with embeddings
+            VectorStore: The created vector database, or None if failed
         """
-        print(
-            f"\n🧠 Generating embeddings for {len(self.chunks)} chunks using {model}..."
-        )
+        if not self.chunks:
+            print("❌ No chunks available to create vector database")
+            return None
 
+        print(f"🔍 Generating embeddings for {len(self.chunks)} chunks...")
+
+        # Generate embeddings inline using OpenAI by default
         batch_size = 100  # OpenAI recommended batch size
+        model = "text-embedding-3-large"
 
         for i in range(0, len(self.chunks), batch_size):
             batch = self.chunks[i : i + batch_size]
@@ -331,33 +401,6 @@ class AspectBasedChunker:
                     f"   ❌ Error generating embeddings for batch {i//batch_size + 1}: {e}"
                 )
 
-        print(f"✅ Embedding generation completed for {len(self.chunks)} chunks")
-        return self.chunks
-
-    def create_vector_database(self, embedding_model=None) -> Optional[VectorStore]:
-        """
-        Create a vector database from the aspect chunks
-
-        This method:
-        1. Generates embeddings for all chunks using OpenAI (default) or provided model
-        2. Creates a DocArrayInMemorySearch vector store
-        3. Saves the vector database to disk for persistence
-
-        Parameters:
-            embedding_model: The embedding model to use (if None, uses OpenAI)
-
-        Returns:
-            VectorStore: The created vector database, or None if failed
-        """
-        if not self.chunks:
-            print("❌ No chunks available to create vector database")
-            return None
-
-        print(f"🔍 Generating embeddings for {len(self.chunks)} chunks...")
-
-        # Generate embeddings for all chunks using OpenAI by default
-        self.generate_embeddings()
-
         # Debug: Check embedding dimensions
         if self.chunks and self.chunks[0].embedding:
             first_embedding = self.chunks[0].embedding
@@ -369,7 +412,7 @@ class AspectBasedChunker:
         print("🏗️ Creating vector database...")
 
         try:
-            # Create DocArrayInMemorySearch vector store
+            # Create Chroma vector store with persistent storage
             # Convert chunks to documents and use OpenAI embeddings directly
             documents = []
             for chunk in self.chunks:
@@ -444,44 +487,35 @@ class AspectBasedChunker:
 
             embedding_function = OpenAIEmbeddingFunction(self.chunks, self.client)
 
-            self.vector_db = DocArrayInMemorySearch.from_documents(
-                documents, embedding_function
+            # Create Chroma vector store with file-based naming
+            db_name = get_database_name(properties_file, legal_file)
+            chroma_persist_directory = f"databases/chroma_db_{db_name}"
+
+            print(f"📁 Creating database: {chroma_persist_directory}")
+
+            self.vector_db = Chroma.from_documents(
+                documents=documents,
+                embedding=embedding_function,
+                persist_directory=chroma_persist_directory,
             )
 
-            # Save the vector database to disk for persistence
-            self.save_vector_database()
+            # Save the vector database metadata to disk for persistence
+            self.save_vector_database(db_name, properties_file, legal_file)
 
             print(
-                f"✅ Vector database created successfully with {len(documents)} chunks!"
+                f"✅ Chroma vector database '{db_name}' created successfully with {len(documents)} chunks!"
             )
             return self.vector_db
 
         except Exception as e:
-            print(f"❌ Error creating DocArrayInMemorySearch: {e}")
+            print(f"❌ Error creating Chroma database: {e}")
+            return None
 
-            # Fallback to Chroma
-            try:
-                from langchain_community.vectorstores import Chroma
-
-                self.vector_db = Chroma.from_documents(documents, embedding_function)
-
-                # Save the vector database to disk for persistence
-                self.save_vector_database()
-
-                print(
-                    f"✅ Chroma vector database created successfully with {len(documents)} chunks!"
-                )
-                return self.vector_db
-
-            except Exception as e2:
-                print(f"❌ Error creating Chroma database: {e2}")
-                return None
-
-    def save_vector_database(self):
-        """Save the vector database and chunks to disk for persistence"""
+    def save_vector_database(self, db_name: str, properties_file: str, legal_file: str):
+        """Save the vector database metadata and chunks to disk for persistence"""
         try:
             # Create artifacts directory if it doesn't exist
-            os.makedirs("artifacts_v3", exist_ok=True)
+            os.makedirs("databases", exist_ok=True)
 
             # Save chunks data (without embeddings to avoid serialization issues)
             chunks_data = []
@@ -496,89 +530,136 @@ class AspectBasedChunker:
                 }
                 chunks_data.append(chunk_dict)
 
-            with open("artifacts_v3/aspect_chunks.json", "w", encoding="utf-8") as f:
+            chunks_file = f"databases/aspect_chunks_{db_name}.json"
+            with open(chunks_file, "w", encoding="utf-8") as f:
                 json.dump(chunks_data, f, indent=2, ensure_ascii=False)
 
-            print(
-                f"💾 Saved {len(chunks_data)} chunks to artifacts_v3/aspect_chunks.json"
-            )
+            # Save database metadata
+            metadata = {
+                "db_name": db_name,
+                "properties_file": properties_file,
+                "legal_file": legal_file,
+                "chunk_count": len(chunks_data),
+                "created_at": time.time(),
+                "embedding_model": "text-embedding-3-large",
+            }
+
+            metadata_file = f"databases/db_metadata_{db_name}.json"
+            with open(metadata_file, "w", encoding="utf-8") as f:
+                json.dump(metadata, f, indent=2, ensure_ascii=False)
+
+            print(f"💾 Saved {len(chunks_data)} chunks to {chunks_file}")
+            print(f"💾 Saved database metadata to {metadata_file}")
 
         except Exception as e:
             print(f"⚠️ Warning: Could not save chunks data: {e}")
 
-    def load_vector_database(self, embedding_model=None) -> Optional[VectorStore]:
+    def load_vector_database(
+        self, properties_file: str, legal_file: str, embedding_model=None
+    ) -> Optional[VectorStore]:
         """
         Load an existing vector database from disk if available
 
         Parameters:
+            properties_file: Path to properties JSON file (for database naming)
+            legal_file: Path to legal JSONL file (for database naming)
             embedding_model: The embedding model to use (ignored, uses OpenAI)
 
         Returns:
             VectorStore: The loaded vector database, or None if not available
         """
         try:
-            # Check if we have saved chunks
-            chunks_file = "artifacts_v3/aspect_chunks.json"
-            if not os.path.exists(chunks_file):
-                print("📁 No saved chunks found, will create new vector database")
+            # Generate database name based on files
+            db_name = get_database_name(properties_file, legal_file)
+            chroma_persist_directory = f"databases/chroma_db_{db_name}"
+
+            if not os.path.exists(chroma_persist_directory):
+                print(
+                    f"📁 No database '{db_name}' found, will create new vector database"
+                )
                 return None
 
-            print("📁 Loading existing chunks from disk...")
-
-            # Load chunks data
-            with open(chunks_file, "r", encoding="utf-8") as f:
-                chunks_data = json.load(f)
-
-            # Recreate AspectChunk objects
-            self.chunks = []
-            for chunk_dict in chunks_data:
-                chunk = AspectChunk(
-                    chunk_id=chunk_dict["chunk_id"],
-                    content=chunk_dict["content"],
-                    metadata=chunk_dict["metadata"],
-                    aspect_type=chunk_dict["aspect_type"],
-                    property_id=chunk_dict["property_id"],
-                    source_file=chunk_dict["source_file"],
+            # Check if files have been modified since database was created
+            if check_files_modified(
+                properties_file, legal_file, chroma_persist_directory
+            ):
+                print(
+                    f"📝 Dataset files have been modified since database '{db_name}' was created"
                 )
-                self.chunks.append(chunk)
+                print("🔄 Will recreate database with updated data")
+                return None
 
-            print(f"✅ Loaded {len(self.chunks)} chunks from disk")
+            print(f"📁 Loading existing database '{db_name}' from disk...")
 
-            # Generate embeddings and create vector database
-            return self.create_vector_database(embedding_model)
+            # Create embedding function for loading
+            from langchain_core.embeddings import Embeddings
+
+            class OpenAIEmbeddingFunction(Embeddings):
+                def __init__(self, openai_client):
+                    self.openai_client = openai_client
+                    self.embedding_dim = 3072  # Updated for text-embedding-3-large
+
+                def embed_documents(self, texts: List[str]) -> List[List[float]]:
+                    # This should not be called when loading existing database
+                    # but we need to implement it
+                    return [[0.0] * self.embedding_dim for _ in texts]
+
+                def embed_query(self, text: str) -> List[float]:
+                    # For queries, we need to generate new embeddings with OpenAI
+                    try:
+                        response = self.openai_client.embeddings.create(
+                            input=[text], model="text-embedding-3-large"
+                        )
+                        return response.data[0].embedding
+                    except Exception as e:
+                        print(f"❌ Error generating query embedding: {e}")
+                        return [0.0] * self.embedding_dim
+
+            embedding_function = OpenAIEmbeddingFunction(self.client)
+
+            # Load existing Chroma database
+            self.vector_db = Chroma(
+                persist_directory=chroma_persist_directory,
+                embedding_function=embedding_function,
+            )
+
+            print(f"✅ Successfully loaded existing database '{db_name}' from disk!")
+            return self.vector_db
 
         except Exception as e:
-            print(f"⚠️ Warning: Could not load saved chunks: {e}")
+            print(f"⚠️ Warning: Could not load Chroma database: {e}")
             return None
 
 
 def create_aspect_based_vectordb(
     openai_api_key: str,
-    properties_file: str = "dataset_v2/run_ready_100.json",
-    legal_file: str = "dataset_v2/legal_uk_greater_manchester.jsonl",
-    embedding_model=None,
+    properties_file: str = LOCAL_DATASET_PATH_LISTING_JSON,
+    legal_file: str = LOCAL_DATASET_PATH_LEGAL_JSONL,
+    embedding_model=utils.configure_embedding_model(),
     force_recreate: bool = False,
 ):
     """
-    Create an Aspect-Based vector database for real estate data
+    Create an Aspect-Based vector database for real estate data with smart caching
 
     This function:
-    1. First tries to load existing vector database from disk (unless force_recreate=True)
-    2. If none exists or force_recreate=True, creates new chunks and vector database
-    3. Uses OpenAI embeddings by default for optimal quality
-    4. Saves everything to disk for future use
+    1. Uses file-based naming for databases (e.g., run_ready_100, run_ready_904)
+    2. Automatically loads existing database if files haven't changed
+    3. Only recreates database if files are modified or force_recreate=True
+    4. Uses OpenAI embeddings by default for optimal quality
+    5. Saves everything to disk for future use
 
     Parameters:
         openai_api_key: OpenAI API key for embeddings
-        properties_file: Path to properties JSON file
-        legal_file: Path to legal JSONL file
+        properties_file: Path to properties JSON file (determines database name)
+        legal_file: Path to legal JSONL file (determines database name)
         embedding_model: LangChain embedding model (optional, OpenAI used by default)
         force_recreate: If True, ignore existing database and create new one
 
     Returns:
         VectorStore: The created/loaded vector database
     """
-    print("🚀 Creating Aspect-Based Vector Database...")
+    db_name = get_database_name(properties_file, legal_file)
+    print(f"🚀 Creating/Loading Aspect-Based Vector Database: '{db_name}'")
 
     # Initialize chunker
     chunker = AspectBasedChunker(openai_api_key)
@@ -588,15 +669,17 @@ def create_aspect_based_vectordb(
         print("🔄 Force recreate flag set - ignoring existing database")
     else:
         # First, try to load existing vector database from disk
-        print("📁 Checking for existing vector database...")
-        existing_vectordb = chunker.load_vector_database(embedding_model)
+        print(f"📁 Checking for existing database '{db_name}'...")
+        existing_vectordb = chunker.load_vector_database(
+            properties_file, legal_file, embedding_model
+        )
 
         if existing_vectordb:
-            print("✅ Successfully loaded existing vector database from disk!")
+            print(f"✅ Successfully loaded existing database '{db_name}' from disk!")
             return existing_vectordb
 
     # If no existing database or force_recreate=True, create new one
-    print("🆕 Creating new vector database...")
+    print(f"🆕 Creating new database '{db_name}'...")
 
     # Load data
     properties_data, legal_data = chunker.load_data(properties_file, legal_file)
@@ -612,11 +695,15 @@ def create_aspect_based_vectordb(
         print("❌ Failed to create aspect chunks")
         return None
 
-    # Create vector database (OpenAI embeddings used by default)
-    vectordb = chunker.create_vector_database(embedding_model)
+    # Create vector database with file-based naming
+    vectordb = chunker.create_vector_database(
+        properties_file, legal_file, embedding_model
+    )
 
     if vectordb:
-        print("✅ Aspect-Based Vector Database created and saved successfully!")
+        print(
+            f"✅ Aspect-Based Vector Database '{db_name}' created and saved successfully!"
+        )
         return vectordb
     else:
         print("❌ Failed to create vector database")

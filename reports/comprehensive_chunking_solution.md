@@ -19,7 +19,7 @@ This guide consolidates all chunking strategy information for the AI Real Estate
 ### 1. Aspect-Based (BEST PERFORMER - DEFAULT)
 - **Average Retrieval Score**: 0.4872
 - **Average Coverage**: 1.00
-- **Total Chunks**: 410+
+- **Total Chunks**: 58 core aspect chunks + 410+ total chunks
 - **Average Chunk Size**: 43.4 words
 - **Chunk Size Std Dev**: 11.9
 - **Status**: Successfully integrated as default strategy

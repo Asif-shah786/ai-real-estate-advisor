@@ -96,7 +96,7 @@ The project adopts an applied data science methodology adapted from the CRISP-DM
 
 **Modelling** – Implement RAG pipeline using LangChain 0.3.27, incorporating aspect-based chunking, conversational memory, and history-aware retrieval with fallback mechanisms.
 
-**Evaluation** – Measure faithfulness (0.92), relevancy (0.89), and retrieval quality (0.85) against benchmark queries, ensuring statistical significance across 25 test scenarios.
+**Evaluation** – Measure faithfulness and answer relevancy against benchmark queries across 24 test scenarios.
 
 **Deployment** – Build a Streamlit conversational application with comprehensive error handling, ensuring transparency through source citations and GDPR compliance.
  
@@ -115,7 +115,7 @@ The project has successfully implemented and deployed a comprehensive AI real es
 **Advanced Aspect-Based Chunking Strategy**
 - Successfully implemented and evaluated five distinct chunking strategies
 - Aspect-based chunking achieved superior performance (0.4872 retrieval score) compared to traditional approaches
-- Created 58 optimized chunks covering crime, schools, transport, overview, and legal aspects
+- Created 58 core aspect chunks + 410+ total chunks covering crime, schools, transport, overview, and legal aspects
 - Integrated seamlessly with the main RAG application
 
 **Comprehensive Data Integration**
@@ -132,9 +132,9 @@ The project has successfully implemented and deployed a comprehensive AI real es
 
 **Evaluation Framework and Performance Metrics**
 - Built comprehensive evaluation system using Ragas metrics
-- Achieved target performance: faithfulness ≥0.92, relevancy ≥0.89, retrieval quality ≥0.85
+- Achieved target performance: Faithfulness 0.85-1.00, Answer Relevancy 0.89-0.97 (generation quality targets met)
 - Automated test generation and reporting capabilities
-- Performance analysis across 25 benchmark scenarios
+- Performance analysis across 24 benchmark scenarios
 
 **Production-Ready Features**
 - Robust error handling and fallback mechanisms
@@ -150,7 +150,7 @@ The dissertation makes the following contributions:
 
 **An aspect-based chunking strategy** that achieves superior retrieval performance (0.4872 retrieval score) compared to traditional semantic chunking approaches, enabling focused information retrieval across different content types.
 
-**A preprocessing pipeline integrating structured listings and embedding text**, enabling dual-use retrieval with 410+ optimized chunks and 3072-dimensional embeddings for enhanced semantic understanding.
+**A preprocessing pipeline integrating structured listings and embedding text**, enabling dual-use retrieval with 58 core aspect chunks + 410+ total chunks and 3072-dimensional embeddings for enhanced semantic understanding.
 
 **A prototype conversational advisor demonstrating advanced RAG capabilities**, including history-aware retrieval, conversational memory, and robust fallback mechanisms using LangChain 0.3.27.
 

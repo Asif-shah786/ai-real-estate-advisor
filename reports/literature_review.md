@@ -88,7 +88,7 @@ Contemporary RAG systems incorporate several advanced features that enhance perf
 
 • **Fallback Mechanisms**: Robust error handling and fallback strategies ensure system reliability even when primary retrieval or generation components fail.
 
-Our implementation successfully demonstrates these advanced RAG capabilities through a production-ready system that incorporates hybrid retrieval (BM25 + dense embeddings), contextual compression reranking, and comprehensive fallback mechanisms. The system achieves the target performance metrics established in our research objectives, validating the theoretical foundations established in the literature.
+Our implementation successfully demonstrates these advanced RAG capabilities through a production-ready system that incorporates hybrid retrieval (BM25 + dense embeddings), contextual compression reranking, and comprehensive fallback mechanisms. The system achieves high faithfulness (0.85-1.00) and answer relevancy (0.89-0.97) for generation quality, validating the theoretical foundations established in the literature.
 
 2.5 Large Language Models: Capabilities, Limitations, and Applications
 
@@ -228,7 +228,7 @@ The evaluation methodology employed in this project incorporates modern metrics 
 
 • **Cross-Validation** techniques ensure that evaluation results are robust and not dependent on specific test data or evaluation conditions.
 
-Our implementation successfully demonstrates these evaluation frameworks through a comprehensive assessment system that achieves the target performance metrics: faithfulness ≥0.92, relevancy ≥0.89, and retrieval quality ≥0.85. The system's performance validates the theoretical foundations established in the literature and demonstrates the effectiveness of modern evaluation approaches for RAG systems.
+Our implementation successfully demonstrates these evaluation frameworks through a comprehensive assessment system that achieves high faithfulness (0.85-1.00) and answer relevancy (0.89-0.97) for generation quality. The system's performance validates the theoretical foundations established in the literature and demonstrates the effectiveness of modern evaluation approaches for RAG systems.
 
 2.9 Research Gap Analysis and Project Positioning
 

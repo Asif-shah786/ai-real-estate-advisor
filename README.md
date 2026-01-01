@@ -1,6 +1,6 @@
-# AI Real Estate Assistant
+# AI Real Estate Advisor
 
-An intelligent, conversational AI assistant for real estate queries in Greater Manchester, built with Retrieval-Augmented Generation (RAG) and advanced chunking strategies.
+An intelligent, conversational AI advisor for real estate queries in Greater Manchester, built with Retrieval-Augmented Generation (RAG) and advanced chunking strategies.
 
 🌐 **Live App**: [https://ai-real-estate-advisor-h6twnfpajgcajjbhcymh9p.streamlit.app](https://ai-real-estate-advisor-h6twnfpajgcajjbhcymh9p.streamlit.app)
 

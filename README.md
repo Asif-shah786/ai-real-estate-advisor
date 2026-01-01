@@ -2,6 +2,8 @@
 
 An intelligent, conversational AI assistant for real estate queries in Greater Manchester, built with Retrieval-Augmented Generation (RAG) and advanced chunking strategies.
 
+🌐 **Live App**: [https://ai-real-estate-advisor-h6twnfpajgcajjbhcymh9p.streamlit.app](https://ai-real-estate-advisor-h6twnfpajgcajjbhcymh9p.streamlit.app)
+
 ## Features
 
 - **Conversational AI Interface**: Natural language queries about properties, neighborhoods, and real estate

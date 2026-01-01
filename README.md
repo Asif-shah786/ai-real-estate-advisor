@@ -20,19 +20,81 @@ An intelligent, conversational AI assistant for real estate queries in Greater M
 - OpenAI API key
 - Poetry (for dependency management)
 
+### Installing Poetry
+
+If you don't have Poetry installed:
+
+**On macOS/Linux:**
+```bash
+brew install poetry
+```
+
+**Or using the official installer:**
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+**On Windows:**
+```powershell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+```
+
 ### Installation
+
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd ai-real-estate-assistant
+cd ai-real-estate-advisor
 
-# Install dependencies
-poetry install
+# Install dependencies (this will create a virtual environment)
+poetry install --no-root
 
 # Set up environment variables
-cp .env.example .env
-# Edit .env with your OpenAI API key
+# Create .env file in the project root with your OpenAI API key
+# See Configuration section below for all available variables
 ```
+
+### Configuration
+
+The project requires two configuration files:
+
+1. **`.env` file** (in project root) - Used by the RAG pipeline and configuration system
+2. **`.streamlit/secrets.toml`** - Used by Streamlit UI components
+
+**Create `.env` file:**
+```bash
+# Create .env file in project root
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional: Model Configuration
+LLM_MODEL=gpt-4o
+EMBEDDING_MODEL=text-embedding-3-large
+TEMPERATURE=0.3
+
+# Optional: Database Configuration
+PROPERTIES_FILE=datasets/run_ready_904.json
+LEGAL_FILE=datasets/legal_uk_greater_manchester.jsonl
+USE_EXISTING_DB=true
+DB_NAME=run_ready_904_legal_uk_greater_manchester
+
+# Optional: Memory and Retrieval Settings
+MEMORY_TOKEN_LIMIT=2000
+RETRIEVAL_TOP_K=15
+RETRIEVAL_TOP_N=3
+```
+
+**Create `.streamlit/secrets.toml` file:**
+```bash
+# Create .streamlit directory and secrets.toml
+mkdir -p .streamlit
+
+# Create secrets.toml file
+cat > .streamlit/secrets.toml << EOF
+OPENAI_API_KEY = "your_openai_api_key_here"
+EOF
+```
+
+**Important:** Replace `your_openai_api_key_here` with your actual OpenAI API key in both files.
 
 ### Run the Application
 ```bash
@@ -80,15 +142,37 @@ python run_evaluation.py
 - **Transport Links**: Transport for Greater Manchester data
 - **Legal Regulations**: UK property law and compliance information
 
-## Configuration
+## Configuration Details
 
-### Environment Variables
-```bash
-OPENAI_API_KEY=your_openai_api_key
-LLM_MODEL=gpt-4o
-EMBEDDING_MODEL=text-embedding-3-large
-MEMORY_TOKEN_LIMIT=2000
-```
+### Required Environment Variables
+
+- `OPENAI_API_KEY` - Your OpenAI API key (required in both `.env` and `.streamlit/secrets.toml`)
+
+### Optional Environment Variables (with defaults)
+
+**Model Configuration:**
+- `LLM_MODEL` (default: `gpt-4o`)
+- `EMBEDDING_MODEL` (default: `text-embedding-3-large`)
+- `TEMPERATURE` (default: `0.3`)
+
+**Database Configuration:**
+- `PROPERTIES_FILE` (default: `datasets/run_ready_904.json`)
+- `LEGAL_FILE` (default: `datasets/legal_uk_greater_manchester.jsonl`)
+- `USE_EXISTING_DB` (default: `true`)
+- `DB_NAME` (default: `run_ready_904_legal_uk_greater_manchester`)
+
+**Memory and Retrieval Settings:**
+- `MEMORY_TOKEN_LIMIT` (default: `2000`)
+- `RETRIEVAL_TOP_K` (default: `15`)
+- `RETRIEVAL_TOP_N` (default: `3`)
+
+**Evaluation Settings:**
+- `EVALUATION_SEED` (default: `42`)
+- `EVALUATION_QUESTIONS` (default: `5`)
+
+**LangChain Configuration (optional):**
+- `LANGCHAIN_API_KEY`
+- `LANGCHAIN_ENDPOINT`
 
 ### Evaluation Configuration
 Edit `eval/configs.yaml` to customize:
@@ -121,13 +205,13 @@ The system has achieved strong performance across key metrics:
 ### Run Complete Evaluation
 ```bash
 cd eval
-python run_evaluation.py
+poetry run python run_evaluation.py
 ```
 
 ### Generate Test Set Only
 ```bash
 cd eval
-python run_evaluation.py testset-only
+poetry run python run_evaluation.py testset-only
 ```
 
 ### Evaluation Outputs
@@ -175,20 +259,27 @@ The system generates comprehensive evaluation reports in `eval/outputs/{run_id}/
 ## Project Structure
 
 ```
-ai-real-estate-assistant/
+ai-real-estate-advisor/
 ├── app.py                      # Main Streamlit application
 ├── rag_pipeline.py            # Core RAG implementation
 ├── aspect_based_chunker.py    # Advanced chunking strategy
 ├── prompts.py                 # System prompts and templates
 ├── utils.py                   # Utility functions
+├── streaming.py               # Streaming utilities
 ├── common/                    # Configuration and settings
+│   └── cfg.py                # Configuration loader
 ├── eval/                      # Evaluation framework
 │   ├── run_evaluation.py      # Main evaluation runner
 │   ├── configs.yaml          # Evaluation configuration
 │   └── outputs/              # Generated reports
 ├── datasets/                  # Property and legal data
+├── chats/                     # Saved chat sessions
 ├── reports/                   # Technical documentation and implementation guides
-└── pyproject.toml            # Dependencies and project config
+├── .streamlit/                # Streamlit configuration
+│   └── secrets.toml          # Streamlit secrets (API keys)
+├── .env                       # Environment variables
+├── pyproject.toml            # Dependencies and project config
+└── poetry.lock               # Locked dependency versions
 ```
 
 ## Development
